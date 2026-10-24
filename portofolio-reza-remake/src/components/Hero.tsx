@@ -144,11 +144,12 @@ export const Hero: React.FC<HeroProps> = ({ onOpenResume }) => {
               <button
                 type="button"
                 onClick={onOpenResume}
-                className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl font-mono text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-white/10 bg-white/60 dark:bg-dark-surface/60 hover:border-orange-500/40 hover:text-orange-500 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
-                title="Buka & Lihat Curriculum Vitae (PDF)"
+                className="inline-flex items-center gap-1.5 px-3 py-3 font-mono text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-orange-500 dark:hover:text-orange-400 transition-colors cursor-pointer"
+                title="Lihat Curriculum Vitae (PDF)"
               >
                 <FileText className="w-4 h-4 text-orange-500" />
-                <span>Lihat CV</span>
+                <span className="underline underline-offset-4 decoration-slate-300 dark:decoration-slate-700 hover:decoration-orange-500">Lihat CV</span>
+                <span className="text-[10px] text-slate-400">↗</span>
               </button>
 
               {/* Minimalist Social Row */}

@@ -138,15 +138,15 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenResume }) => {
               )}
             </button>
 
-            {/* CV PDF In-Website Preview Modal Trigger */}
+            {/* Simple CV Button */}
             <button
               type="button"
               onClick={onOpenResume}
               className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-100/80 dark:bg-dark-surface/80 text-slate-700 dark:text-slate-300 font-mono text-xs hover:border-orange-500/40 hover:text-orange-500 transition-colors shadow-sm cursor-pointer"
-              title="Lihat & Unduh Curriculum Vitae (PDF)"
+              title="Lihat CV (PDF)"
             >
               <FileText className="w-3.5 h-3.5 text-orange-500" />
-              <span className="text-[10px] font-bold">CV.PDF</span>
+              <span className="text-[10px] font-bold">CV</span>
             </button>
 
             {/* Direct CLI Ping CTA */}
@@ -220,7 +220,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenResume }) => {
                 className="w-full text-center py-2.5 rounded-xl font-mono text-xs font-bold text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-dark-surface flex items-center justify-center gap-2 hover:border-orange-500/40 hover:text-orange-500 transition-all cursor-pointer"
               >
                 <FileText className="w-4 h-4 text-orange-500" />
-                <span>$ cat resume.pdf (Lihat CV)</span>
+                <span>Lihat CV (PDF)</span>
               </button>
               <a
                 href="#contact"
