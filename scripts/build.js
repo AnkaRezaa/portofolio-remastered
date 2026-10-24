@@ -8,8 +8,8 @@ const remakeDir = path.join(rootDir, 'portofolio-reza-remake');
 const distDir = path.join(rootDir, 'dist');
 const portfolioSubDir = path.join(distDir, 'portfolio');
 
-console.log('🚀 [1/3] Building React Web Portfolio (portofolio-reza-remake)...');
-execSync('npm run build', {
+console.log('🚀 [1/3] Installing dependencies & building React Web Portfolio...');
+execSync('npm install && npm run build', {
   cwd: remakeDir,
   stdio: 'inherit',
 });
