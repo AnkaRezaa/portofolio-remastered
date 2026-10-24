@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RezaOS // Authentic Linux CLI Console</title>
+  <meta name="description" content="RezaOS - Fullscreen Realistic Linux CLI Terminal & Portfolio Gateway of Muhammad Anka Reza (IT Support, Network Engineer, Web Developer).">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐧</text></svg>">
+  
+  <!-- Realistic Linux Terminal Stylesheet -->
+  <link rel="stylesheet" href="css/portal.css">
+</head>
+<body>
+
+  <!-- Subtle CRT Scanline overlay -->
+  <div class="scanlines"></div>
+
+  <!-- True Fullscreen Linux Workspace -->
+  <main class="os-workspace">
+    
+    <!-- Edge-to-Edge Linux Terminal Console -->
+    <div class="os-terminal-window">
+      
+      <!-- Authentic Linux Top Panel (Ubuntu / GNOME / TTY Style) -->
+      <header class="terminal-top-panel">
+        <div class="panel-left">
+          <span class="panel-icon">🐧</span>
+          <span class="panel-session">RezaOS 24.04 LTS</span>
+          <span class="panel-sep">|</span>
+          <span class="panel-tty">tty1</span>
+          <span class="panel-sep">|</span>
+          <span class="panel-prompt">anka@reza-station:~</span>
+        </div>
+
+        <div class="panel-center">
+          <span class="panel-kernel">GNU/Linux 6.8.0-generic (x86_64)</span>
+        </div>
+
+        <div class="panel-right">
+          <span class="panel-net">
+            <span class="status-dot"></span>
+            <span>eth0: 1000 Mb/s</span>
+          </span>
+          <span class="panel-sep">|</span>
+          <span id="topClock" class="panel-clock">--:--:--</span>
+          <span class="panel-sep">|</span>
+          <button id="btnFullscreen" class="panel-btn" title="Toggle Fullscreen (F11)">[ ⛶ Fullscreen ]</button>
+          <button id="btnRebootTop" class="panel-btn" title="Reboot Linux OS">[ ↺ Reboot ]</button>
+        </div>
+      </header>
+
+      <!-- Terminal Body Content (Continuous Scrollable Stream) -->
+      <div id="terminalBody" class="terminal-body">
+        
+        <!-- ===================================================
+             1. AUTHENTIC LINUX BOOTLOADER SEQUENCE
+             =================================================== -->
+        <div id="bootScreen" class="boot-screen">
+          
+          <!-- Linux Tux ASCII Header on Boot -->
+          <div class="boot-tux-banner">
+            <pre class="tux-ascii-banner">
+   .--.
+  |o_o |
+  |:_/ |
+ //   \ \
+(|     | )
+/'\_   _/`\
+\___)=(___/
+            </pre>
+            <div class="tux-banner-text">
+              <h2>RezaOS GNU/Linux 24.04.1 LTS (kernel 6.8.0-generic)</h2>
+              <p>Politeknik Negeri Malang • D4 Teknologi Informasi // Initializing Systemd Subsystems...</p>
+            </div>
+          </div>
+
+          <!-- Dynamic systemd [ OK ] Log Stream -->
+          <div id="systemdLogs" class="systemd-logs"></div>
+
+          <!-- Authentic TTY Login Transition Prompt -->
+          <div id="ttyLoginBlock" class="tty-login-block" style="display: none;">
+            <div class="tty-header">RezaOS 24.04.1 LTS reza-station tty1</div>
+            <div class="tty-line">
+              <span>reza-station login:&nbsp;</span><span id="typeLoginUser" style="color: #ffffff; font-weight: 700;"></span><span id="cursorLogin" class="blink-cursor">█</span>
+            </div>
+            <div id="ttyPassRow" class="tty-line" style="display: none;">
+              <span>Password:&nbsp;</span><span id="typeLoginPass" style="color: #ffffff; font-weight: 700;"></span>
+            </div>
+            <div id="ttyAuthMsg" class="tty-line" style="display: none; color: var(--systemd-ok); font-weight: 700; margin-top: 4px;"></div>
+          </div>
+
+          <!-- Skip Boot Option With Clean Hint -->
+          <div class="boot-skip-container">
+            <span>Sedang memuat kernel dan modul jaringan... Tekan <strong>[Enter]</strong> atau <strong>[Esc]</strong> untuk langsung masuk terminal.</span>
+            <button id="btnSkipBoot" class="btn-skip-boot-banner">⚡ Masuk Terminal (Lewati Boot) →</button>
+          </div>
+
+        </div>
+
+        <!-- ===================================================
+             2. MAIN AUTHENTIC LINUX CLI SESSION
+             =================================================== -->
+        <div id="mainScreen" class="main-screen" style="display: none;">
+          
+          <!-- Terminal Command Prompt Header for Neofetch -->
+          <div class="initial-cmd-run">
+            <span class="p-usr">anka@reza-station</span><span class="p-colon">:</span><span class="p-path">~</span><span class="p-symbol">$</span>
+            <span class="run-text">neofetch</span>
+          </div>
+
+          <!-- Authentic MOTD (Message of the Day) -->
+          <div class="motd-banner">
+            <div>RezaOS 24.04.1 LTS (GNU/Linux 6.8.0-generic x86_64)</div>
+            <div style="color: var(--text-dim); margin-top: 2px;">
+              * Almamater: Politeknik Negeri Malang (POLINEMA) - D4 Teknologi Informasi<br>
+              * Spesialisasi: IT Support Specialist • Cisco Network Engineer • Web Developer<br>
+              * System Load: 0.08, 0.04, 0.01 | Uptime: 4+ Tahun Pengalaman &amp; Eksplorasi
+            </div>
+            <div style="margin-top: 4px; color: var(--systemd-ok); font-weight: 600;">
+              Last login: Sat Oct 24 2026 on tty1 from 127.0.0.1 (RezaOS Interactive Shell)
+            </div>
+          </div>
+
+          <!-- Neofetch Block (Large Avatar with Terminal Frame + Specs) -->
+          <div class="neofetch-section">
+            
+            <!-- Left Column: Large Avatar in Terminal Frame -->
+            <div class="neofetch-avatar-frame">
+              <div class="avatar-terminal-header">
+                <span>┌── [FRAMEBUFFER: 270x270 RGBA] ──┐</span>
+              </div>
+              <div class="avatar-img-box">
+                <img src="assets/avatar.jpg" alt="Muhammad Anka Reza">
+              </div>
+              <div class="avatar-terminal-footer">
+                <span>└── MUHAMMAD ANKA REZA (ONLINE) ──┘</span>
+              </div>
+            </div>
+
+            <!-- Right Column: Neofetch Specs Table -->
+            <div class="neofetch-specs-col">
+              <div class="neofetch-user-title">
+                <span class="nf-usr">anka</span><span class="nf-at">@</span><span class="nf-hst">reza-station</span>
+              </div>
+              <div class="neofetch-line">----------------------------------------------------</div>
+
+              <div class="nf-table">
+                <div class="nf-row">
+                  <span class="nf-key">OS:</span>
+                  <span class="nf-val">RezaOS 24.04.1 LTS x86_64 (Linux Kernel 6.8.0-generic)</span>
+                </div>
+                <div class="nf-row">
+                  <span class="nf-key">Host:</span>
+                  <span class="nf-val">Politeknik Negeri Malang (POLINEMA) // D4 Teknologi Informasi</span>
+                </div>
+                <div class="nf-row">
+                  <span class="nf-key">Roles:</span>
+                  <span class="nf-val">IT Support Specialist • Network Engineer • Web Developer</span>
+                </div>
+                <div class="nf-row">
+                  <span class="nf-key">Uptime:</span>
+                  <span class="nf-val">4+ Tahun Eksplorasi &amp; Implementasi Teknis</span>
+                </div>
+                <div class="nf-row">
+                  <span class="nf-key">Packages:</span>
+                  <span class="nf-val">9 (Official Accreditations), 12 (Projects Deployed)</span>
+                </div>
+                <div class="nf-row">
+                  <span class="nf-key">Shell:</span>
+                  <span class="nf-val">zsh 5.9 / bash 5.2.21 (x86_64-pc-linux-gnu)</span>
+                </div>
+                <div class="nf-row">
+                  <span class="nf-key">Terminal:</span>
+                  <span class="nf-val">/dev/tty1 (Fullscreen Natural Linux Console)</span>
+                </div>
+                <div class="nf-row">
+                  <span class="nf-key">Status:</span>
+                  <span class="nf-val nf-status">● Terbuka untuk Peluang Kerja &amp; Kolaborasi Teknis</span>
+                </div>
+                <div class="nf-row">
+                  <span class="nf-key">Lokasi:</span>
+                  <span class="nf-val">Malang / Blitar, Jawa Timur, Indonesia</span>
+                </div>
+              </div>
+
+              <!-- Classic Linux Terminal Color Palette Bar -->
+              <div class="neofetch-palettes">
+                <span class="pal-chip chip-1"></span>
+                <span class="pal-chip chip-2"></span>
+                <span class="pal-chip chip-3"></span>
+                <span class="pal-chip chip-4"></span>
+                <span class="pal-chip chip-5"></span>
+                <span class="pal-chip chip-6"></span>
+                <span class="pal-chip chip-7"></span>
+                <span class="pal-chip chip-8"></span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- ===================================================
+               3. AUTHENTIC SYSTEM DISPATCH MENU (CLI DISPATCH TABLE)
+               =================================================== -->
+          <div class="cli-dispatch-box">
+            <div class="dispatch-header">
+              <span class="dh-title">┌── [ REZA-OS SYSTEM DISPATCH MENU ] ──────────────────────────────────────────┐</span>
+              <span class="dh-hint">│ // Tekan angka [1-8] di keyboard, klik baris menu, atau ketik perintah di prompt │</span>
+              <span class="dh-div">├─────────────────────────────────────────────────────────────────────────────┤</span>
+            </div>
+
+            <div class="dispatch-rows">
+              <!-- 1: Primary Action (Interactive Web Portfolio) -->
+              <a href="http://127.0.0.1:5173/" class="dispatch-row primary-exec-row" onclick="window.runCli && window.runCli('1'); return false;">
+                <span class="dr-num">[ 1 ]</span>
+                <span class="dr-cmd">./portfolio.sh</span>
+                <span class="dr-arrow">==&gt;</span>
+                <span class="dr-desc"><strong style="color: var(--primary);">★ BUKA WEB PORTOFOLIO LENGKAP</strong> (Full Interactive Technical Showcase)</span>
+                <span class="dr-tag tag-primary">EXECUTE ↗</span>
+              </a>
+
+              <!-- 2: LinkedIn -->
+              <a href="https://www.linkedin.com/in/muhammad-anka-reza-620a0b2b7/?isSelfProfile=true" target="_blank" rel="noopener noreferrer" class="dispatch-row" onclick="window.runCli && window.runCli('2'); return false;">
+                <span class="dr-num">[ 2 ]</span>
+                <span class="dr-cmd">./linkedin.sh</span>
+                <span class="dr-arrow">--&gt;</span>
+                <span class="dr-desc">Profil LinkedIn Resmi Muhammad Anka Reza (Karier, Sertifikasi, &amp; Relasi)</span>
+                <span class="dr-tag">LINK ↗</span>
+              </a>
+
+              <!-- 3: WhatsApp -->
+              <a href="https://wa.me/6285334347482?text=Halo%20Reza,%20saya%20tertarik%20berkolaborasi%20proyek." target="_blank" rel="noopener noreferrer" class="dispatch-row" onclick="window.runCli && window.runCli('3'); return false;">
+                <span class="dr-num">[ 3 ]</span>
+                <span class="dr-cmd">./whatsapp.sh</span>
+                <span class="dr-arrow">--&gt;</span>
+                <span class="dr-desc">Chat WhatsApp Langsung (Konsultasi Teknis, Wawancara, &amp; Tawaran Kolaborasi)</span>
+                <span class="dr-tag">CHAT ↗</span>
+              </a>
+
+              <!-- 4: GitHub -->
+              <a href="https://github.com/AnkaRezaa" target="_blank" rel="noopener noreferrer" class="dispatch-row" onclick="window.runCli && window.runCli('4'); return false;">
+                <span class="dr-num">[ 4 ]</span>
+                <span class="dr-cmd">./github.sh</span>
+                <span class="dr-arrow">--&gt;</span>
+                <span class="dr-desc">Repositori Proyek GitHub &amp; Open Source Code Repository</span>
+                <span class="dr-tag">CODE ↗</span>
+              </a>
+
+              <!-- 5: Email -->
+              <a href="mailto:rezawalker02@gmail.com?subject=Tawaran%20Kolaborasi%20/%20Pekerjaan&body=Halo%20Reza," class="dispatch-row" onclick="window.runCli && window.runCli('5'); return false;">
+                <span class="dr-num">[ 5 ]</span>
+                <span class="dr-cmd">./email.sh</span>
+                <span class="dr-arrow">--&gt;</span>
+                <span class="dr-desc">Kirim Transmisi Email Resmi ke rezawalker02@gmail.com</span>
+                <span class="dr-tag">MAIL ↗</span>
+              </a>
+
+              <!-- 6: Instagram -->
+              <a href="https://www.instagram.com/toxickers002/" target="_blank" rel="noopener noreferrer" class="dispatch-row" onclick="window.runCli && window.runCli('6'); return false;">
+                <span class="dr-num">[ 6 ]</span>
+                <span class="dr-cmd">./instagram.sh</span>
+                <span class="dr-arrow">--&gt;</span>
+                <span class="dr-desc">Dokumentasi Portofolio Desain Grafis &amp; Feed Instagram (@toxickers002)</span>
+                <span class="dr-tag">FEED ↗</span>
+              </a>
+
+              <!-- 7: Twitter / X -->
+              <a href="https://x.com/Toxickers1" target="_blank" rel="noopener noreferrer" class="dispatch-row" onclick="window.runCli && window.runCli('7'); return false;">
+                <span class="dr-num">[ 7 ]</span>
+                <span class="dr-cmd">./twitter.sh</span>
+                <span class="dr-arrow">--&gt;</span>
+                <span class="dr-desc">Pembaruan Tech, Opini Teknis, &amp; Akun Twitter / X (@Toxickers1)</span>
+                <span class="dr-tag">POST ↗</span>
+              </a>
+
+              <!-- 8: CV / Resume Document -->
+              <a href="resumeCV/resume.pdf" target="_blank" rel="noopener noreferrer" class="dispatch-row" onclick="window.runCli && window.runCli('8'); return false;">
+                <span class="dr-num">[ 8 ]</span>
+                <span class="dr-cmd">./resume.pdf</span>
+                <span class="dr-arrow">--&gt;</span>
+                <span class="dr-desc"><strong style="color: var(--bash-yellow);">📄 DOKUMEN RESMI CV / RESUME</strong> (Muhammad Anka Reza - Unduh Berkas PDF)</span>
+                <span class="dr-tag" style="color: #000; background: var(--bash-yellow); font-weight: 800; border-color: var(--bash-yellow);">UNDUH ↗</span>
+              </a>
+            </div>
+
+            <div class="dispatch-footer">
+              <span>└─────────────────────────────────────────────────────────────────────────────┘</span>
+            </div>
+          </div>
+
+          <!-- ===================================================
+               4. UNIFIED LIVE INTERACTIVE TERMINAL STREAM
+               =================================================== -->
+          <div class="terminal-stream-container">
+            
+            <!-- Output Log Buffer (Grows dynamically as commands run) -->
+            <div id="cliOutputLog" class="cli-output-log">
+              <div class="cli-system-note">
+                <span style="color: var(--systemd-ok); font-weight: 700;">[SHELL ACTIVE]</span> 
+                <span>Ketik perintah di baris prompt atau klik cepat: </span>
+                <span class="cmd-pill" onclick="window.runCli('help')">help</span>
+                <span class="cmd-pill" onclick="window.runCli('ls -la')">ls</span>
+                <span class="cmd-pill" onclick="window.runCli('skills')">skills</span>
+                <span class="cmd-pill" onclick="window.runCli('neofetch')">neofetch</span>
+                <span class="cmd-pill" onclick="window.runCli('ping reza')">ping</span>
+                <span class="cmd-pill" onclick="window.runCli('cowsay')">cowsay</span>
+                <span class="cmd-pill" onclick="window.runCli('fortune')">fortune</span>
+              </div>
+            </div>
+
+            <!-- Natural Active Prompt Line -->
+            <div class="cli-active-prompt-line">
+              <span class="p-usr">anka@reza-station</span><span class="p-colon">:</span><span class="p-path">~</span><span class="p-symbol">$</span>
+              <input type="text" id="cliInput" class="cli-inline-input" placeholder="Ketik perintah (contoh: help, ls, skills, cowsay, ping, 1)..." autocomplete="off" spellcheck="false" autofocus>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Authentic Linux Bottom Status Bar (tmux / screen / vim style) -->
+      <footer class="terminal-bottom-bar">
+        <div class="bar-left">
+          <span class="status-badge">[ RezaOS 24.04 LTS ]</span>
+          <span class="status-badge">[ Shell: bash 5.2.21 ]</span>
+          <span class="status-badge">[ UTF-8 ]</span>
+        </div>
+        <div class="bar-center">
+          <span>// Klik di mana saja untuk fokus ke keyboard • Tekan F11 untuk Fullscreen</span>
+        </div>
+        <div class="bar-right">
+          <span class="status-badge">[ UID: 1000 (anka) ]</span>
+          <span class="status-badge">[ tty1: ACTIVE ]</span>
+        </div>
+      </footer>
+
+    </div>
+
+  <!-- Linux Terminal Embedded CV/Resume PDF Viewer Modal -->
+  <div id="cvModalOverlay" class="cv-modal-overlay" style="display: none;">
+    <div class="cv-modal-window">
+      <div class="cv-modal-header">
+        <div class="cv-modal-title">
+          <span style="color: var(--primary); font-weight: 800;">[PDF-VIEWER]</span>
+          <span>/home/reza/resumeCV/resume.pdf (evince / xpdf)</span>
+        </div>
+        <div class="cv-modal-actions">
+          <a href="resumeCV/resume.pdf" download="CV_Muhammad_Anka_Reza.pdf" class="cv-btn-action" title="Unduh Berkas PDF ke Komputer">
+            <span>⬇</span> Unduh PDF
+          </a>
+          <a href="resumeCV/resume.pdf" target="_blank" rel="noopener noreferrer" class="cv-btn-action" title="Buka PDF di Tab Baru">
+            <span>↗</span> Tab Baru
+          </a>
+          <button id="btnCloseCvModal" class="cv-btn-close" title="Tutup Viewer (Esc)">✖</button>
+        </div>
+      </div>
+      <div class="cv-modal-body">
+        <iframe id="cvPdfFrame" src="" class="cv-iframe" title="CV Muhammad Anka Reza"></iframe>
+      </div>
+      <div class="cv-modal-footer">
+        <span>Tekan <strong>[Esc]</strong> atau tombol silang untuk kembali ke terminal</span>
+        <span>Ukuran: ~610 KB (PDF Resmi)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Logic -->
+  <script src="js/portal.js"></script>
+</body>
+</html>
