@@ -54,6 +54,37 @@ Aplikasi berjalan di: `http://localhost:5173/`
 ### Menjalankan Terminal Portal:
 Cukup buka berkas `portofolio-portal/index.html` langsung di browser, atau jalankan melalui web server lokal (seperti Laragon, Live Server, atau Nginx).
 
+### Build Unified Ecosystem (Production):
+```bash
+npm run build
+```
+Hasil build akan terkumpul di folder `dist/`:
+- `/` -> Linux Terminal Gateway
+- `/portfolio/` -> React Web Portfolio
+
+---
+
+## 🌐 Panduan Deployment ke Vercel
+
+Repositori ini telah disiapkan dengan konfigurasi Vercel otomatis (`vercel.json` dan `package.json`):
+
+1. **Push ke GitHub**:
+   ```bash
+   git push -u origin main
+   ```
+2. **Import ke Vercel**:
+   - Buka [vercel.com](https://vercel.com) dan login via GitHub.
+   - Klik **"Add New..."** > **"Project"**.
+   - Pilih repositori `portofolio-remastered`.
+   - **Framework Preset**: Biarkan `Other` (atau otomatis terdeteksi).
+   - **Root Directory**: `./` (biarkan default root).
+   - **Output Directory**: Otomatis `dist` dari `vercel.json`.
+   - Klik **Deploy**! 🚀
+3. Hasilnya:
+   - Akses `https://<nama-project>.vercel.app/` -> **Linux Terminal Portal Gateway**.
+   - Tekan `[ 1 ]` -> Langsung masuk ke **Web Portofolio Lengkap** (`/portfolio`).
+   - Tekan tombol `TERMINAL` di navbar -> Kembali ke Linux Terminal Gateway.
+
 ---
 
 ## 📬 Kontak & Profil
