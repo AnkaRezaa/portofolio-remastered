@@ -1,0 +1,9 @@
+{
+  "name": "muhammad-anka-reza-portfolio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Unified Portfolio Ecosystem for Muhammad Anka Reza (Linux Terminal Gateway & Modern React Web Portfolio)",
+  "scripts": {
+    "build": "node scripts/build.js"
+  }
+}
