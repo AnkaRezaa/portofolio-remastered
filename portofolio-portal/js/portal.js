@@ -758,12 +758,9 @@ __(@@)___(@@)__(@@)___(@@)__(@@)___(@@)___(@@)___(@@)___`;
 
     // Shortcuts for links
     '1': () => {
-      appendOutput('[EXEC] Membuka Web Portofolio Lengkap...', 'success');
+      appendOutput('[EXEC] Mengarahkan ke Web Portofolio Lengkap (https://portofolio-anka.vercel.app/)...', 'success');
       sfx.playChime();
-      const targetUrl = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port === '5173'
-        ? 'http://127.0.0.1:5173/'
-        : './portfolio/';
-      setTimeout(() => { window.location.href = targetUrl; }, 600);
+      setTimeout(() => { window.location.href = 'https://portofolio-anka.vercel.app/'; }, 600);
     },
     portfolio: () => shellCommands['1'](),
     run: () => shellCommands['1'](),

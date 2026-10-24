@@ -149,16 +149,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenResume }) => {
               <span className="text-[10px] font-bold">CV.PDF</span>
             </button>
 
-            {/* Open Linux Terminal Gateway */}
-            <a
-              href="/terminal/"
-              className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-100/80 dark:bg-dark-surface/80 text-slate-700 dark:text-slate-300 font-mono text-xs hover:border-orange-500/40 hover:text-orange-500 transition-colors shadow-sm"
-              title="Buka Linux Terminal Gateway"
-            >
-              <Terminal className="w-3.5 h-3.5 text-orange-500" />
-              <span className="text-[10px] font-bold">TERMINAL</span>
-            </a>
-
             {/* Direct CLI Ping CTA */}
             <a
               href="#contact"
@@ -232,13 +222,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenResume }) => {
                 <FileText className="w-4 h-4 text-orange-500" />
                 <span>$ cat resume.pdf (Lihat CV)</span>
               </button>
-              <a
-                href="/terminal/"
-                className="w-full text-center py-2.5 rounded-xl font-mono text-xs font-bold text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-dark-surface flex items-center justify-center gap-2 hover:border-orange-500/40 hover:text-orange-500 transition-all"
-              >
-                <Terminal className="w-4 h-4 text-orange-500" />
-                <span>$ terminal (Buka Linux Terminal)</span>
-              </a>
               <a
                 href="#contact"
                 onClick={() => setMobileMenuOpen(false)}
