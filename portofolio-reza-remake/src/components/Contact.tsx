@@ -367,14 +367,17 @@ export const Contact: React.FC<ContactProps> = ({ onOpenAdmin }) => {
           <p>© {new Date().getFullYear()} MUHAMMAD ANKA REZA. ALL RIGHTS RESERVED.</p>
           <div className="flex items-center gap-4">
             <span className="hidden md:inline">REACT 18 • TAILWIND • FRAMER MOTION</span>
-            <button
-              onClick={onOpenAdmin}
+            <a
+              href="?admin=true#admin"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => onOpenAdmin?.()}
               className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg border border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-dark-surface text-slate-600 dark:text-slate-300 hover:text-orange-500 hover:border-orange-500/40 transition-colors"
-              title="Admin Console"
+              title="Buka Admin Console di Halaman / Tab Baru"
             >
               <Lock className="w-3 h-3 text-orange-500" />
-              <span>Admin Login</span>
-            </button>
+              <span>Admin Console ↗</span>
+            </a>
           </div>
         </div>
       </footer>

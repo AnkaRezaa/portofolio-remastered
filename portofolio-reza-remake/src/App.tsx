@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ThemeProvider } from "./context/ThemeContext";
 import { Navbar } from "./components/Navbar";
 import { Hero } from "./components/Hero";
@@ -9,57 +9,119 @@ import { Services } from "./components/Services";
 import { Projects } from "./components/Projects";
 import { Certificates } from "./components/Certificates";
 import { Contact } from "./components/Contact";
-import { AdminPortal } from "./components/AdminPortal";
+import { AdminDashboard } from "./components/AdminDashboard";
 import { ResumeModal } from "./components/ResumeModal";
 import { TerminalStreamBg } from "./components/TerminalStreamBg";
 import { projectsData, ProjectItem } from "./data/projects";
 import { certificatesData, CertificateItem } from "./data/certificates";
 
 export function App() {
-  const [isAdminOpen, setIsAdminOpen] = useState(false);
+  const [isAdminOpen, setIsAdminOpen] = useState(() => {
+    if (typeof window !== "undefined") {
+      return (
+        window.location.hash === "#admin" ||
+        new URLSearchParams(window.location.search).has("admin")
+      );
+    }
+    return false;
+  });
   const [isResumeOpen, setIsResumeOpen] = useState(false);
 
-  // Dynamic projects with localStorage persistence
+  // Listen for route changes (e.g. hash or back/forward)
+  useEffect(() => {
+    const handleRouteCheck = () => {
+      setIsAdminOpen(
+        window.location.hash === "#admin" ||
+        new URLSearchParams(window.location.search).has("admin")
+      );
+    };
+    window.addEventListener("hashchange", handleRouteCheck);
+    window.addEventListener("popstate", handleRouteCheck);
+    return () => {
+      window.removeEventListener("hashchange", handleRouteCheck);
+      window.removeEventListener("popstate", handleRouteCheck);
+    };
+  }, []);
+
+  // Dynamic projects with localStorage persistence (Full CRUD: Create, Read, Update, Delete)
   const [projects, setProjects] = useState<ProjectItem[]>(() => {
-    const saved = localStorage.getItem("custom-projects");
+    const saved = localStorage.getItem("anka-portfolio-projects");
     if (saved) {
       try {
-        const parsed = JSON.parse(saved);
-        return [...parsed, ...projectsData];
+        return JSON.parse(saved);
       } catch (e) {
         return projectsData;
       }
     }
+    const legacy = localStorage.getItem("custom-projects");
+    if (legacy) {
+      try {
+        return [...JSON.parse(legacy), ...projectsData];
+      } catch (e) {}
+    }
     return projectsData;
   });
 
-  // Dynamic certificates with localStorage persistence
+  // Dynamic certificates with localStorage persistence (Full CRUD)
   const [certificates, setCertificates] = useState<CertificateItem[]>(() => {
-    const saved = localStorage.getItem("custom-certificates");
+    const saved = localStorage.getItem("anka-portfolio-certificates");
     if (saved) {
       try {
-        const parsed = JSON.parse(saved);
-        return [...parsed, ...certificatesData];
+        return JSON.parse(saved);
       } catch (e) {
         return certificatesData;
       }
     }
+    const legacy = localStorage.getItem("custom-certificates");
+    if (legacy) {
+      try {
+        return [...JSON.parse(legacy), ...certificatesData];
+      } catch (e) {}
+    }
     return certificatesData;
   });
 
-  const handleAddProject = (newProject: ProjectItem) => {
-    const updated = [newProject, ...projects];
+  const handleSaveProjects = (updated: ProjectItem[]) => {
     setProjects(updated);
-    const customOnly = updated.filter((p) => p.id.startsWith("proj-"));
-    localStorage.setItem("custom-projects", JSON.stringify(customOnly));
+    localStorage.setItem("anka-portfolio-projects", JSON.stringify(updated));
   };
 
-  const handleAddCertificate = (newCert: CertificateItem) => {
-    const updated = [newCert, ...certificates];
+  const handleSaveCertificates = (updated: CertificateItem[]) => {
     setCertificates(updated);
-    const customOnly = updated.filter((c) => c.id.startsWith("cert-"));
-    localStorage.setItem("custom-certificates", JSON.stringify(customOnly));
+    localStorage.setItem("anka-portfolio-certificates", JSON.stringify(updated));
   };
+
+  const handleResetDefault = () => {
+    setProjects(projectsData);
+    setCertificates(certificatesData);
+    localStorage.removeItem("anka-portfolio-projects");
+    localStorage.removeItem("anka-portfolio-certificates");
+    localStorage.removeItem("custom-projects");
+    localStorage.removeItem("custom-certificates");
+  };
+
+  // Dedicated Full-Page / Tab View: Reimagined Admin Dashboard
+  if (isAdminOpen) {
+    return (
+      <ThemeProvider>
+        <AdminDashboard
+          projects={projects}
+          certificates={certificates}
+          onSaveProjects={handleSaveProjects}
+          onSaveCertificates={handleSaveCertificates}
+          onResetDefault={handleResetDefault}
+          onBackToSite={() => {
+            if (window.history.pushState) {
+              window.history.pushState(null, "", window.location.pathname);
+            } else {
+              window.location.hash = "";
+            }
+            setIsAdminOpen(false);
+          }}
+        />
+      </ThemeProvider>
+    );
+  }
 
   return (
     <ThemeProvider>
@@ -97,14 +159,6 @@ export function App() {
           {/* Section 7: Contact & Footer */}
           <Contact onOpenAdmin={() => setIsAdminOpen(true)} />
         </main>
-
-        {/* Dynamic Content Admin Portal Modal */}
-        <AdminPortal
-          isOpen={isAdminOpen}
-          onClose={() => setIsAdminOpen(false)}
-          onAddProject={handleAddProject}
-          onAddCertificate={handleAddCertificate}
-        />
 
         {/* Interactive In-Website Resume/CV Viewer Modal */}
         <ResumeModal
