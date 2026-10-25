@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Code2,
   Smartphone,
@@ -8,12 +8,18 @@ import {
   Database,
   Cpu,
   CheckCircle2,
-  ArrowRight,
   Terminal,
   Activity,
   Layers,
   ShieldCheck,
   Send,
+  X,
+  Maximize2,
+  Play,
+  Pause,
+  ChevronLeft,
+  ChevronRight,
+  Sparkles,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -323,27 +329,73 @@ export const Services: React.FC = () => {
     },
   ];
 
-  const [selectedServiceId, setSelectedServiceId] = useState<string>(dossiers[0].id);
+  // State untuk Pop-up Modal Detail (Expanded View)
+  const [activeModal, setActiveModal] = useState<ServiceDossier | null>(null);
 
-  const activeDossier =
-    dossiers.find((d) => d.id === selectedServiceId) || dossiers[0];
+  // State untuk Kontrol Pause Marquee
+  const [isPaused, setIsPaused] = useState<boolean>(false);
 
-  const handleScrollToContact = () => {
-    const el = document.getElementById("contact");
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth" });
+  // Ref container untuk manual scroll jika pengguna menekan tombol panah
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  // Duplikasi item 3x agar animasi infinite bergerak ke kanan selalu mulus tanpa jeda
+  const marqueeItems = [...dossiers, ...dossiers, ...dossiers];
+
+  // Handle ESC key to close modal & lock body scroll
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setActiveModal(null);
+      }
+    };
+
+    if (activeModal) {
+      document.body.style.overflow = "hidden";
+      window.addEventListener("keydown", handleKeyDown);
+    } else {
+      document.body.style.overflow = "unset";
     }
+
+    return () => {
+      document.body.style.overflow = "unset";
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [activeModal]);
+
+  // Manual scroll helper
+  const handleManualScroll = (direction: "left" | "right") => {
+    if (scrollContainerRef.current) {
+      const scrollAmount = 400;
+      scrollContainerRef.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  // Scroll to contact section
+  const handleScrollToContact = () => {
+    setActiveModal(null);
+    setTimeout(() => {
+      const el = document.getElementById("contact");
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth" });
+      }
+    }, 150);
   };
 
   return (
     <section
       id="services"
-      className="py-24 relative bg-slate-100/60 dark:bg-dark-surface/40 border-t border-b border-slate-200/80 dark:border-white/5 transition-colors"
+      className="py-24 relative bg-slate-100/60 dark:bg-dark-surface/40 border-t border-b border-slate-200/80 dark:border-white/5 transition-colors overflow-hidden"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+      {/* Background Decorative Gradient Orbs */}
+      <div className="absolute top-1/4 -left-32 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-10">
+        {/* Section Header with Controls */}
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
           <div>
             <div className="flex items-center gap-2 mb-2.5">
               <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
@@ -357,141 +409,281 @@ export const Services: React.FC = () => {
                 EXPERTISE
               </span>
             </h2>
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-xl leading-relaxed mt-2 font-sans">
+              Kartu layanan meluncur secara dinamis ke arah kanan. <strong className="text-slate-900 dark:text-white">Arahkan kursor untuk jeda</strong>, lalu <strong className="text-orange-500">klik kartu</strong> untuk membuka menu pop-up spesifikasi lengkap (*workflow* & *deliverables*).
+            </p>
           </div>
 
-          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-lg leading-relaxed font-sans">
-            Pilih domain layanan di sisi kiri untuk membuka spesifikasi kapabilitas, alur pengerjaan (*workflow*), dan output (*deliverables*) konkret yang Anda dapatkan.
-          </p>
-        </div>
-
-        {/* Master-Detail Interactive Service Dossier Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
-          
-          {/* LEFT: Tactile Service Directory / Selector */}
-          <div className="lg:col-span-5 space-y-2.5">
-            <div className="text-[11px] font-mono text-slate-400 uppercase tracking-widest px-2 mb-1 flex items-center justify-between">
-              <span>DAFTAR DOMAIN LAYANAN</span>
-              <span className="text-orange-500 font-bold">{dossiers.length} AKTIF</span>
+          {/* Interactive Marquee Controls */}
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Status Pill */}
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/80 dark:bg-dark-card/80 border border-slate-200 dark:border-white/10 text-[11px] font-mono text-slate-500 dark:text-slate-400">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
+              <span>GERAK: KE KANAN ⏩</span>
             </div>
 
-            {dossiers.map((item) => {
-              const isSelected = item.id === selectedServiceId;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => setSelectedServiceId(item.id)}
-                  className={`w-full text-left p-3.5 sm:p-4 rounded-2xl border transition-all duration-200 relative flex items-center justify-between group ${
-                    isSelected
-                      ? "bg-white dark:bg-dark-card border-orange-500/80 shadow-lg shadow-orange-500/10"
-                      : "bg-white/60 dark:bg-dark-card/40 border-slate-200/80 dark:border-white/5 hover:border-orange-500/40 hover:bg-white dark:hover:bg-dark-card/70"
-                  }`}
-                >
-                  <div className="flex items-center gap-3.5 min-w-0">
-                    {/* Glowing Icon Container */}
-                    <div
-                      className={`w-10 h-10 rounded-xl border flex items-center justify-center shrink-0 transition-transform ${
-                        isSelected
-                          ? "bg-orange-500/10 border-orange-500/40 scale-105"
-                          : "bg-slate-100 dark:bg-dark-surface border-slate-200/80 dark:border-white/10 group-hover:scale-105"
-                      }`}
-                    >
-                      {item.icon}
-                    </div>
+            {/* Pause / Play Toggle */}
+            <button
+              onClick={() => setIsPaused(!isPaused)}
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white dark:bg-dark-card border border-slate-200 dark:border-white/10 hover:border-orange-500/50 text-xs font-mono font-bold text-slate-700 dark:text-slate-200 shadow-sm hover:shadow transition-all cursor-pointer"
+              title={isPaused ? "Lanjutkan pergerakan" : "Jeda pergerakan"}
+            >
+              {isPaused ? (
+                <>
+                  <Play className="w-3.5 h-3.5 text-emerald-500 fill-emerald-500" />
+                  <span>PUTAR</span>
+                </>
+              ) : (
+                <>
+                  <Pause className="w-3.5 h-3.5 text-orange-500 fill-orange-500" />
+                  <span>JEDA</span>
+                </>
+              )}
+            </button>
 
-                    <div className="min-w-0 pr-2">
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono text-[11px] font-bold text-orange-500">
-                          [{item.code}]
-                        </span>
-                        <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 truncate">
-                          {item.category}
-                        </span>
-                      </div>
-                      <h4
-                        className={`text-sm font-bold truncate transition-colors ${
-                          isSelected
-                            ? "text-slate-900 dark:text-white"
-                            : "text-slate-700 dark:text-slate-300 group-hover:text-orange-500"
-                        }`}
-                      >
-                        {item.title}
-                      </h4>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 shrink-0">
-                    {isSelected ? (
-                      <span className="w-2 h-2 rounded-full bg-orange-500 animate-ping" />
-                    ) : (
-                      <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-orange-500 group-hover:translate-x-1 transition-all" />
-                    )}
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* RIGHT: Detailed Capability Dossier & Execution Hub */}
-          <div className="lg:col-span-7 sticky top-24">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeDossier.id}
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -15 }}
-                transition={{ duration: 0.25 }}
-                className="rounded-3xl bg-white dark:bg-dark-card/90 border-2 border-slate-200/90 dark:border-white/10 p-6 sm:p-8 shadow-2xl relative overflow-hidden backdrop-blur-md"
+            {/* Manual Step Buttons */}
+            <div className="flex items-center gap-1 bg-white dark:bg-dark-card border border-slate-200 dark:border-white/10 rounded-xl p-1 shadow-sm">
+              <button
+                onClick={() => handleManualScroll("left")}
+                className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-dark-surface text-slate-600 dark:text-slate-300 hover:text-orange-500 transition-colors cursor-pointer"
+                title="Geser Kiri"
               >
-                {/* Ambient Glow */}
-                <div
-                  className={`absolute top-0 right-0 w-80 h-80 bg-gradient-to-bl ${activeDossier.accentGradient} rounded-full blur-3xl pointer-events-none -z-10`}
-                />
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => handleManualScroll("right")}
+                className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-dark-surface text-slate-600 dark:text-slate-300 hover:text-orange-500 transition-colors cursor-pointer"
+                title="Geser Kanan"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
 
-                {/* Dossier Header Bar */}
-                <div className="flex items-center justify-between pb-4 mb-6 border-b border-slate-200/80 dark:border-white/10 text-[11px] font-mono text-slate-500 dark:text-slate-400">
+      {/* CONTINUOUS RIGHTWARD MOVING CAROUSEL TRACK */}
+      <div
+        ref={scrollContainerRef}
+        className="relative w-full overflow-x-hidden py-4 select-none group"
+      >
+        {/* Soft edge blur masks */}
+        <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-28 bg-gradient-to-r from-slate-100 dark:from-[#0c0e15] to-transparent z-10 pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-28 bg-gradient-to-l from-slate-100 dark:from-[#0c0e15] to-transparent z-10 pointer-events-none" />
+
+        {/* Marquee Track moving to the right */}
+        <div
+          className={`flex gap-6 w-max animate-marquee-right ${
+            isPaused ? "marquee-paused" : ""
+          } hover:[animation-play-state:paused]`}
+        >
+          {marqueeItems.map((item, index) => (
+            <div
+              key={`${item.id}-${index}`}
+              onClick={() => setActiveModal(item)}
+              className="w-[330px] sm:w-[380px] shrink-0 p-6 rounded-2xl bg-white/90 dark:bg-dark-card/90 border border-slate-200/90 dark:border-white/10 hover:border-orange-500/80 shadow-md hover:shadow-2xl hover:shadow-orange-500/15 backdrop-blur-md transition-all duration-300 cursor-pointer group/card flex flex-col justify-between hover:-translate-y-1.5 relative overflow-hidden"
+            >
+              {/* Top ambient color strip */}
+              <div
+                className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${item.accentGradient} opacity-70 group-hover/card:opacity-100 transition-opacity`}
+              />
+
+              {/* Card Top Row */}
+              <div>
+                <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
-                    <Terminal className="w-3.5 h-3.5 text-orange-500" />
-                    <span className="text-slate-800 dark:text-slate-200 font-bold">
-                      spec: ~/dossier/{activeDossier.id}.json
+                    <span className="font-mono text-xs font-bold text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded border border-orange-500/20">
+                      [{item.code}]
+                    </span>
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                      {item.category}
                     </span>
                   </div>
-                  <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 font-bold text-[10px]">
-                    <Activity className="w-3 h-3" />
-                    <span>CAPABILITY:READY</span>
+
+                  {/* Expand cue badge */}
+                  <div className="flex items-center gap-1 text-[10px] font-mono text-slate-400 group-hover/card:text-orange-500 transition-colors">
+                    <span>EXPAND</span>
+                    <Maximize2 className="w-3 h-3 group-hover/card:scale-110 transition-transform" />
                   </div>
                 </div>
 
-                {/* Title & Tagline */}
-                <div className="mb-6">
-                  <div className="flex items-center gap-2 mb-1.5">
+                {/* Icon & Title */}
+                <div className="flex items-start gap-3.5 mb-3">
+                  <div className="w-11 h-11 rounded-xl bg-orange-500/10 border border-orange-500/30 flex items-center justify-center shrink-0 group-hover/card:scale-105 group-hover/card:border-orange-500 transition-all shadow-sm">
+                    {item.icon}
+                  </div>
+                  <div>
+                    <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white group-hover/card:text-orange-500 transition-colors leading-snug">
+                      {item.title}
+                    </h3>
+                    <p className="text-[11px] font-mono text-orange-500/90 font-medium line-clamp-1 mt-0.5">
+                      {item.tagline}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Scope line */}
+                <div className="text-[11px] font-mono text-slate-500 dark:text-slate-400 mb-4 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-400 dark:bg-slate-500" />
+                  <span>{item.scope}</span>
+                </div>
+
+                {/* Deliverables snippet (2 items) */}
+                <div className="space-y-1.5 mb-5 p-3 rounded-xl bg-slate-50 dark:bg-dark-surface/60 border border-slate-200/60 dark:border-white/5">
+                  <div className="text-[10px] font-mono text-slate-400 uppercase tracking-wider font-semibold">
+                    Core Output:
+                  </div>
+                  {item.deliverables.slice(0, 2).map((del, dIdx) => (
+                    <div
+                      key={dIdx}
+                      className="flex items-start gap-2 text-[11px] text-slate-600 dark:text-slate-300"
+                    >
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
+                      <span className="line-clamp-1 leading-snug">{del}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Card Footer: Tech Logos & Expand Action Button */}
+              <div className="pt-3 border-t border-slate-200/80 dark:border-white/10 flex items-center justify-between">
+                {/* Tech Badges Mini */}
+                <div className="flex items-center gap-1.5">
+                  {item.techLogos.slice(0, 3).map((tech) => (
+                    <div
+                      key={tech.name}
+                      className="w-6 h-6 rounded-md bg-slate-100 dark:bg-dark-surface border border-slate-200/70 dark:border-white/10 flex items-center justify-center p-1"
+                      title={tech.name}
+                    >
+                      <img
+                        src={tech.path}
+                        alt={tech.name}
+                        className="w-3.5 h-3.5 object-contain"
+                        loading="lazy"
+                        onError={(e) => {
+                          e.currentTarget.style.display = "none";
+                        }}
+                      />
+                    </div>
+                  ))}
+                  {item.techLogos.length > 3 && (
+                    <span className="text-[10px] font-mono text-slate-400">
+                      +{item.techLogos.length - 3}
+                    </span>
+                  )}
+                </div>
+
+                {/* Interactive Click Cue */}
+                <div className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-orange-500/10 text-orange-500 border border-orange-500/25 group-hover/card:bg-orange-500 group-hover/card:text-white transition-all text-xs font-mono font-bold">
+                  <span>Buka Detail</span>
+                  <Maximize2 className="w-3 h-3" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* EXPANDED POP-UP MODAL (POP UP MENU) */}
+      <AnimatePresence>
+        {activeModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+            {/* Backdrop Blur Overlay */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setActiveModal(null)}
+              className="fixed inset-0 bg-black/80 backdrop-blur-md transition-opacity"
+            />
+
+            {/* Modal Window Container */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.94, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.94, y: 20 }}
+              transition={{ type: "spring", duration: 0.35, bounce: 0.15 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative w-full max-w-3xl rounded-3xl bg-white dark:bg-dark-card border-2 border-orange-500/40 shadow-2xl shadow-orange-500/20 overflow-hidden z-10 max-h-[90vh] flex flex-col"
+            >
+              {/* Ambient Glow in Modal */}
+              <div
+                className={`absolute top-0 right-0 w-80 h-80 bg-gradient-to-bl ${activeModal.accentGradient} rounded-full blur-3xl pointer-events-none -z-10`}
+              />
+
+              {/* Terminal Title Bar */}
+              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200/80 dark:border-white/10 bg-slate-50/90 dark:bg-dark-surface/90 shrink-0">
+                <div className="flex items-center gap-3">
+                  {/* macOS style dots */}
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-3 h-3 rounded-full bg-rose-500/80" />
+                    <span className="w-3 h-3 rounded-full bg-amber-500/80" />
+                    <span className="w-3 h-3 rounded-full bg-emerald-500/80" />
+                  </div>
+                  <div className="flex items-center gap-2 font-mono text-xs text-slate-600 dark:text-slate-300">
+                    <Terminal className="w-3.5 h-3.5 text-orange-500" />
+                    <span className="font-bold">spec: ~/dossier/{activeModal.id}.json</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 font-mono text-[10px] font-bold">
+                    <Activity className="w-3 h-3" />
+                    <span>CAPABILITY:READY</span>
+                  </div>
+
+                  <button
+                    onClick={() => setActiveModal(null)}
+                    className="p-1.5 rounded-xl hover:bg-slate-200 dark:hover:bg-white/10 text-slate-500 hover:text-rose-500 dark:hover:text-rose-400 transition-colors cursor-pointer"
+                    title="Tutup (Esc)"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Modal Body (Scrollable) */}
+              <div className="p-6 sm:p-8 overflow-y-auto space-y-6">
+                {/* Header Information */}
+                <div>
+                  <div className="flex flex-wrap items-center gap-2 mb-2">
                     <span className="px-2.5 py-0.5 rounded-md text-[10px] font-mono font-bold bg-orange-500/10 text-orange-500 border border-orange-500/20">
-                      {activeDossier.category}
+                      [{activeModal.code}] {activeModal.category}
                     </span>
                     <span className="text-xs font-mono text-slate-400">
-                      • {activeDossier.scope}
+                      • {activeModal.scope}
                     </span>
                   </div>
-                  <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
-                    {activeDossier.title}
-                  </h3>
-                  <p className="text-xs sm:text-sm font-mono text-orange-500 font-medium mt-1">
-                    {activeDossier.tagline}
-                  </p>
-                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed mt-3 font-sans">
-                    {activeDossier.description}
+
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 rounded-2xl bg-orange-500/10 border border-orange-500/30 flex items-center justify-center shrink-0 mt-1">
+                      {activeModal.icon}
+                    </div>
+                    <div>
+                      <h3 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white leading-tight">
+                        {activeModal.title}
+                      </h3>
+                      <p className="text-xs sm:text-sm font-mono text-orange-500 font-semibold mt-1">
+                        {activeModal.tagline}
+                      </p>
+                    </div>
+                  </div>
+
+                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed mt-4 font-sans bg-slate-50 dark:bg-dark-surface/40 p-4 rounded-xl border border-slate-200/60 dark:border-white/5">
+                    {activeModal.description}
                   </p>
                 </div>
 
                 {/* Concrete Deliverables Checklist */}
-                <div className="mb-6 p-4 sm:p-5 rounded-2xl bg-slate-50/80 dark:bg-dark-surface/60 border border-slate-200/80 dark:border-white/5 space-y-2.5">
-                  <div className="flex items-center gap-1.5 text-xs font-mono font-bold text-slate-900 dark:text-white mb-2">
+                <div className="p-5 rounded-2xl bg-slate-50 dark:bg-dark-surface/70 border border-slate-200/80 dark:border-white/5 space-y-3">
+                  <div className="flex items-center gap-2 text-xs font-mono font-bold text-slate-900 dark:text-white">
                     <ShieldCheck className="w-4 h-4 text-emerald-500" />
                     <span>DELIVERABLES KONKRET (OUTPUT YANG ANDA DAPATKAN):</span>
                   </div>
-                  <div className="space-y-2">
-                    {activeDossier.deliverables.map((item, idx) => (
-                      <div key={idx} className="flex items-start gap-2.5 text-xs">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
+                  <div className="space-y-2.5">
+                    {activeModal.deliverables.map((item, idx) => (
+                      <div key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
                         <span className="text-slate-700 dark:text-slate-200 leading-relaxed font-sans">
                           {item}
                         </span>
@@ -501,24 +693,24 @@ export const Services: React.FC = () => {
                 </div>
 
                 {/* 3-Phase Execution Workflow Stepper */}
-                <div className="mb-6">
-                  <div className="flex items-center gap-1.5 text-xs font-mono font-bold text-slate-900 dark:text-white mb-3">
+                <div>
+                  <div className="flex items-center gap-2 text-xs font-mono font-bold text-slate-900 dark:text-white mb-3">
                     <Layers className="w-4 h-4 text-orange-500" />
                     <span>ALUR PENGERJAAN (WORKFLOW PIPELINE):</span>
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                    {activeDossier.workflow.map((step) => (
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    {activeModal.workflow.map((step) => (
                       <div
                         key={step.phase}
-                        className="p-3 rounded-xl bg-slate-100/60 dark:bg-dark-surface/40 border border-slate-200/70 dark:border-white/5"
+                        className="p-3.5 rounded-xl bg-slate-50 dark:bg-dark-surface/50 border border-slate-200/80 dark:border-white/5"
                       >
-                        <div className="font-mono text-[10px] font-bold text-orange-500 mb-0.5">
+                        <div className="font-mono text-[10px] font-bold text-orange-500 mb-1">
                           PHASE {step.phase}
                         </div>
-                        <div className="font-bold text-xs text-slate-900 dark:text-white">
+                        <div className="font-bold text-xs text-slate-900 dark:text-white mb-1">
                           {step.title}
                         </div>
-                        <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-snug">
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-snug">
                           {step.desc}
                         </p>
                       </div>
@@ -526,50 +718,55 @@ export const Services: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Tech Ecosystem Badges & Action CTA */}
-                <div className="pt-4 border-t border-slate-200/80 dark:border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  {/* Tech Logo Pills */}
-                  <div>
-                    <div className="text-[10px] font-mono text-slate-400 mb-1.5 uppercase">
-                      Teknologi Utama yang Digunakan:
-                    </div>
-                    <div className="flex flex-wrap items-center gap-2">
-                      {activeDossier.techLogos.map((tech) => (
-                        <div
-                          key={tech.name}
-                          className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-dark-surface border border-slate-200/80 dark:border-white/5 text-[11px] font-mono font-bold text-slate-700 dark:text-slate-300"
-                        >
-                          <img
-                            src={tech.path}
-                            alt={tech.name}
-                            className="w-3.5 h-3.5 object-contain"
-                            loading="lazy"
-                            onError={(e) => {
-                              e.currentTarget.style.display = "none";
-                            }}
-                          />
-                          <span>{tech.name}</span>
-                        </div>
-                      ))}
-                    </div>
+                {/* Tech Ecosystem Badges */}
+                <div>
+                  <div className="text-[10px] font-mono text-slate-400 mb-2 uppercase font-semibold">
+                    Teknologi & Tools Utama yang Digunakan:
                   </div>
-
-                  {/* Consult CTA Button */}
-                  <button
-                    onClick={handleScrollToContact}
-                    className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-mono text-xs font-bold text-white bg-gradient-to-r from-amber-500 via-orange-500 to-rose-600 shadow-lg shadow-orange-500/25 hover:opacity-95 transition-all shrink-0 cursor-pointer"
-                  >
-                    <span>Konsultasikan Kebutuhan Ini</span>
-                    <Send className="w-3.5 h-3.5" />
-                  </button>
+                  <div className="flex flex-wrap items-center gap-2">
+                    {activeModal.techLogos.map((tech) => (
+                      <div
+                        key={tech.name}
+                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-dark-surface border border-slate-200/80 dark:border-white/5 text-xs font-mono font-bold text-slate-700 dark:text-slate-300"
+                      >
+                        <img
+                          src={tech.path}
+                          alt={tech.name}
+                          className="w-4 h-4 object-contain"
+                          loading="lazy"
+                          onError={(e) => {
+                            e.currentTarget.style.display = "none";
+                          }}
+                        />
+                        <span>{tech.name}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </motion.div>
-            </AnimatePresence>
+              </div>
+
+              {/* Modal Footer Bar */}
+              <div className="px-6 py-4 border-t border-slate-200/80 dark:border-white/10 bg-slate-50/90 dark:bg-dark-surface/90 flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0">
+                <button
+                  onClick={() => setActiveModal(null)}
+                  className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-slate-300 dark:border-white/10 text-xs font-mono text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
+                >
+                  Tutup [ESC]
+                </button>
+
+                <button
+                  onClick={handleScrollToContact}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-mono text-xs font-bold text-white bg-gradient-to-r from-amber-500 via-orange-500 to-rose-600 shadow-lg shadow-orange-500/25 hover:opacity-95 transition-all cursor-pointer"
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Konsultasikan Kebutuhan Ini</span>
+                  <Send className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </motion.div>
           </div>
-
-        </div>
-
-      </div>
+        )}
+      </AnimatePresence>
     </section>
   );
 };

@@ -114,4 +114,24 @@
       linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
       linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
   }
+
+  /* Continuous Rightward Moving Marquee (Left-to-Right Carousel) */
+  @keyframes marquee-right {
+    0% {
+      transform: translateX(-50%);
+    }
+    100% {
+      transform: translateX(0%);
+    }
+  }
+
+  .animate-marquee-right {
+    animation: marquee-right 50s linear infinite;
+  }
+
+  .animate-marquee-right:hover,
+  .marquee-paused {
+    animation-play-state: paused !important;
+  }
 }
+
