@@ -44,6 +44,18 @@ export function App() {
     };
   }, []);
 
+  // Secret Easter Egg Shortcut: Ctrl + Shift + A opens Admin Console in new tab
+  useEffect(() => {
+    const handleSecretShortcut = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === "A" || e.key === "a")) {
+        e.preventDefault();
+        window.open("?admin=true#admin", "_blank");
+      }
+    };
+    window.addEventListener("keydown", handleSecretShortcut);
+    return () => window.removeEventListener("keydown", handleSecretShortcut);
+  }, []);
+
   // Fetch live projects and certificates from Supabase Cloud
   useEffect(() => {
     let isMounted = true;

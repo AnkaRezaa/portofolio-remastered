@@ -6,7 +6,6 @@ import {
   Send,
   CheckCircle,
   ExternalLink,
-  Lock,
   Terminal,
   Radio,
   AlertCircle,
@@ -364,19 +363,33 @@ export const Contact: React.FC<ContactProps> = ({ onOpenAdmin }) => {
       {/* Industrial Footer */}
       <footer className="mt-24 pt-8 border-t border-slate-200 dark:border-white/10 text-xs font-mono text-slate-500 dark:text-slate-400">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p>© {new Date().getFullYear()} MUHAMMAD ANKA REZA. ALL RIGHTS RESERVED.</p>
-          <div className="flex items-center gap-4">
-            <span className="hidden md:inline">REACT 18 • TAILWIND • FRAMER MOTION</span>
+          <p className="flex items-center gap-0.5">
+            <span>© {new Date().getFullYear()} MUHAMMAD ANKA REZA. ALL RIGHTS RESERVED</span>
+            {/* Secret Easter Egg: Clickable period */}
             <a
               href="?admin=true#admin"
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => onOpenAdmin?.()}
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg border border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-dark-surface text-slate-600 dark:text-slate-300 hover:text-orange-500 hover:border-orange-500/40 transition-colors"
-              title="Buka Admin Console di Halaman / Tab Baru"
+              className="text-slate-400 dark:text-slate-600 hover:text-orange-500 transition-colors cursor-default hover:cursor-pointer select-none"
+              title="sys.console"
             >
-              <Lock className="w-3 h-3 text-orange-500" />
-              <span>Admin Console ↗</span>
+              .
+            </a>
+          </p>
+          <div className="flex items-center gap-4">
+            <span className="hidden md:inline">REACT 18 • TAILWIND • FRAMER MOTION</span>
+            {/* Secret Easter Egg: Subtle technical telemetry link */}
+            <a
+              href="?admin=true#admin"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => onOpenAdmin?.()}
+              className="opacity-25 hover:opacity-100 text-[11px] text-slate-500 dark:text-slate-400 hover:text-orange-500 transition-all flex items-center gap-1 font-mono tracking-wider cursor-default hover:cursor-pointer select-none"
+              title="system terminal (Ctrl+Shift+A)"
+            >
+              <span>sys.root</span>
+              <span className="w-1 h-1 rounded-full bg-emerald-500 inline-block" />
             </a>
           </div>
         </div>
