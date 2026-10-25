@@ -247,111 +247,109 @@ export const Hero: React.FC<HeroProps> = ({ onOpenResume }) => {
               {/* 5. Holographic Pedestal Disc Glow under Character */}
               <div className="absolute bottom-0 w-64 sm:w-80 h-14 rounded-[100%] bg-gradient-to-r from-orange-500/40 via-cyan-400/50 to-blue-600/40 blur-xl pointer-events-none transform -rotate-1 -z-10" />
 
-              {/* 6. True Planetary Orbiting Micro Tech Icons Surrounding the Character */}
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20 group/orbit">
-                {/* Visual Orbit Track Ring */}
-                <div className="absolute w-[310px] h-[310px] sm:w-[410px] sm:h-[410px] lg:w-[470px] lg:h-[470px] rounded-full border border-dashed border-cyan-400/25 dark:border-cyan-400/30 pointer-events-none" />
-
-                {/* 360-Degree Continuous Rotating Orbit Track */}
-                <div className="relative w-[310px] h-[310px] sm:w-[410px] sm:h-[410px] lg:w-[470px] lg:h-[470px] rounded-full animate-orbit-revolve pointer-events-auto">
-                  {[
-                    {
-                      id: "tech-network",
-                      name: "Cisco & MikroTik",
-                      role: "Routing & VLAN",
-                      icon: <Network className="w-4 h-4 text-cyan-400" />,
-                      borderHover: "hover:border-cyan-400 hover:shadow-cyan-400/40",
-                      left: "50%",
-                      top: "0%",
-                    },
-                    {
-                      id: "tech-code",
-                      name: "Full-Stack Dev",
-                      role: "Laravel, React, Next.js",
-                      icon: <Code2 className="w-4 h-4 text-orange-400" />,
-                      borderHover: "hover:border-orange-400 hover:shadow-orange-400/40",
-                      left: "93.3%",
-                      top: "25%",
-                    },
-                    {
-                      id: "tech-cpu",
-                      name: "Hardware & IoT",
-                      role: "Core Architecture",
-                      icon: <Cpu className="w-4 h-4 text-amber-400" />,
-                      borderHover: "hover:border-amber-400 hover:shadow-amber-400/40",
-                      left: "93.3%",
-                      top: "75%",
-                    },
-                    {
-                      id: "tech-database",
-                      name: "Database Systems",
-                      role: "PostgreSQL & Supabase",
-                      icon: <Database className="w-4 h-4 text-sky-400" />,
-                      borderHover: "hover:border-sky-400 hover:shadow-sky-400/40",
-                      left: "50%",
-                      top: "100%",
-                    },
-                    {
-                      id: "tech-security",
-                      name: "Network Security",
-                      role: "Firewall & QoS Bandwidth",
-                      icon: <ShieldCheck className="w-4 h-4 text-rose-400" />,
-                      borderHover: "hover:border-rose-400 hover:shadow-rose-400/40",
-                      left: "6.7%",
-                      top: "75%",
-                    },
-                    {
-                      id: "tech-terminal",
-                      name: "Linux & Server",
-                      role: "System Administration",
-                      icon: <Terminal className="w-4 h-4 text-emerald-400" />,
-                      borderHover: "hover:border-emerald-400 hover:shadow-emerald-400/40",
-                      left: "6.7%",
-                      top: "25%",
-                    },
-                  ].map((tech) => (
-                    <div
-                      key={tech.id}
-                      style={{
-                        position: "absolute",
-                        left: tech.left,
-                        top: tech.top,
-                        transform: "translate(-50%, -50%)",
-                      }}
-                      className="group/node cursor-pointer pointer-events-auto"
-                    >
-                      {/* Counter-rotation to keep each icon upright while revolving */}
-                      <div className="animate-orbit-counter-revolve">
-                        {/* Micro Glassmorphic Sphere */}
-                        <div
-                          className={`relative w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-slate-900/90 dark:bg-black/85 backdrop-blur-md border border-white/20 ${tech.borderHover} shadow-xl shadow-black/50 flex items-center justify-center transition-all duration-300 group-hover/node:scale-130`}
-                        >
-                          {tech.icon}
-                          
-                          {/* Micro Pulse Halo behind Icon */}
-                          <span className="absolute inset-0 rounded-full bg-white/5 group-hover/node:bg-white/15 animate-pulse pointer-events-none" />
-                        </div>
-
-                        {/* Floating Tooltip positioned neatly above each icon */}
-                        <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 opacity-0 pointer-events-none group-hover/node:opacity-100 transition-opacity duration-200 z-50 whitespace-nowrap">
-                          <div className="px-2.5 py-1 rounded-lg bg-slate-900/95 dark:bg-black/95 backdrop-blur-md border border-white/20 shadow-2xl text-center font-mono">
-                            <p className="text-[11px] font-bold text-white leading-tight">
-                              {tech.name}
-                            </p>
-                            <p className="text-[9px] text-slate-400">
-                              {tech.role}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+              {/* 6A. 3D Saturn Ring Arc: BACK HALF (Positioned behind Character PNG, z-index: 6) */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-[6]">
+                <div
+                  className="w-[340px] h-[150px] sm:w-[440px] sm:h-[190px] lg:w-[490px] lg:h-[210px] rounded-[100%] border-2 border-dashed border-cyan-400/35 dark:border-cyan-400/40 shadow-[0_0_20px_rgba(34,211,238,0.25)] transform -rotate-[22deg]"
+                  style={{
+                    clipPath: "polygon(0% 0%, 100% 0%, 100% 50%, 0% 50%)",
+                  }}
+                />
               </div>
 
+              {/* 6B. True 3D Diagonal Saturn Orbiting Icons (Weaves behind PNG at z:5 and in front at z:25) */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none group/saturn">
+                {[
+                  {
+                    id: "tech-network",
+                    name: "Cisco & MikroTik",
+                    role: "Routing & VLAN",
+                    icon: <Network className="w-4 h-4 text-cyan-400" />,
+                    borderHover: "hover:border-cyan-400 hover:shadow-cyan-400/50",
+                    delay: "0s",
+                  },
+                  {
+                    id: "tech-code",
+                    name: "Full-Stack Dev",
+                    role: "Laravel, React, Next.js",
+                    icon: <Code2 className="w-4 h-4 text-orange-400" />,
+                    borderHover: "hover:border-orange-400 hover:shadow-orange-400/50",
+                    delay: "-3.66s",
+                  },
+                  {
+                    id: "tech-terminal",
+                    name: "Linux & Server",
+                    role: "System Administration",
+                    icon: <Terminal className="w-4 h-4 text-emerald-400" />,
+                    borderHover: "hover:border-emerald-400 hover:shadow-emerald-400/50",
+                    delay: "-7.33s",
+                  },
+                  {
+                    id: "tech-cpu",
+                    name: "Hardware & IoT",
+                    role: "Core Architecture",
+                    icon: <Cpu className="w-4 h-4 text-amber-400" />,
+                    borderHover: "hover:border-amber-400 hover:shadow-amber-400/50",
+                    delay: "-11.0s",
+                  },
+                  {
+                    id: "tech-database",
+                    name: "Database Systems",
+                    role: "PostgreSQL & Supabase",
+                    icon: <Database className="w-4 h-4 text-sky-400" />,
+                    borderHover: "hover:border-sky-400 hover:shadow-sky-400/50",
+                    delay: "-14.66s",
+                  },
+                  {
+                    id: "tech-security",
+                    name: "Network Security",
+                    role: "Firewall & QoS Bandwidth",
+                    icon: <ShieldCheck className="w-4 h-4 text-rose-400" />,
+                    borderHover: "hover:border-rose-400 hover:shadow-rose-400/50",
+                    delay: "-18.33s",
+                  },
+                ].map((tech) => (
+                  <div
+                    key={tech.id}
+                    style={{
+                      animationDelay: tech.delay,
+                    }}
+                    className="absolute animate-saturn-orbit saturn-node pointer-events-auto cursor-pointer"
+                  >
+                    {/* Micro Glassmorphic Sphere Node */}
+                    <div
+                      className={`relative w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-slate-900/90 dark:bg-black/85 backdrop-blur-md border border-white/25 ${tech.borderHover} shadow-xl shadow-black/50 flex items-center justify-center transition-all duration-300 hover:scale-135`}
+                    >
+                      {tech.icon}
+                      <span className="absolute inset-0 rounded-full bg-white/5 hover:bg-white/15 animate-pulse pointer-events-none" />
+                    </div>
 
+                    {/* Floating Tooltip upon hover */}
+                    <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 opacity-0 pointer-events-none hover:opacity-100 transition-opacity duration-200 z-50 whitespace-nowrap">
+                      <div className="px-2.5 py-1 rounded-lg bg-slate-900/95 dark:bg-black/95 backdrop-blur-md border border-white/20 shadow-2xl text-center font-mono">
+                        <p className="text-[11px] font-bold text-white leading-tight">
+                          {tech.name}
+                        </p>
+                        <p className="text-[9px] text-slate-400">
+                          {tech.role}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
 
-              {/* 7. Character Persona: Smooth Floating Levitation with Drop Shadow */}
+              {/* 6C. 3D Saturn Ring Arc: FRONT HALF (Crosses in front of Character PNG, z-index: 18) */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-[18]">
+                <div
+                  className="w-[340px] h-[150px] sm:w-[440px] sm:h-[190px] lg:w-[490px] lg:h-[210px] rounded-[100%] border-2 border-dashed border-orange-400/40 dark:border-orange-400/45 shadow-[0_0_20px_rgba(249,115,22,0.35)] transform -rotate-[22deg]"
+                  style={{
+                    clipPath: "polygon(0% 50%, 100% 50%, 100% 100%, 0% 100%)",
+                  }}
+                />
+              </div>
+
+              {/* 7. Character Persona: Placed at z-index 10 (Between Back & Front Ring Arcs) */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
                 animate={{

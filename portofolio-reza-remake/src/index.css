@@ -176,38 +176,128 @@
     animation: pulse-portal 5s ease-in-out infinite;
   }
 
-  /* True Planetary Orbit & Counter-Rotation Animations */
-  @keyframes orbit-revolve {
-    from {
-      transform: rotate(0deg);
+  /* True 3D Diagonal Saturn Ring Orbit Animations */
+  @keyframes saturn-orbit-3d {
+    0% {
+      transform: translate(210px, -80px) scale(0.82);
+      z-index: 5;
+      opacity: 0.65;
     }
-    to {
-      transform: rotate(360deg);
+    12.5% {
+      transform: translate(110px, -115px) scale(0.75);
+      z-index: 5;
+      opacity: 0.55;
+    }
+    25% {
+      transform: translate(0px, -125px) scale(0.7);
+      z-index: 5;
+      opacity: 0.45;
+    }
+    37.5% {
+      transform: translate(-110px, -90px) scale(0.78);
+      z-index: 5;
+      opacity: 0.6;
+    }
+    49.9% {
+      z-index: 5;
+    }
+    50% {
+      transform: translate(-215px, 15px) scale(0.95);
+      z-index: 25;
+      opacity: 0.85;
+    }
+    62.5% {
+      transform: translate(-120px, 90px) scale(1.12);
+      z-index: 25;
+      opacity: 1;
+    }
+    75% {
+      transform: translate(0px, 125px) scale(1.22);
+      z-index: 25;
+      opacity: 1;
+    }
+    87.5% {
+      transform: translate(120px, 65px) scale(1.08);
+      z-index: 25;
+      opacity: 0.95;
+    }
+    99.9% {
+      z-index: 25;
+    }
+    100% {
+      transform: translate(210px, -80px) scale(0.82);
+      z-index: 5;
+      opacity: 0.65;
     }
   }
 
-  @keyframes orbit-counter-revolve {
-    from {
-      transform: rotate(0deg);
+  @keyframes saturn-orbit-3d-sm {
+    0% {
+      transform: translate(145px, -55px) scale(0.82);
+      z-index: 5;
+      opacity: 0.65;
     }
-    to {
-      transform: rotate(-360deg);
+    12.5% {
+      transform: translate(75px, -80px) scale(0.75);
+      z-index: 5;
+      opacity: 0.55;
+    }
+    25% {
+      transform: translate(0px, -90px) scale(0.7);
+      z-index: 5;
+      opacity: 0.45;
+    }
+    37.5% {
+      transform: translate(-75px, -65px) scale(0.78);
+      z-index: 5;
+      opacity: 0.6;
+    }
+    49.9% {
+      z-index: 5;
+    }
+    50% {
+      transform: translate(-150px, 10px) scale(0.95);
+      z-index: 25;
+      opacity: 0.85;
+    }
+    62.5% {
+      transform: translate(-85px, 65px) scale(1.12);
+      z-index: 25;
+      opacity: 1;
+    }
+    75% {
+      transform: translate(0px, 90px) scale(1.2);
+      z-index: 25;
+      opacity: 1;
+    }
+    87.5% {
+      transform: translate(85px, 45px) scale(1.08);
+      z-index: 25;
+      opacity: 0.95;
+    }
+    99.9% {
+      z-index: 25;
+    }
+    100% {
+      transform: translate(145px, -55px) scale(0.82);
+      z-index: 5;
+      opacity: 0.65;
     }
   }
 
-  .animate-orbit-revolve {
-    animation: orbit-revolve 28s linear infinite;
+  .animate-saturn-orbit {
+    animation: saturn-orbit-3d-sm 22s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
   }
 
-  .animate-orbit-counter-revolve {
-    animation: orbit-counter-revolve 28s linear infinite;
+  @media (min-width: 640px) {
+    .animate-saturn-orbit {
+      animation-name: saturn-orbit-3d;
+    }
   }
 
-  .orbit-track:hover,
-  .orbit-track:hover .animate-orbit-revolve,
-  .orbit-track:hover .animate-orbit-counter-revolve,
-  .group\/orbit:hover .animate-orbit-revolve,
-  .group\/orbit:hover .animate-orbit-counter-revolve {
+  .animate-saturn-orbit:hover,
+  .group\/saturn:hover .animate-saturn-orbit,
+  .saturn-node:hover {
     animation-play-state: paused !important;
   }
 }
