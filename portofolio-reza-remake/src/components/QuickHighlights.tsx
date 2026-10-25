@@ -274,7 +274,7 @@ export const QuickHighlights: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header: Clean, Authoritative & Recruiter-Focused */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-6">
           <div>
             <div className="flex items-center gap-2 mb-2.5">
               <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
@@ -290,58 +290,13 @@ export const QuickHighlights: React.FC = () => {
             </h2>
           </div>
 
-          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-lg leading-relaxed font-sans">
-            Ekosistem teknologi terintegrasi yang saya kuasai dan terapkan dalam pengembangan Full-Stack, Mobile App, Jaringan Enterprise, dan Rekayasa Sistem.
-          </p>
-        </div>
-
-        {/* Executive Quick Stats Strip */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-10">
-          <div className="p-4 rounded-2xl bg-white/80 dark:bg-dark-card/60 border border-slate-200/90 dark:border-white/10 backdrop-blur-sm shadow-sm">
-            <div className="font-mono text-2xl sm:text-3xl font-black text-orange-500">
-              Full-Stack
-            </div>
-            <div className="text-xs font-bold text-slate-800 dark:text-slate-200 mt-1">
-              Web & Mobile
-            </div>
-            <div className="text-[11px] text-slate-500 dark:text-slate-400 font-mono mt-0.5">
-              Laravel, React, Flutter
-            </div>
-          </div>
-
-          <div className="p-4 rounded-2xl bg-white/80 dark:bg-dark-card/60 border border-slate-200/90 dark:border-white/10 backdrop-blur-sm shadow-sm">
-            <div className="font-mono text-2xl sm:text-3xl font-black text-amber-500">
-              Cisco & GNS3
-            </div>
-            <div className="text-xs font-bold text-slate-800 dark:text-slate-200 mt-1">
-              Network Engineering
-            </div>
-            <div className="text-[11px] text-slate-500 dark:text-slate-400 font-mono mt-0.5">
-              OSPF, VLAN, MikroTik QoS
-            </div>
-          </div>
-
-          <div className="p-4 rounded-2xl bg-white/80 dark:bg-dark-card/60 border border-slate-200/90 dark:border-white/10 backdrop-blur-sm shadow-sm">
-            <div className="font-mono text-2xl sm:text-3xl font-black text-emerald-500">
-              SQL & Cloud
-            </div>
-            <div className="text-xs font-bold text-slate-800 dark:text-slate-200 mt-1">
-              Database Architecture
-            </div>
-            <div className="text-[11px] text-slate-500 dark:text-slate-400 font-mono mt-0.5">
-              MySQL, Postgres, Supabase
-            </div>
-          </div>
-
-          <div className="p-4 rounded-2xl bg-white/80 dark:bg-dark-card/60 border border-slate-200/90 dark:border-white/10 backdrop-blur-sm shadow-sm">
-            <div className="font-mono text-2xl sm:text-3xl font-black text-rose-500">
-              Java & C++
-            </div>
-            <div className="text-xs font-bold text-slate-800 dark:text-slate-200 mt-1">
-              Core Fundamentals
-            </div>
-            <div className="text-[11px] text-slate-500 dark:text-slate-400 font-mono mt-0.5">
-              OOP & Algoritma Sistem
+          <div className="flex flex-col sm:items-end gap-2">
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-md sm:text-right leading-relaxed font-sans">
+              Ekosistem teknologi terintegrasi yang saya kuasai dan terapkan dalam pengembangan Full-Stack, Mobile App, Jaringan Enterprise, dan Rekayasa Sistem.
+            </p>
+            <div className="flex items-center gap-2 font-mono text-[11px] text-slate-400 dark:text-slate-500">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              <span>9 EKOSISTEM UTAMA • PRODUCTION-TESTED</span>
             </div>
           </div>
         </div>
