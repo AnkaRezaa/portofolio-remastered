@@ -31,6 +31,7 @@ import {
   getAdminPassword,
   updateAdminPassword,
 } from "../lib/supabase";
+import { ImageUploadInput } from "./ImageUploadInput";
 
 interface AdminDashboardProps {
   projects: ProjectItem[];
@@ -707,34 +708,30 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  {/* Image URL / Local path */}
-                  <div>
-                    <label className="block text-xs font-mono font-bold text-slate-300 mb-1.5">
-                      Path Gambar / URL Gambar
-                    </label>
-                    <input
-                      type="text"
-                      value={projectForm.image}
-                      onChange={(e) => setProjectForm({ ...projectForm, image: e.target.value })}
-                      placeholder="/assets/projects/nama-file.png atau link https://..."
-                      className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-white/10 text-white font-mono text-sm focus:outline-none focus:border-orange-500 placeholder:text-slate-600"
-                    />
-                  </div>
+                {/* Tags */}
+                <div>
+                  <label className="block text-xs font-mono font-bold text-slate-300 mb-1.5">
+                    Tags Teknologi (Pisahkan koma)
+                  </label>
+                  <input
+                    type="text"
+                    value={projectForm.tags}
+                    onChange={(e) => setProjectForm({ ...projectForm, tags: e.target.value })}
+                    placeholder="React, TypeScript, Tailwind, REST API"
+                    className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-white/10 text-white font-mono text-sm focus:outline-none focus:border-orange-500 placeholder:text-slate-600"
+                  />
+                </div>
 
-                  {/* Tags */}
-                  <div>
-                    <label className="block text-xs font-mono font-bold text-slate-300 mb-1.5">
-                      Tags Teknologi (Pisahkan koma)
-                    </label>
-                    <input
-                      type="text"
-                      value={projectForm.tags}
-                      onChange={(e) => setProjectForm({ ...projectForm, tags: e.target.value })}
-                      placeholder="React, TypeScript, Tailwind, REST API"
-                      className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-white/10 text-white font-mono text-sm focus:outline-none focus:border-orange-500 placeholder:text-slate-600"
-                    />
-                  </div>
+                {/* Project Image: Drag & Drop File Upload & URL with Live Preview */}
+                <div className="p-4 sm:p-5 rounded-2xl bg-slate-950/40 border border-white/10">
+                  <ImageUploadInput
+                    label="Gambar / Thumbnail Proyek"
+                    value={projectForm.image}
+                    onChange={(newImg) => setProjectForm({ ...projectForm, image: newImg })}
+                    placeholder="/assets/projects/hotelier.png atau https://..."
+                    previewAspect="video"
+                    helpText="Pilih foto/screenshot proyek dari komputer atau seret file ke sini (JPG, PNG, WEBP, SVG)."
+                  />
                 </div>
 
                 {/* Description */}
@@ -1008,16 +1005,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-mono font-bold text-slate-300 mb-1.5">
-                    Path Gambar / File Sertifikat
-                  </label>
-                  <input
-                    type="text"
+                {/* Certificate Image: File Upload & URL with Live Preview */}
+                <div className="p-4 sm:p-5 rounded-2xl bg-slate-950/40 border border-white/10">
+                  <ImageUploadInput
+                    label="File / Gambar Sertifikat"
                     value={certForm.image}
-                    onChange={(e) => setCertForm({ ...certForm, image: e.target.value })}
-                    placeholder="/assets/certificates/nama-file.jpg"
-                    className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-white/10 text-white font-mono text-sm focus:outline-none focus:border-orange-500"
+                    onChange={(newImg) => setCertForm({ ...certForm, image: newImg })}
+                    placeholder="/assets/certificates/sertifikat_bnsp.jpeg atau https://..."
+                    previewAspect="cert"
+                    helpText="Pilih scan sertifikat dari komputer atau seret file ke sini (JPG, PNG, WEBP, SVG)."
                   />
                 </div>
 
