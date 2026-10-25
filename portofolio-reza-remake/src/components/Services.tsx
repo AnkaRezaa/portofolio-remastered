@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Code2,
   Smartphone,
@@ -14,11 +14,7 @@ import {
   ShieldCheck,
   Send,
   X,
-  Maximize2,
-  Play,
-  Pause,
-  ChevronLeft,
-  ChevronRight,
+  ArrowUpRight,
   Sparkles,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -332,12 +328,6 @@ export const Services: React.FC = () => {
   // State untuk Pop-up Modal Detail (Expanded View)
   const [activeModal, setActiveModal] = useState<ServiceDossier | null>(null);
 
-  // State untuk Kontrol Pause Marquee
-  const [isPaused, setIsPaused] = useState<boolean>(false);
-
-  // Ref container untuk manual scroll jika pengguna menekan tombol panah
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-
   // Duplikasi item 3x agar animasi infinite bergerak ke kanan selalu mulus tanpa jeda
   const marqueeItems = [...dossiers, ...dossiers, ...dossiers];
 
@@ -362,17 +352,6 @@ export const Services: React.FC = () => {
     };
   }, [activeModal]);
 
-  // Manual scroll helper
-  const handleManualScroll = (direction: "left" | "right") => {
-    if (scrollContainerRef.current) {
-      const scrollAmount = 400;
-      scrollContainerRef.current.scrollBy({
-        left: direction === "left" ? -scrollAmount : scrollAmount,
-        behavior: "smooth",
-      });
-    }
-  };
-
   // Scroll to contact section
   const handleScrollToContact = () => {
     setActiveModal(null);
@@ -394,8 +373,8 @@ export const Services: React.FC = () => {
       <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-10">
-        {/* Section Header with Controls */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+        {/* Section Header */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
             <div className="flex items-center gap-2 mb-2.5">
               <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
@@ -409,150 +388,64 @@ export const Services: React.FC = () => {
                 EXPERTISE
               </span>
             </h2>
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-xl leading-relaxed mt-2 font-sans">
-              Kartu layanan meluncur secara dinamis ke arah kanan. <strong className="text-slate-900 dark:text-white">Arahkan kursor untuk jeda</strong>, lalu <strong className="text-orange-500">klik kartu</strong> untuk membuka menu pop-up spesifikasi lengkap (*workflow* & *deliverables*).
-            </p>
           </div>
 
-          {/* Interactive Marquee Controls */}
-          <div className="flex flex-wrap items-center gap-3">
-            {/* Status Pill */}
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/80 dark:bg-dark-card/80 border border-slate-200 dark:border-white/10 text-[11px] font-mono text-slate-500 dark:text-slate-400">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
-              <span>GERAK: KE KANAN ⏩</span>
-            </div>
-
-            {/* Pause / Play Toggle */}
-            <button
-              onClick={() => setIsPaused(!isPaused)}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white dark:bg-dark-card border border-slate-200 dark:border-white/10 hover:border-orange-500/50 text-xs font-mono font-bold text-slate-700 dark:text-slate-200 shadow-sm hover:shadow transition-all cursor-pointer"
-              title={isPaused ? "Lanjutkan pergerakan" : "Jeda pergerakan"}
-            >
-              {isPaused ? (
-                <>
-                  <Play className="w-3.5 h-3.5 text-emerald-500 fill-emerald-500" />
-                  <span>PUTAR</span>
-                </>
-              ) : (
-                <>
-                  <Pause className="w-3.5 h-3.5 text-orange-500 fill-orange-500" />
-                  <span>JEDA</span>
-                </>
-              )}
-            </button>
-
-            {/* Manual Step Buttons */}
-            <div className="flex items-center gap-1 bg-white dark:bg-dark-card border border-slate-200 dark:border-white/10 rounded-xl p-1 shadow-sm">
-              <button
-                onClick={() => handleManualScroll("left")}
-                className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-dark-surface text-slate-600 dark:text-slate-300 hover:text-orange-500 transition-colors cursor-pointer"
-                title="Geser Kiri"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => handleManualScroll("right")}
-                className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-dark-surface text-slate-600 dark:text-slate-300 hover:text-orange-500 transition-colors cursor-pointer"
-                title="Geser Kanan"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
+          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-md leading-relaxed font-sans">
+            Solusi rekayasa perangkat lunak, arsitektur jaringan, dan desain produk digital berkualitas tinggi siap produksi. Klik kartu untuk melihat spesifikasi detail.
+          </p>
         </div>
       </div>
 
       {/* CONTINUOUS RIGHTWARD MOVING CAROUSEL TRACK */}
-      <div
-        ref={scrollContainerRef}
-        className="relative w-full overflow-x-hidden py-4 select-none group"
-      >
+      <div className="relative w-full overflow-x-hidden py-4 select-none group">
         {/* Soft edge blur masks */}
         <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-28 bg-gradient-to-r from-slate-100 dark:from-[#0c0e15] to-transparent z-10 pointer-events-none" />
         <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-28 bg-gradient-to-l from-slate-100 dark:from-[#0c0e15] to-transparent z-10 pointer-events-none" />
 
         {/* Marquee Track moving to the right */}
-        <div
-          className={`flex gap-6 w-max animate-marquee-right ${
-            isPaused ? "marquee-paused" : ""
-          } hover:[animation-play-state:paused]`}
-        >
+        <div className="flex gap-5 w-max animate-marquee-right hover:[animation-play-state:paused]">
           {marqueeItems.map((item, index) => (
             <div
               key={`${item.id}-${index}`}
               onClick={() => setActiveModal(item)}
-              className="w-[330px] sm:w-[380px] shrink-0 p-6 rounded-2xl bg-white/90 dark:bg-dark-card/90 border border-slate-200/90 dark:border-white/10 hover:border-orange-500/80 shadow-md hover:shadow-2xl hover:shadow-orange-500/15 backdrop-blur-md transition-all duration-300 cursor-pointer group/card flex flex-col justify-between hover:-translate-y-1.5 relative overflow-hidden"
+              className="w-[280px] sm:w-[320px] shrink-0 p-5 rounded-2xl bg-white/70 dark:bg-[#12151e]/80 border border-slate-200/80 dark:border-white/5 hover:border-orange-500/50 shadow-sm hover:shadow-xl hover:shadow-orange-500/10 backdrop-blur-md transition-all duration-300 cursor-pointer group/card flex flex-col justify-between hover:-translate-y-1 relative"
             >
-              {/* Top ambient color strip */}
-              <div
-                className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${item.accentGradient} opacity-70 group-hover/card:opacity-100 transition-opacity`}
-              />
-
-              {/* Card Top Row */}
+              {/* Card Top Row: Code & Minimalist Arrow */}
               <div>
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs font-bold text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded border border-orange-500/20">
+                    <span className="font-mono text-[11px] font-bold text-orange-500">
                       [{item.code}]
                     </span>
-                    <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-slate-400 dark:text-slate-500 truncate max-w-[170px]">
                       {item.category}
                     </span>
                   </div>
 
-                  {/* Expand cue badge */}
-                  <div className="flex items-center gap-1 text-[10px] font-mono text-slate-400 group-hover/card:text-orange-500 transition-colors">
-                    <span>EXPAND</span>
-                    <Maximize2 className="w-3 h-3 group-hover/card:scale-110 transition-transform" />
-                  </div>
+                  <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover/card:text-orange-500 group-hover/card:translate-x-0.5 group-hover/card:-translate-y-0.5 transition-all" />
                 </div>
 
-                {/* Icon & Title */}
-                <div className="flex items-start gap-3.5 mb-3">
-                  <div className="w-11 h-11 rounded-xl bg-orange-500/10 border border-orange-500/30 flex items-center justify-center shrink-0 group-hover/card:scale-105 group-hover/card:border-orange-500 transition-all shadow-sm">
-                    {item.icon}
-                  </div>
-                  <div>
-                    <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white group-hover/card:text-orange-500 transition-colors leading-snug">
-                      {item.title}
-                    </h3>
-                    <p className="text-[11px] font-mono text-orange-500/90 font-medium line-clamp-1 mt-0.5">
-                      {item.tagline}
-                    </p>
-                  </div>
+                {/* Service Icon & Title */}
+                <div className="w-9 h-9 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center mb-3 group-hover/card:scale-105 group-hover/card:border-orange-500/40 transition-all">
+                  {item.icon}
                 </div>
 
-                {/* Scope line */}
-                <div className="text-[11px] font-mono text-slate-500 dark:text-slate-400 mb-4 flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-slate-400 dark:bg-slate-500" />
-                  <span>{item.scope}</span>
-                </div>
+                <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white group-hover/card:text-orange-500 transition-colors line-clamp-1">
+                  {item.title}
+                </h3>
 
-                {/* Deliverables snippet (2 items) */}
-                <div className="space-y-1.5 mb-5 p-3 rounded-xl bg-slate-50 dark:bg-dark-surface/60 border border-slate-200/60 dark:border-white/5">
-                  <div className="text-[10px] font-mono text-slate-400 uppercase tracking-wider font-semibold">
-                    Core Output:
-                  </div>
-                  {item.deliverables.slice(0, 2).map((del, dIdx) => (
-                    <div
-                      key={dIdx}
-                      className="flex items-start gap-2 text-[11px] text-slate-600 dark:text-slate-300"
-                    >
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
-                      <span className="line-clamp-1 leading-snug">{del}</span>
-                    </div>
-                  ))}
-                </div>
+                <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mt-1.5 leading-relaxed font-sans">
+                  {item.tagline}
+                </p>
               </div>
 
-              {/* Card Footer: Tech Logos & Expand Action Button */}
-              <div className="pt-3 border-t border-slate-200/80 dark:border-white/10 flex items-center justify-between">
-                {/* Tech Badges Mini */}
+              {/* Card Bottom Row: Subtle Tech Badges & Minimalist Hint */}
+              <div className="pt-3.5 mt-4 border-t border-slate-200/60 dark:border-white/5 flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
                   {item.techLogos.slice(0, 3).map((tech) => (
                     <div
                       key={tech.name}
-                      className="w-6 h-6 rounded-md bg-slate-100 dark:bg-dark-surface border border-slate-200/70 dark:border-white/10 flex items-center justify-center p-1"
+                      className="w-5 h-5 rounded-md bg-slate-100 dark:bg-dark-surface/80 border border-slate-200/50 dark:border-white/5 flex items-center justify-center p-0.5"
                       title={tech.name}
                     >
                       <img
@@ -567,17 +460,15 @@ export const Services: React.FC = () => {
                     </div>
                   ))}
                   {item.techLogos.length > 3 && (
-                    <span className="text-[10px] font-mono text-slate-400">
+                    <span className="text-[9px] font-mono text-slate-400">
                       +{item.techLogos.length - 3}
                     </span>
                   )}
                 </div>
 
-                {/* Interactive Click Cue */}
-                <div className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-orange-500/10 text-orange-500 border border-orange-500/25 group-hover/card:bg-orange-500 group-hover/card:text-white transition-all text-xs font-mono font-bold">
-                  <span>Buka Detail</span>
-                  <Maximize2 className="w-3 h-3" />
-                </div>
+                <span className="text-[10px] font-mono text-slate-400 group-hover/card:text-orange-500 transition-colors">
+                  Detail ↗
+                </span>
               </div>
             </div>
           ))}
