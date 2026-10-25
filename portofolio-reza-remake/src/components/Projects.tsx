@@ -27,22 +27,17 @@ export const Projects: React.FC<ProjectsProps> = ({ items = projectsData }) => {
     <section id="project" className="py-24 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="font-mono text-xs font-bold text-orange-500 tracking-wider">
-                // SELECTED WORKS
-              </span>
-            </div>
-            <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white uppercase">
-              SELECTED <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500">WORKS</span>
-            </h2>
+        {/* Section Header: Clean & Minimalist */}
+        <div className="mb-10 sm:mb-12">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
+            <span className="font-mono text-xs font-bold text-orange-500 tracking-wider uppercase">
+              // SELECTED WORKS & ENGINEERING PORTFOLIO
+            </span>
           </div>
-
-          <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 max-w-md leading-relaxed">
-            Kurasi proyek pilihan mencakup implementasi full-stack web, desain prototipe sistem cerdas, dan perancangan infrastruktur jaringan.
-          </p>
+          <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white uppercase">
+            SELECTED <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500">WORKS</span>
+          </h2>
         </div>
 
         {/* Monospace Category Filter Pills */}

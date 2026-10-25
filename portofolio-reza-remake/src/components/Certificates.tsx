@@ -124,26 +124,20 @@ export const Certificates: React.FC<CertificatesProps> = ({ items = certificates
       className="py-24 relative bg-slate-100/50 dark:bg-dark-surface/40 border-t border-b border-slate-200/80 dark:border-white/5"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
-              <span className="font-mono text-xs font-bold text-orange-500 tracking-wider">
-                // CREDENTIALS & ACCREDITATIONS
-              </span>
-            </div>
-            <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white uppercase">
-              CREDENTIAL{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500">
-                VAULT
-              </span>
-            </h2>
+        {/* Section Header: Clean & Minimalist */}
+        <div className="mb-10 sm:mb-12">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
+            <span className="font-mono text-xs font-bold text-orange-500 tracking-wider uppercase">
+              // CREDENTIALS & ACCREDITATIONS
+            </span>
           </div>
-
-          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-md leading-relaxed">
-            Pengakuan kompetensi, penghargaan kompetisi, pelatihan intensif, dan lisensi berstandar industri dari institusi terakreditasi nasional maupun internasional.
-          </p>
+          <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white uppercase">
+            CREDENTIAL{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500">
+              VAULT
+            </span>
+          </h2>
         </div>
 
         {/* Monospace Category Filter Pills */}

@@ -372,27 +372,21 @@ export const Services: React.FC = () => {
       <div className="absolute top-1/4 -left-32 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-10">
-        {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div>
-            <div className="flex items-center gap-2 mb-2.5">
-              <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
-              <span className="font-mono text-xs font-bold text-orange-500 tracking-wider uppercase">
-                // CAPABILITIES & SERVICE DOSSIER
-              </span>
-            </div>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white uppercase font-sans">
-              SERVICES &{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500">
-                EXPERTISE
-              </span>
-            </h2>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+        {/* Section Header: Clean & Minimalist */}
+        <div>
+          <div className="flex items-center gap-2 mb-2.5">
+            <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
+            <span className="font-mono text-xs font-bold text-orange-500 tracking-wider uppercase">
+              // CAPABILITIES & SERVICE DOSSIER
+            </span>
           </div>
-
-          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-md leading-relaxed font-sans">
-            Solusi rekayasa perangkat lunak, arsitektur jaringan, dan desain produk digital berkualitas tinggi siap produksi. Klik kartu untuk melihat spesifikasi detail.
-          </p>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white uppercase font-sans">
+            SERVICES &{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500">
+              EXPERTISE
+            </span>
+          </h2>
         </div>
       </div>
 

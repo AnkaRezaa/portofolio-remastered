@@ -273,32 +273,20 @@ export const QuickHighlights: React.FC = () => {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Section Header: Clean, Authoritative & Recruiter-Focused */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-6">
-          <div>
-            <div className="flex items-center gap-2 mb-2.5">
-              <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
-              <span className="font-mono text-xs font-bold text-orange-500 tracking-wider uppercase">
-                // TECHNICAL ARSENAL & CONSOLIDATED STACK
-              </span>
-            </div>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white uppercase font-sans">
-              WEAPONS OF{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500">
-                CHOICE
-              </span>
-            </h2>
+        {/* Section Header: Clean & Minimalist */}
+        <div className="mb-8">
+          <div className="flex items-center gap-2 mb-2.5">
+            <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
+            <span className="font-mono text-xs font-bold text-orange-500 tracking-wider uppercase">
+              // TECHNICAL ARSENAL & CONSOLIDATED STACK
+            </span>
           </div>
-
-          <div className="flex flex-col sm:items-end gap-2">
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-md sm:text-right leading-relaxed font-sans">
-              Ekosistem teknologi terintegrasi yang saya kuasai dan terapkan dalam pengembangan Full-Stack, Mobile App, Jaringan Enterprise, dan Rekayasa Sistem.
-            </p>
-            <div className="flex items-center gap-2 font-mono text-[11px] text-slate-400 dark:text-slate-500">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-              <span>9 EKOSISTEM UTAMA • PRODUCTION-TESTED</span>
-            </div>
-          </div>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white uppercase font-sans">
+            WEAPONS OF{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500">
+              CHOICE
+            </span>
+          </h2>
         </div>
 
         {/* Clean, Non-Distracting Category Filter Tabs */}
