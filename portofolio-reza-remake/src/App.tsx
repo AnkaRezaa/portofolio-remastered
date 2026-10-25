@@ -14,6 +14,7 @@ import { ResumeModal } from "./components/ResumeModal";
 import { TerminalStreamBg } from "./components/TerminalStreamBg";
 import { projectsData, ProjectItem } from "./data/projects";
 import { certificatesData, CertificateItem } from "./data/certificates";
+import { fetchProjects, fetchCertificates } from "./lib/supabase";
 
 export function App() {
   const [isAdminOpen, setIsAdminOpen] = useState(() => {
@@ -40,6 +41,24 @@ export function App() {
     return () => {
       window.removeEventListener("hashchange", handleRouteCheck);
       window.removeEventListener("popstate", handleRouteCheck);
+    };
+  }, []);
+
+  // Fetch live projects and certificates from Supabase Cloud
+  useEffect(() => {
+    let isMounted = true;
+    fetchProjects().then((items) => {
+      if (isMounted && items && items.length > 0) {
+        setProjects(items);
+      }
+    });
+    fetchCertificates().then((items) => {
+      if (isMounted && items && items.length > 0) {
+        setCertificates(items);
+      }
+    });
+    return () => {
+      isMounted = false;
     };
   }, []);
 

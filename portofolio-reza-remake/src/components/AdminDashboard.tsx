@@ -19,8 +19,18 @@ import {
   Globe,
   LogOut,
   RotateCcw,
+  Cloud,
+  Loader2,
 } from "lucide-react";
 import confetti from "canvas-confetti";
+import {
+  saveProject,
+  deleteProject,
+  saveCertificate,
+  deleteCertificate,
+  getAdminPassword,
+  updateAdminPassword,
+} from "../lib/supabase";
 
 interface AdminDashboardProps {
   projects: ProjectItem[];
@@ -87,25 +97,37 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   });
   const [showNewPassword, setShowNewPassword] = useState(false);
 
+  // Loading states for Cloud Operations
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [isSavingProject, setIsSavingProject] = useState(false);
+  const [isSavingCert, setIsSavingCert] = useState(false);
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
+
   // Helper notification toaster
   const showToast = (text: string, type: "success" | "error" = "success") => {
     setNotification({ type, text });
     setTimeout(() => setNotification(null), 3500);
   };
 
-  // Login handler
-  const handleLogin = (e: React.FormEvent) => {
+  // Login handler with Supabase Cloud check
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const storedPwd = localStorage.getItem("reza_admin_pwd") || "reza2026";
-
-    if (passwordInput === storedPwd) {
-      setIsAuthenticated(true);
-      sessionStorage.setItem("reza_admin_auth", "true");
-      setAuthError("");
-      setPasswordInput("");
-      confetti({ particleCount: 50, spread: 60 });
-    } else {
-      setAuthError("Kata sandi otorisasi tidak valid. Akses ditolak.");
+    setIsLoggingIn(true);
+    setAuthError("");
+    try {
+      const storedPwd = await getAdminPassword();
+      if (passwordInput === storedPwd) {
+        setIsAuthenticated(true);
+        sessionStorage.setItem("reza_admin_auth", "true");
+        setPasswordInput("");
+        confetti({ particleCount: 50, spread: 60 });
+      } else {
+        setAuthError("Kata sandi otorisasi tidak valid. Akses ditolak.");
+      }
+    } catch {
+      setAuthError("Gagal menghubungi server database. Periksa koneksi internet.");
+    } finally {
+      setIsLoggingIn(false);
     }
   };
 
@@ -151,7 +173,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     });
   };
 
-  const handleSaveProject = (e: React.FormEvent) => {
+  const handleSaveProject = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!projectForm.title.trim()) {
       showToast("Judul proyek tidak boleh kosong!", "error");
@@ -163,50 +185,60 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       .map((t) => t.trim())
       .filter(Boolean);
 
-    if (editingProjectId) {
-      // UPDATE existing project
-      const updatedList = projects.map((p) => {
-        if (p.id === editingProjectId) {
-          return {
-            ...p,
-            title: projectForm.title.trim(),
-            category: projectForm.category,
-            demoUrl: projectForm.demoUrl.trim() || undefined,
-            githubUrl: projectForm.githubUrl.trim() || undefined,
-            image: projectForm.image.trim() || "/assets/projects/Dashboard Desktop.png",
-            tags: tagsArray.length > 0 ? tagsArray : ["Web"],
-            description: projectForm.description.trim(),
-          };
-        }
-        return p;
-      });
+    setIsSavingProject(true);
+    try {
+      if (editingProjectId) {
+        // UPDATE existing project
+        const updatedItem: ProjectItem = {
+          id: editingProjectId,
+          title: projectForm.title.trim(),
+          category: projectForm.category,
+          demoUrl: projectForm.demoUrl.trim() || undefined,
+          githubUrl: projectForm.githubUrl.trim() || undefined,
+          image: projectForm.image.trim() || "/assets/projects/Dashboard Desktop.png",
+          tags: tagsArray.length > 0 ? tagsArray : ["Web"],
+          description: projectForm.description.trim(),
+        };
 
-      onSaveProjects(updatedList);
-      showToast(`Proyek "${projectForm.title}" berhasil diperbarui!`);
-      handleCancelEditProject();
-    } else {
-      // CREATE new project
-      const newProject: ProjectItem = {
-        id: `proj-${Date.now()}`,
-        title: projectForm.title.trim(),
-        category: projectForm.category,
-        demoUrl: projectForm.demoUrl.trim() || undefined,
-        githubUrl: projectForm.githubUrl.trim() || undefined,
-        image: projectForm.image.trim() || "/assets/projects/Dashboard Desktop.png",
-        tags: tagsArray.length > 0 ? tagsArray : ["Web"],
-        description: projectForm.description.trim(),
-      };
+        const updatedList = projects.map((p) =>
+          p.id === editingProjectId ? updatedItem : p
+        );
 
-      onSaveProjects([newProject, ...projects]);
-      showToast(`Proyek "${newProject.title}" berhasil ditambahkan!`);
-      handleCancelEditProject();
+        onSaveProjects(updatedList);
+        await saveProject(updatedItem);
+        showToast(`Proyek "${projectForm.title}" berhasil diperbarui di Cloud Supabase!`);
+        handleCancelEditProject();
+      } else {
+        // CREATE new project
+        const newProject: ProjectItem = {
+          id: `proj-${Date.now()}`,
+          title: projectForm.title.trim(),
+          category: projectForm.category,
+          demoUrl: projectForm.demoUrl.trim() || undefined,
+          githubUrl: projectForm.githubUrl.trim() || undefined,
+          image: projectForm.image.trim() || "/assets/projects/Dashboard Desktop.png",
+          tags: tagsArray.length > 0 ? tagsArray : ["Web"],
+          description: projectForm.description.trim(),
+        };
+
+        onSaveProjects([newProject, ...projects]);
+        await saveProject(newProject);
+        showToast(`Proyek "${newProject.title}" berhasil disimpan ke Cloud Supabase!`);
+        handleCancelEditProject();
+      }
+    } catch (err) {
+      console.error(err);
+      showToast("Gagal menyimpan ke cloud. Coba periksa koneksi.", "error");
+    } finally {
+      setIsSavingProject(false);
     }
   };
 
-  const handleDeleteProject = (id: string, title: string) => {
-    if (window.confirm(`Yakin ingin menghapus proyek "${title}"?`)) {
+  const handleDeleteProject = async (id: string, title: string) => {
+    if (window.confirm(`Yakin ingin menghapus proyek "${title}" dari database cloud?`)) {
       const updatedList = projects.filter((p) => p.id !== id);
       onSaveProjects(updatedList);
+      await deleteProject(id);
       showToast(`Proyek "${title}" telah dihapus.`);
       if (editingProjectId === id) handleCancelEditProject();
     }
@@ -242,55 +274,65 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     });
   };
 
-  const handleSaveCertificate = (e: React.FormEvent) => {
+  const handleSaveCertificate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!certForm.title.trim() || !certForm.issuer.trim()) {
       showToast("Nama sertifikat dan penerbit wajib diisi!", "error");
       return;
     }
 
-    if (editingCertId) {
-      // UPDATE certificate
-      const updatedList = certificates.map((c) => {
-        if (c.id === editingCertId) {
-          return {
-            ...c,
-            title: certForm.title.trim(),
-            issuer: certForm.issuer.trim(),
-            issueDate: certForm.issueDate.trim() || "2024",
-            credentialId: certForm.credentialId.trim() || undefined,
-            image: certForm.image.trim() || "/assets/certificates/sertifikat_bnsp.jpeg",
-            category: certForm.category,
-          };
-        }
-        return c;
-      });
+    setIsSavingCert(true);
+    try {
+      if (editingCertId) {
+        // UPDATE certificate
+        const updatedItem: CertificateItem = {
+          id: editingCertId,
+          title: certForm.title.trim(),
+          issuer: certForm.issuer.trim(),
+          issueDate: certForm.issueDate.trim() || "2024",
+          credentialId: certForm.credentialId.trim() || undefined,
+          image: certForm.image.trim() || "/assets/certificates/sertifikat_bnsp.jpeg",
+          category: certForm.category,
+        };
 
-      onSaveCertificates(updatedList);
-      showToast(`Sertifikat "${certForm.title}" berhasil diperbarui!`);
-      handleCancelEditCert();
-    } else {
-      // CREATE certificate
-      const newCert: CertificateItem = {
-        id: `cert-${Date.now()}`,
-        title: certForm.title.trim(),
-        issuer: certForm.issuer.trim(),
-        issueDate: certForm.issueDate.trim() || "2024",
-        credentialId: certForm.credentialId.trim() || undefined,
-        image: certForm.image.trim() || "/assets/certificates/sertifikat_bnsp.jpeg",
-        category: certForm.category,
-      };
+        const updatedList = certificates.map((c) =>
+          c.id === editingCertId ? updatedItem : c
+        );
 
-      onSaveCertificates([newCert, ...certificates]);
-      showToast(`Sertifikat "${newCert.title}" berhasil ditambahkan!`);
-      handleCancelEditCert();
+        onSaveCertificates(updatedList);
+        await saveCertificate(updatedItem);
+        showToast(`Sertifikat "${certForm.title}" berhasil diperbarui di Cloud Supabase!`);
+        handleCancelEditCert();
+      } else {
+        // CREATE certificate
+        const newCert: CertificateItem = {
+          id: `cert-${Date.now()}`,
+          title: certForm.title.trim(),
+          issuer: certForm.issuer.trim(),
+          issueDate: certForm.issueDate.trim() || "2024",
+          credentialId: certForm.credentialId.trim() || undefined,
+          image: certForm.image.trim() || "/assets/certificates/sertifikat_bnsp.jpeg",
+          category: certForm.category,
+        };
+
+        onSaveCertificates([newCert, ...certificates]);
+        await saveCertificate(newCert);
+        showToast(`Sertifikat "${newCert.title}" berhasil disimpan ke Cloud Supabase!`);
+        handleCancelEditCert();
+      }
+    } catch (err) {
+      console.error(err);
+      showToast("Gagal menyimpan sertifikat ke cloud.", "error");
+    } finally {
+      setIsSavingCert(false);
     }
   };
 
-  const handleDeleteCertificate = (id: string, title: string) => {
-    if (window.confirm(`Yakin ingin menghapus sertifikat "${title}"?`)) {
+  const handleDeleteCertificate = async (id: string, title: string) => {
+    if (window.confirm(`Yakin ingin menghapus sertifikat "${title}" dari database cloud?`)) {
       const updatedList = certificates.filter((c) => c.id !== id);
       onSaveCertificates(updatedList);
+      await deleteCertificate(id);
       showToast(`Sertifikat "${title}" telah dihapus.`);
       if (editingCertId === id) handleCancelEditCert();
     }
@@ -299,26 +341,38 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   // ==========================================
   // CHANGE PASSWORD HANDLER
   // ==========================================
-  const handleChangePassword = (e: React.FormEvent) => {
+  const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    const storedPwd = localStorage.getItem("reza_admin_pwd") || "reza2026";
+    setIsUpdatingPassword(true);
 
-    if (securityForm.currentPassword !== storedPwd) {
-      showToast("Kata sandi saat ini salah!", "error");
-      return;
-    }
-    if (securityForm.newPassword.length < 5) {
-      showToast("Kata sandi baru minimal 5 karakter!", "error");
-      return;
-    }
-    if (securityForm.newPassword !== securityForm.confirmPassword) {
-      showToast("Konfirmasi kata sandi baru tidak cocok!", "error");
-      return;
-    }
+    try {
+      const storedPwd = await getAdminPassword();
 
-    localStorage.setItem("reza_admin_pwd", securityForm.newPassword);
-    setSecurityForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
-    showToast("Kata sandi admin berhasil diperbarui secara rahasia!");
+      if (securityForm.currentPassword !== storedPwd) {
+        showToast("Kata sandi saat ini salah!", "error");
+        return;
+      }
+      if (securityForm.newPassword.length < 5) {
+        showToast("Kata sandi baru minimal 5 karakter!", "error");
+        return;
+      }
+      if (securityForm.newPassword !== securityForm.confirmPassword) {
+        showToast("Konfirmasi kata sandi baru tidak cocok!", "error");
+        return;
+      }
+
+      const success = await updateAdminPassword(securityForm.newPassword);
+      if (success) {
+        setSecurityForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
+        showToast("Kata sandi admin berhasil diperbarui secara rahasia di Cloud Supabase!");
+      } else {
+        showToast("Gagal memperbarui di database cloud. Coba lagi.", "error");
+      }
+    } catch {
+      showToast("Terjadi kendala saat update password ke cloud.", "error");
+    } finally {
+      setIsUpdatingPassword(false);
+    }
   };
 
   // Filtered lists
@@ -406,10 +460,20 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
             <button
               type="submit"
-              className="w-full py-3.5 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-amber-500 via-orange-500 to-rose-600 shadow-lg shadow-orange-500/20 hover:opacity-95 transition-all flex items-center justify-center gap-2"
+              disabled={isLoggingIn}
+              className="w-full py-3.5 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-amber-500 via-orange-500 to-rose-600 shadow-lg shadow-orange-500/20 hover:opacity-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
             >
-              <Unlock className="w-4 h-4" />
-              <span>Buka Akses Console</span>
+              {isLoggingIn ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Memverifikasi Sandi ke Cloud...</span>
+                </>
+              ) : (
+                <>
+                  <Unlock className="w-4 h-4" />
+                  <span>Buka Akses Console</span>
+                </>
+              )}
             </button>
           </form>
 
@@ -458,8 +522,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           {/* Quick Metrics & Logout */}
           <div className="flex items-center gap-3 font-mono text-xs">
             <div className="hidden md:flex items-center gap-2 px-2.5 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px]">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
-              <span>AUTH:ROOT_ACTIVE</span>
+              <Cloud className="w-3.5 h-3.5 text-emerald-400" />
+              <span>SUPABASE:CONNECTED</span>
             </div>
 
             <button
@@ -696,10 +760,20 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 <div className="flex items-center gap-3 pt-2">
                   <button
                     type="submit"
-                    className="px-6 py-3 rounded-xl font-mono text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-amber-500 via-orange-500 to-rose-600 shadow-lg shadow-orange-500/25 hover:opacity-95 transition-all flex items-center gap-2"
+                    disabled={isSavingProject}
+                    className="px-6 py-3 rounded-xl font-mono text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-amber-500 via-orange-500 to-rose-600 shadow-lg shadow-orange-500/25 hover:opacity-95 transition-all flex items-center gap-2 disabled:opacity-50"
                   >
-                    <CheckCircle2 className="w-4 h-4" />
-                    <span>{editingProjectId ? "Simpan Perubahan Proyek" : "Publish Proyek ke Portofolio"}</span>
+                    {isSavingProject ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span>Menyimpan ke Cloud Supabase...</span>
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle2 className="w-4 h-4" />
+                        <span>{editingProjectId ? "Simpan Perubahan Proyek" : "Publish Proyek ke Portofolio"}</span>
+                      </>
+                    )}
                   </button>
 
                   {editingProjectId && (
@@ -954,10 +1028,20 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 <div className="flex items-center gap-3 pt-2">
                   <button
                     type="submit"
-                    className="px-6 py-3 rounded-xl font-mono text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-amber-500 via-orange-500 to-rose-600 shadow-lg shadow-orange-500/25 hover:opacity-95 transition-all flex items-center gap-2"
+                    disabled={isSavingCert}
+                    className="px-6 py-3 rounded-xl font-mono text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-amber-500 via-orange-500 to-rose-600 shadow-lg shadow-orange-500/25 hover:opacity-95 transition-all flex items-center gap-2 disabled:opacity-50"
                   >
-                    <CheckCircle2 className="w-4 h-4" />
-                    <span>{editingCertId ? "Simpan Perubahan Sertifikat" : "Publish Sertifikat"}</span>
+                    {isSavingCert ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span>Menyimpan ke Cloud Supabase...</span>
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle2 className="w-4 h-4" />
+                        <span>{editingCertId ? "Simpan Perubahan Sertifikat" : "Publish Sertifikat"}</span>
+                      </>
+                    )}
                   </button>
 
                   {editingCertId && (
@@ -1118,9 +1202,17 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
                 <button
                   type="submit"
-                  className="w-full py-3 rounded-xl font-mono text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-amber-500 via-orange-500 to-rose-600 shadow-md shadow-orange-500/20 hover:opacity-95 transition-all"
+                  disabled={isUpdatingPassword}
+                  className="w-full py-3 rounded-xl font-mono text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-amber-500 via-orange-500 to-rose-600 shadow-md shadow-orange-500/20 hover:opacity-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                 >
-                  Simpan Kata Sandi Baru
+                  {isUpdatingPassword ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Menyimpan Kata Sandi ke Cloud...</span>
+                    </>
+                  ) : (
+                    <span>Simpan Kata Sandi Baru ke Cloud</span>
+                  )}
                 </button>
               </form>
             </div>
