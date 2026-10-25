@@ -725,12 +725,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 {/* Project Image: Drag & Drop File Upload & URL with Live Preview */}
                 <div className="p-4 sm:p-5 rounded-2xl bg-slate-950/40 border border-white/10">
                   <ImageUploadInput
-                    label="Gambar / Thumbnail Proyek"
+                    label="Gambar / Thumbnail Dokumen Proyek (JPG, PNG, PDF)"
                     value={projectForm.image}
                     onChange={(newImg) => setProjectForm({ ...projectForm, image: newImg })}
                     placeholder="/assets/projects/hotelier.png atau https://..."
                     previewAspect="video"
-                    helpText="Pilih foto/screenshot proyek dari komputer atau seret file ke sini (JPG, PNG, WEBP, SVG)."
+                    helpText="Pilih foto/screenshot atau file PDF dokumen proyek. Halaman 1 PDF otomatis dirender menjadi gambar thumbnail!"
+                    docTitle={projectForm.title || "Dokumen Proyek"}
                   />
                 </div>
 
@@ -1012,12 +1013,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 {/* Certificate Image: File Upload & URL with Live Preview */}
                 <div className="p-4 sm:p-5 rounded-2xl bg-slate-950/40 border border-white/10">
                   <ImageUploadInput
-                    label="File / Gambar Sertifikat"
+                    label="File / Gambar / PDF Sertifikat"
                     value={certForm.image}
                     onChange={(newImg) => setCertForm({ ...certForm, image: newImg })}
                     placeholder="/assets/certificates/sertifikat_bnsp.jpeg atau https://..."
                     previewAspect="cert"
-                    helpText="Pilih scan sertifikat dari komputer atau seret file ke sini (JPG, PNG, WEBP, SVG)."
+                    helpText="Pilih scan sertifikat (JPG, PNG) atau dokumen PDF sertifikat. Halaman 1 PDF otomatis dirender menjadi gambar thumbnail!"
+                    docTitle={certForm.title || "Sertifikat"}
                   />
                 </div>
 

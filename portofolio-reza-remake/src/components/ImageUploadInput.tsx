@@ -7,7 +7,11 @@ import {
   AlertCircle,
   Loader2,
   Image as ImageIcon,
+  FileText,
+  FileCheck,
+  Sparkles,
 } from "lucide-react";
+import { renderPdfCoverToThumbnail } from "../lib/pdfThumbnail";
 
 interface ImageUploadInputProps {
   label: string;
@@ -16,6 +20,7 @@ interface ImageUploadInputProps {
   placeholder?: string;
   previewAspect?: "video" | "cert" | "square";
   helpText?: string;
+  docTitle?: string;
 }
 
 /**
@@ -85,12 +90,15 @@ export const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
   onChange,
   placeholder = "https://... atau /assets/...",
   previewAspect = "video",
-  helpText = "Format didukung: JPG, PNG, WEBP, SVG. Gambar otomatis dioptimasi.",
+  helpText = "Format didukung: JPG, PNG, WEBP, SVG, PDF. File PDF otomatis dirender halaman pertamanya sebagai thumbnail.",
+  docTitle = "Dokumen",
 }) => {
   const [mode, setMode] = useState<"file" | "url">("file");
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
+  const [processStatus, setProcessStatus] = useState<string>("");
   const [errorMsg, setErrorMsg] = useState<string>("");
   const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [isPdfSource, setIsPdfSource] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // File selection handler
@@ -111,14 +119,19 @@ export const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
   };
 
   const processFile = async (file: File) => {
-    if (!file.type.startsWith("image/")) {
-      setErrorMsg("File yang dipilih harus berupa file gambar!");
+    const isPdf =
+      file.type === "application/pdf" ||
+      file.name.toLowerCase().endsWith(".pdf");
+    const isImage = file.type.startsWith("image/");
+
+    if (!isImage && !isPdf) {
+      setErrorMsg("File harus berupa Gambar (JPG, PNG, WEBP, SVG) atau Dokumen PDF!");
       return;
     }
 
-    // Max 10MB input check
-    if (file.size > 10 * 1024 * 1024) {
-      setErrorMsg("Ukuran file terlalu besar! Maksimal 10MB.");
+    // Max 15MB input check
+    if (file.size > 15 * 1024 * 1024) {
+      setErrorMsg("Ukuran file terlalu besar! Maksimal 15MB.");
       return;
     }
 
@@ -126,22 +139,54 @@ export const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
     setIsProcessing(true);
 
     try {
-      const isCert = previewAspect === "cert";
-      const compressedDataUrl = await compressImageFile(
-        file,
-        isCert ? 1000 : 1200,
-        isCert ? 800 : 750,
-        0.85
-      );
-      onChange(compressedDataUrl);
+      if (isPdf) {
+        setIsPdfSource(true);
+        setProcessStatus("Merender halaman 1 PDF menjadi thumbnail...");
+        const pdfThumbnail = await renderPdfCoverToThumbnail(
+          file,
+          docTitle || file.name
+        );
+        onChange(pdfThumbnail);
+      } else {
+        setIsPdfSource(false);
+        setProcessStatus("Mengoptimasi dan mengompresi gambar...");
+        const isCert = previewAspect === "cert";
+        const compressedDataUrl = await compressImageFile(
+          file,
+          isCert ? 1000 : 1200,
+          isCert ? 800 : 750,
+          0.85
+        );
+        onChange(compressedDataUrl);
+      }
     } catch (err) {
-      console.error(err);
-      setErrorMsg("Gagal memproses gambar. Coba format file lain.");
+      console.error("Upload process error:", err);
+      setErrorMsg("Gagal memproses file. Pastikan file valid.");
     } finally {
       setIsProcessing(false);
+      setProcessStatus("");
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
+    }
+  };
+
+  // Process PDF from direct URL
+  const handleProcessPdfUrl = async () => {
+    if (!value || !value.toLowerCase().includes(".pdf")) return;
+    setIsProcessing(true);
+    setProcessStatus("Merender halaman 1 PDF dari tautan...");
+    setErrorMsg("");
+    try {
+      const pdfThumbnail = await renderPdfCoverToThumbnail(value, docTitle);
+      onChange(pdfThumbnail);
+      setIsPdfSource(true);
+    } catch (err) {
+      console.error(err);
+      setErrorMsg("Gagal mengambil PDF dari tautan. Pastikan link dapat diakses publik.");
+    } finally {
+      setIsProcessing(false);
+      setProcessStatus("");
     }
   };
 
@@ -152,9 +197,10 @@ export const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
     }
   };
 
-  // Clear image
+  // Clear file
   const handleRemoveImage = () => {
     onChange("");
+    setIsPdfSource(false);
     setErrorMsg("");
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
@@ -163,6 +209,7 @@ export const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
 
   const hasValue = Boolean(value && value.trim().length > 0);
   const isBase64 = value?.startsWith("data:image");
+  const isDirectPdfUrl = value?.toLowerCase().endsWith(".pdf");
 
   return (
     <div className="space-y-3">
@@ -184,7 +231,7 @@ export const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
             }`}
           >
             <UploadCloud className="w-3.5 h-3.5" />
-            <span>Upload File</span>
+            <span>Upload File / PDF</span>
           </button>
           <button
             type="button"
@@ -204,11 +251,11 @@ export const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
       {/* Input Mode 1: File Upload / Drag & Drop */}
       {mode === "file" && (
         <div>
-          {/* Hidden HTML input */}
+          {/* Hidden HTML input supporting images AND pdfs */}
           <input
             ref={fileInputRef}
             type="file"
-            accept="image/*"
+            accept="image/jpeg,image/png,image/webp,image/svg+xml,.pdf,application/pdf"
             onChange={handleFileChange}
             className="hidden"
           />
@@ -231,22 +278,28 @@ export const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
               <div className="py-4 flex flex-col items-center gap-2">
                 <Loader2 className="w-7 h-7 text-orange-500 animate-spin" />
                 <span className="font-mono text-xs text-slate-300">
-                  Mengompresi & menyiapkan gambar...
+                  {processStatus || "Memproses dan mengoptimasi file..."}
                 </span>
               </div>
             ) : (
               <>
-                <div className="w-10 h-10 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center group-hover:scale-110 group-hover:border-orange-500/40 transition-all text-orange-500">
-                  <UploadCloud className="w-5 h-5" />
+                <div className="flex items-center gap-2">
+                  <div className="w-10 h-10 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center group-hover:scale-110 group-hover:border-orange-500/40 transition-all text-orange-500">
+                    <UploadCloud className="w-5 h-5" />
+                  </div>
+                  <div className="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center group-hover:scale-110 group-hover:border-red-500/40 transition-all text-red-400">
+                    <FileText className="w-5 h-5" />
+                  </div>
                 </div>
+
                 <div>
                   <p className="text-xs font-mono font-bold text-slate-200">
                     <span className="text-orange-400 underline decoration-orange-500/50 underline-offset-2">
-                      Klik untuk memilih gambar
+                      Pilih Gambar atau PDF
                     </span>{" "}
                     atau seret file ke sini
                   </p>
-                  <p className="text-[11px] font-mono text-slate-500 mt-0.5">
+                  <p className="text-[11px] font-mono text-slate-500 mt-1 max-w-md">
                     {helpText}
                   </p>
                 </div>
@@ -258,7 +311,7 @@ export const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
 
       {/* Input Mode 2: Direct Text / URL */}
       {mode === "url" && (
-        <div>
+        <div className="space-y-2">
           <div className="relative">
             <Link2 className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
@@ -269,9 +322,22 @@ export const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
               className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950 border border-white/10 text-white font-mono text-xs sm:text-sm focus:outline-none focus:border-orange-500 placeholder:text-slate-600"
             />
           </div>
-          <p className="text-[11px] font-mono text-slate-500 mt-1.5">
-            Bisa menggunakan link gambar online (https://...) atau file lokal (/assets/projects/...).
-          </p>
+
+          <div className="flex items-center justify-between flex-wrap gap-2 text-[11px] font-mono text-slate-500">
+            <span>Bisa link gambar online (.jpg, .png) atau tautan PDF (.pdf).</span>
+
+            {isDirectPdfUrl && (
+              <button
+                type="button"
+                onClick={handleProcessPdfUrl}
+                disabled={isProcessing}
+                className="px-2.5 py-1 rounded-lg bg-red-500/15 border border-red-500/30 text-red-400 hover:bg-red-500/25 transition-all flex items-center gap-1.5 cursor-pointer font-bold disabled:opacity-50"
+              >
+                <Sparkles className="w-3 h-3" />
+                <span>Konversi PDF URL ke Thumbnail</span>
+              </button>
+            )}
+          </div>
         </div>
       )}
 
@@ -285,10 +351,10 @@ export const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
 
       {/* Live Preview Card */}
       {hasValue && (
-        <div className="p-3 rounded-2xl bg-slate-950/70 border border-white/10 flex flex-col sm:flex-row items-center gap-3.5">
+        <div className="p-3.5 rounded-2xl bg-slate-950/70 border border-white/10 flex flex-col sm:flex-row items-center gap-3.5">
           {/* Thumbnail box */}
           <div
-            className={`w-full sm:w-28 h-24 rounded-xl overflow-hidden bg-slate-900 border border-white/10 shrink-0 relative flex items-center justify-center ${
+            className={`w-full sm:w-32 h-24 rounded-xl overflow-hidden bg-slate-900 border border-white/15 shrink-0 relative flex items-center justify-center ${
               previewAspect === "cert" ? "aspect-[4/3]" : "aspect-video"
             }`}
           >
@@ -300,6 +366,15 @@ export const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
                 e.currentTarget.style.display = "none";
               }}
             />
+
+            {/* If PDF badge indicator */}
+            {isPdfSource && (
+              <div className="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded bg-red-600 text-white font-mono text-[9px] font-bold shadow-md flex items-center gap-1">
+                <FileCheck className="w-2.5 h-2.5" />
+                <span>PDF COVER</span>
+              </div>
+            )}
+
             {/* Fallback icon if image broken */}
             <ImageIcon className="w-6 h-6 text-slate-700 -z-10 absolute" />
           </div>
@@ -308,11 +383,19 @@ export const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
           <div className="flex-1 min-w-0 w-full space-y-1.5">
             <div className="flex items-center gap-1.5 text-emerald-400 text-xs font-mono font-bold">
               <CheckCircle2 className="w-3.5 h-3.5" />
-              <span>Gambar Siap Ditampilkan</span>
+              <span>
+                {isPdfSource
+                  ? "Halaman 1 PDF Berhasil Dikonversi Jadi Thumbnail"
+                  : "Thumbnail Siap Ditampilkan"}
+              </span>
             </div>
 
             <p className="text-[11px] font-mono text-slate-400 truncate max-w-full">
-              {isBase64 ? "File Unggahan Lokal (Base64 Web-Optimized)" : value}
+              {isBase64
+                ? isPdfSource
+                  ? "Dokumen PDF ter-render (Base64 Web-Optimized)"
+                  : "File Unggahan Gambar (Base64 Web-Optimized)"
+                : value}
             </p>
 
             <div className="flex items-center gap-2 pt-1">
@@ -322,7 +405,7 @@ export const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
                 className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-[11px] font-mono text-slate-300 hover:text-white transition-all flex items-center gap-1 cursor-pointer"
               >
                 <UploadCloud className="w-3 h-3 text-orange-400" />
-                <span>Ganti File</span>
+                <span>Ganti File / PDF</span>
               </button>
 
               <button
