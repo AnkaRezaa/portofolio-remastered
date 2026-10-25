@@ -4,273 +4,225 @@ import {
   Code2,
   Palette,
   Cpu,
-  Layers,
   Database,
   CheckCircle2,
-  Sparkles,
   ExternalLink,
-  Laptop,
+  Smartphone,
   Server,
-  Zap,
+  Binary,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-export interface TechArsenalItem {
+export interface ConsolidatedArsenalItem {
   id: string;
   name: string;
-  category: "all" | "network" | "web" | "uiux" | "hardware";
-  categoryName: string;
+  domain: "fullstack" | "mobile" | "network" | "core";
+  domainLabel: string;
   level: string;
-  percentage: number;
-  logoUrl?: string;
+  proficiency: number;
+  mainLogo: string;
+  secondaryLogos?: string[];
   fallbackIcon: React.ReactNode;
   summary: string;
   useCase: string;
-  tags: string[];
-  externalDocUrl?: string;
+  ecosystemTags: string[];
+  docUrl?: string;
 }
 
 export const QuickHighlights: React.FC = () => {
-  const [activeCategory, setActiveCategory] = useState<
-    "all" | "network" | "web" | "uiux" | "hardware"
+  const [activeTab, setActiveTab] = useState<
+    "all" | "fullstack" | "mobile" | "network" | "core"
   >("all");
 
-  const techStack: TechArsenalItem[] = [
-    // 1. NETWORK & INFRASTRUCTURE
+  const consolidatedArsenal: ConsolidatedArsenalItem[] = [
+    // 1. FULL-STACK & WEB
     {
-      id: "cisco",
-      name: "Cisco Packet Tracer",
-      category: "network",
-      categoryName: "Infrastructure & Network",
-      level: "Enterprise Topology & Switching",
-      percentage: 95,
-      logoUrl: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cisco/cisco-original.svg",
-      fallbackIcon: <Network className="w-5 h-5 text-orange-500" />,
+      id: "laravel-fullstack",
+      name: "Laravel & PHP Full-Stack",
+      domain: "fullstack",
+      domainLabel: "Full-Stack Engineering",
+      level: "MVC Architecture & RESTful APIs",
+      proficiency: 93,
+      mainLogo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/laravel/laravel-original.svg",
+      secondaryLogos: [
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg",
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg",
+      ],
+      fallbackIcon: <Server className="w-5 h-5 text-red-500" />,
       summary:
-        "Perancangan arsitektur jaringan kampus multi-gedung, routing dinamis OSPF, dan konfigurasi switching L2/L3.",
-      useCase: "Topologi Jaringan Enterprise Lab & Kampus Polinema",
-      tags: ["OSPF Routing", "VLAN Trunking", "HSRP", "L2/L3 Switching"],
-      externalDocUrl: "https://www.cisco.com/",
+        "Pengembangan web modular berbasis MVC, Eloquent ORM, migrasi database, autentikasi sesi, middleware, dan perancangan REST API siap pakai.",
+      useCase: "Sistem Manajemen Peminjaman Alat Lab (ALAB) & Backend Hotelier",
+      ecosystemTags: ["Laravel 10/11", "PHP", "Eloquent ORM", "Blade", "REST APIs", "MVC"],
+      docUrl: "https://laravel.com/",
     },
     {
-      id: "mikrotik",
-      name: "MikroTik RouterOS",
-      category: "network",
-      categoryName: "Infrastructure & Network",
-      level: "Gateway, Firewall & QoS",
-      percentage: 92,
-      logoUrl: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-original.svg",
-      fallbackIcon: <Server className="w-5 h-5 text-amber-500" />,
-      summary:
-        "Manajemen bandwidth antrian (Queue), captive portal hotspot berkecepatan tinggi, dan firewall NAT dual-ISP failover.",
-      useCase: "Gateway Akses Internet & Manajemen QoS Warnet/Kampus",
-      tags: ["Queue Tree", "Firewall NAT", "Hotspot", "Dual-ISP Failover"],
-      externalDocUrl: "https://mikrotik.com/",
-    },
-    {
-      id: "vlan-routing",
-      name: "VLAN & Subnetting VLSM",
-      category: "network",
-      categoryName: "Infrastructure & Network",
-      level: "IEEE 802.1Q & IP Calculation",
-      percentage: 94,
-      fallbackIcon: <Network className="w-5 h-5 text-orange-500" />,
-      summary:
-        "Segmentasi lalu lintas broadcast departemen, efisiensi alokasi IP berbasis VLSM, dan keamanan lalu lintas lokal.",
-      useCase: "Isolasi Departemen & Keamanan Jaringan Laboratorium",
-      tags: ["IEEE 802.1Q", "VLSM Subnetting", "Access & Trunk", "Broadcast Isolation"],
-    },
-
-    // 2. WEB & SOFTWARE ENGINEERING
-    {
-      id: "react",
-      name: "React.js",
-      category: "web",
-      categoryName: "Web & Software",
-      level: "Component Systems & Modern SPA",
-      percentage: 94,
-      logoUrl: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg",
+      id: "react-typescript-tailwind",
+      name: "React, TypeScript & Tailwind",
+      domain: "fullstack",
+      domainLabel: "Frontend Architecture",
+      level: "Modern SPA & Component Systems",
+      proficiency: 95,
+      mainLogo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg",
+      secondaryLogos: [
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg",
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-original.svg",
+      ],
       fallbackIcon: <Code2 className="w-5 h-5 text-sky-400" />,
       summary:
-        "Pengembangan Single Page Application interaktif dengan arsitektur komponen modular, custom hooks, dan fluid state flow.",
-      useCase: "Web Portal ALAB, myGARDEN App, & Admin Console",
-      tags: ["Custom Hooks", "Context API", "Virtual DOM", "SPA Architecture"],
-      externalDocUrl: "https://react.dev/",
+        "Pembangunan antarmuka Single Page Application interaktif, type-safe data flow, custom hooks, dan arsitektur token desain dark-mode kustom.",
+      useCase: "Web Portofolio Remake, myGARDEN Web, & Admin Console",
+      ecosystemTags: ["React.js", "TypeScript", "Tailwind CSS", "Vite", "Framer Motion"],
+      docUrl: "https://react.dev/",
     },
     {
-      id: "typescript",
-      name: "TypeScript",
-      category: "web",
-      categoryName: "Web & Software",
-      level: "Strict Type Safety",
-      percentage: 90,
-      logoUrl: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg",
-      fallbackIcon: <Code2 className="w-5 h-5 text-blue-500" />,
+      id: "databases-sql-cloud",
+      name: "MySQL, PostgreSQL & Supabase",
+      domain: "fullstack",
+      domainLabel: "Database & Cloud BaaS",
+      level: "Relational Schema & Cloud Sync",
+      proficiency: 91,
+      mainLogo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg",
+      secondaryLogos: [
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg",
+      ],
+      fallbackIcon: <Database className="w-5 h-5 text-blue-500" />,
       summary:
-        "Menjamin kehandalan kode jangka panjang, mencegah runtime bug, dan menyusun kontrak data interface yang kokoh.",
-      useCase: "Portofolio Remake & Full-Stack Core Runtimes",
-      tags: ["Strict Typing", "Generics", "Interface Contracts", "Clean Code"],
-      externalDocUrl: "https://www.typescriptlang.org/",
-    },
-    {
-      id: "tailwind",
-      name: "Tailwind CSS",
-      category: "web",
-      categoryName: "Web & Software",
-      level: "Design Token Architecture",
-      percentage: 96,
-      logoUrl: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-original.svg",
-      fallbackIcon: <Palette className="w-5 h-5 text-cyan-400" />,
-      summary:
-        "Implementasi antarmuka ultra responsif, sistem token warna cyber-sunset kustom, dan dark mode instan tanpa CSS bloated.",
-      useCase: "Sistem Desain Portofolio & Antarmuka Aplikasi Web",
-      tags: ["Utility-First", "Dark Theme", "Responsive", "Glassmorphism"],
-      externalDocUrl: "https://tailwindcss.com/",
-    },
-    {
-      id: "nodejs",
-      name: "Node.js & Express",
-      category: "web",
-      categoryName: "Web & Software",
-      level: "RESTful API & Middleware",
-      percentage: 88,
-      logoUrl: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg",
-      fallbackIcon: <Server className="w-5 h-5 text-emerald-500" />,
-      summary:
-        "Pembangunan layanan backend asynchronous, otentikasi JWT, sanitasi payload, dan integrasi database performa tinggi.",
-      useCase: "Backend Layanan Reservasi Hotelier & Sistem Inventaris",
-      tags: ["RESTful API", "Express.js", "JWT Auth", "Async I/O"],
-      externalDocUrl: "https://nodejs.org/",
-    },
-    {
-      id: "supabase",
-      name: "Supabase & PostgreSQL",
-      category: "web",
-      categoryName: "Web & Software",
-      level: "Cloud Database & Realtime Sync",
-      percentage: 90,
-      logoUrl: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg",
-      fallbackIcon: <Database className="w-5 h-5 text-emerald-400" />,
-      summary:
-        "Arsitektur database relasional di cloud, keamanan Row Level Security (RLS), dan sinkronisasi data live untuk CMS portofolio.",
-      useCase: "Live Database Portofolio & Cloud Admin Console",
-      tags: ["PostgreSQL", "RLS Security", "Realtime CRUD", "Cloud BaaS"],
-      externalDocUrl: "https://supabase.com/",
+        "Normalisasi skema relasional, optimasi query, integritas foreign key, migrasi cloud database, serta penerapan Row Level Security (RLS).",
+      useCase: "Live Database Portofolio Cloud, Reservasi Hotelier, & ALAB Database",
+      ecosystemTags: ["MySQL", "PostgreSQL", "Supabase BaaS", "Row Level Security", "Cloud SQL"],
+      docUrl: "https://supabase.com/",
     },
 
-    // 3. UI/UX & PRODUCT DESIGN
+    // 2. MOBILE APPLICATION
     {
-      id: "figma",
-      name: "Figma Architecture",
-      category: "uiux",
-      categoryName: "UI/UX & Product Design",
-      level: "Design Systems & Tokens",
-      percentage: 95,
-      logoUrl: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg",
+      id: "flutter-dart",
+      name: "Flutter & Dart Mobile",
+      domain: "mobile",
+      domainLabel: "Cross-Platform Mobile",
+      level: "Clean Architecture & State Management",
+      proficiency: 90,
+      mainLogo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/flutter/flutter-original.svg",
+      secondaryLogos: [
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/dart/dart-original.svg",
+      ],
+      fallbackIcon: <Smartphone className="w-5 h-5 text-cyan-400" />,
+      summary:
+        "Pembuatan aplikasi mobile Android & iOS berperforma tinggi dengan prinsip Clean Architecture, pemisahan domain layer, dan penanganan notifikasi kampus.",
+      useCase: "Campus Notify Mobile App & Proyek Mobile Course Polinema",
+      ecosystemTags: ["Flutter SDK", "Dart", "Clean Architecture", "BLoC/Provider", "Android & iOS"],
+      docUrl: "https://flutter.dev/",
+    },
+
+    // 3. NETWORKING & INFRASTRUCTURE
+    {
+      id: "cisco-gns3-simulation",
+      name: "Cisco Packet Tracer & GNS3",
+      domain: "network",
+      domainLabel: "Enterprise Network Simulation",
+      level: "Topologi L2/L3 & Emulasi Real-Device",
+      proficiency: 95,
+      mainLogo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cisco/cisco-original.svg",
+      fallbackIcon: <Network className="w-5 h-5 text-orange-500" />,
+      summary:
+        "Simulasi dan emulasi jaringan enterprise skala besar menggunakan Packet Tracer dan GNS3. Konfigurasi routing OSPF multi-area, inter-VLAN trunking, dan redundansi link.",
+      useCase: "Desain Jaringan Multi-Gedung Kampus & Pengujian Protokol Enterprise",
+      ecosystemTags: ["GNS3", "Packet Tracer", "OSPF Multi-Area", "VLAN 802.1Q", "HSRP"],
+      docUrl: "https://www.gns3.com/",
+    },
+    {
+      id: "mikrotik-network-routing",
+      name: "MikroTik RouterOS & Networking",
+      domain: "network",
+      domainLabel: "Network Infrastructure",
+      level: "Bandwidth QoS, Hotspot & Firewall",
+      proficiency: 93,
+      mainLogo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-original.svg",
+      fallbackIcon: <Server className="w-5 h-5 text-amber-500" />,
+      summary:
+        "Pengaturan gateway internet, manajemen antrian bandwidth (Queue Simple/Tree), firewall filter & NAT, captive portal hotspot, serta failover dual-ISP.",
+      useCase: "Konfigurasi Gateway Internet, QoS Bandwidth, & Sertifikasi BNSP Jaringan",
+      ecosystemTags: ["RouterOS", "Queue QoS", "Firewall NAT", "Hotspot Server", "Dual-ISP Failover"],
+      docUrl: "https://mikrotik.com/",
+    },
+
+    // 4. CORE SYSTEMS & DESIGN
+    {
+      id: "java-cpp-core",
+      name: "Java, C++ & Core Algorithms",
+      domain: "core",
+      domainLabel: "Systems & OOP Fundamentals",
+      level: "Object-Oriented & Algorithmic Problem Solving",
+      proficiency: 89,
+      mainLogo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg",
+      secondaryLogos: [
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg",
+      ],
+      fallbackIcon: <Binary className="w-5 h-5 text-orange-500" />,
+      summary:
+        "Fondasi kuat dalam paradigma Object-Oriented Programming (OOP), struktur data, algoritma komputasi, dan pemrograman sistem tingkat menengah ke rendah.",
+      useCase: "Implementasi Struktur Data, Algoritma Pemrograman, & Core Runtimes",
+      ecosystemTags: ["Java OOP", "C++", "Data Structures", "Algorithms", "Memory Mgmt"],
+      docUrl: "https://dev.java/",
+    },
+    {
+      id: "figma-product-design",
+      name: "Figma UI/UX & Design Systems",
+      domain: "core",
+      domainLabel: "Interface & Product Design",
+      level: "Auto-Layout, Tokens & Prototyping",
+      proficiency: 94,
+      mainLogo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg",
       fallbackIcon: <Palette className="w-5 h-5 text-purple-400" />,
       summary:
-        "Penyusunan komponen atomik, variant interaktif, auto-layout responsif, dan panduan handoff siap implementasi developer.",
-      useCase: "High-Fidelity Mockup Redesign Maxim & myGARDEN App",
-      tags: ["Auto-Layout", "Design Tokens", "Component Variants", "Design Systems"],
-      externalDocUrl: "https://www.figma.com/",
+        "Perancangan antarmuka digital dari wireframe ke high-fidelity mockup dengan Auto-Layout terstandar, token warna terstruktur, dan prototipe interaktif.",
+      useCase: "Redesign Aplikasi Maxim, myGARDEN UI/UX, & Design System Terpadu",
+      ecosystemTags: ["Figma", "Auto-Layout", "Design Tokens", "Wireframing", "Smart Animate"],
+      docUrl: "https://www.figma.com/",
     },
     {
-      id: "prototyping",
-      name: "Interactive Prototyping",
-      category: "uiux",
-      categoryName: "UI/UX & Product Design",
-      level: "Micro-Transitions & User Testing",
-      percentage: 90,
-      fallbackIcon: <Sparkles className="w-5 h-5 text-rose-500" />,
-      summary:
-        "Simulasi transisi antar layar (Smart Animate) untuk memvalidasi kenyamanan interaksi pengguna sebelum masuk ke tahap coding.",
-      useCase: "Validasi Alur Pemesanan Hotelier & Sistem Perpustakaan",
-      tags: ["Smart Animate", "User Testing", "Micro-Interactions", "User Flow"],
-    },
-    {
-      id: "wireframing",
-      name: "Wireframing & IA",
-      category: "uiux",
-      categoryName: "UI/UX & Product Design",
-      level: "Information Architecture",
-      percentage: 92,
-      fallbackIcon: <Layers className="w-5 h-5 text-orange-400" />,
-      summary:
-        "Penataan tata letak bertahap (progressive disclosure) untuk mengurangi beban kognitif pengguna dan mempercepat penyelesaian tugas.",
-      useCase: "Alur Pembelian myGARDEN E-Commerce Flora",
-      tags: ["User Journey", "Low-Fidelity", "Cognitive Flow", "Hierarchy"],
-    },
-
-    // 4. HARDWARE & SYSTEMS
-    {
-      id: "pc-assembly",
-      name: "Workstation & PC Rig Assembly",
-      category: "hardware",
-      categoryName: "Hardware & Systems",
-      level: "Hardware Engineering",
-      percentage: 95,
+      id: "hardware-systems-diagnostics",
+      name: "Hardware Engineering & Diagnostics",
+      domain: "core",
+      domainLabel: "Hardware & Systems",
+      level: "Workstation Rig & UEFI/BIOS",
+      proficiency: 93,
+      mainLogo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-original.svg",
       fallbackIcon: <Cpu className="w-5 h-5 text-amber-500" />,
       summary:
-        "Perakitan komputer workstation komputasi tinggi, penataan alur pendinginan (airflow) optimal, dan manajemen kabel profesional.",
-      useCase: "Perakitan Rig Komputer Laboratorium & PC Pribadi",
-      tags: ["Airflow Optimization", "Cable Routing", "POST Check", "Hardware Setup"],
-    },
-    {
-      id: "uefi-bios",
-      name: "BIOS / UEFI & Dual-Boot OS",
-      category: "hardware",
-      categoryName: "Hardware & Systems",
-      level: "Firmware Profiling & OS Deploy",
-      percentage: 92,
-      fallbackIcon: <Laptop className="w-5 h-5 text-orange-500" />,
-      summary:
-        "Konfigurasi profil XMP/DOCP memori, proteksi Secure Boot, partisi GPT/UEFI, dan deployment dual-boot Windows & Linux Ubuntu.",
-      useCase: "Deployment Workstation Dual-Boot Windows 11 & Linux",
-      tags: ["XMP Profiling", "Secure Boot", "NVMe PCIe Gen4", "Dual-Boot Linux"],
-    },
-    {
-      id: "diagnostics",
-      name: "Hardware Diagnostics & Repair",
-      category: "hardware",
-      categoryName: "Hardware & Systems",
-      level: "Stress Testing & Benchmarking",
-      percentage: 93,
-      fallbackIcon: <Zap className="w-5 h-5 text-rose-500" />,
-      summary:
-        "Diagnostik kegagalan komponen (RAM faulty, thermal throttling, kestabilan voltase PSU) menggunakan stress test terstandar.",
-      useCase: "Troubleshooting & Reparasi Perangkat Keras Laboratorium",
-      tags: ["Prime95", "FurMark", "MemTest86", "Thermal Analysis"],
+        "Perakitan rig workstation berperforma tinggi, optimasi pendinginan & kabel, konfigurasi firmware UEFI/BIOS (XMP, Secure Boot), dan stress test diagnostik.",
+      useCase: "Perakitan Rig Workstation Lab & Troubleshooting Perangkat Keras",
+      ecosystemTags: ["PC Assembly", "UEFI/BIOS", "Dual-Boot Linux/Win", "Stress Testing"],
     },
   ];
 
-  const filterCategories = [
-    { id: "all", label: "Semua Instrumen", count: techStack.length },
+  const filterTabs = [
+    { id: "all", label: "Semua Stack", count: consolidatedArsenal.length },
+    {
+      id: "fullstack",
+      label: "Full-Stack Web",
+      count: consolidatedArsenal.filter((t) => t.domain === "fullstack").length,
+    },
+    {
+      id: "mobile",
+      label: "Mobile App",
+      count: consolidatedArsenal.filter((t) => t.domain === "mobile").length,
+    },
     {
       id: "network",
-      label: "Infrastruktur & Jaringan",
-      count: techStack.filter((t) => t.category === "network").length,
+      label: "Jaringan & GNS3",
+      count: consolidatedArsenal.filter((t) => t.domain === "network").length,
     },
     {
-      id: "web",
-      label: "Web & Software",
-      count: techStack.filter((t) => t.category === "web").length,
-    },
-    {
-      id: "uiux",
-      label: "UI/UX & Desain",
-      count: techStack.filter((t) => t.category === "uiux").length,
-    },
-    {
-      id: "hardware",
-      label: "Hardware & Sistem",
-      count: techStack.filter((t) => t.category === "hardware").length,
+      id: "core",
+      label: "Core OOP & Hardware",
+      count: consolidatedArsenal.filter((t) => t.domain === "core").length,
     },
   ];
 
   const displayedItems =
-    activeCategory === "all"
-      ? techStack
-      : techStack.filter((item) => item.category === activeCategory);
+    activeTab === "all"
+      ? consolidatedArsenal
+      : consolidatedArsenal.filter((item) => item.domain === activeTab);
 
   return (
     <section
@@ -279,13 +231,13 @@ export const QuickHighlights: React.FC = () => {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Section Header: Clean, Authoritative & Recruiter-Friendly */}
+        {/* Section Header: Clean, Authoritative & Recruiter-Focused */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
           <div>
             <div className="flex items-center gap-2 mb-2.5">
               <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
               <span className="font-mono text-xs font-bold text-orange-500 tracking-wider uppercase">
-                // TECHNICAL ARSENAL & PROFICIENCY MATRIX
+                // TECHNICAL ARSENAL & CONSOLIDATED STACK
               </span>
             </div>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white uppercase font-sans">
@@ -297,70 +249,70 @@ export const QuickHighlights: React.FC = () => {
           </div>
 
           <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-lg leading-relaxed font-sans">
-            Katalog teknologi, arsitektur jaringan, dan instrumen rekayasa digital yang saya kuasai dan implementasikan langsung pada proyek dunia nyata.
+            Ekosistem teknologi terintegrasi yang saya kuasai dan terapkan dalam pengembangan Full-Stack, Mobile App, Jaringan Enterprise, dan Rekayasa Sistem.
           </p>
         </div>
 
-        {/* Executive Summary Metrics Strip (Recruiter Quick Stats) */}
+        {/* Executive Quick Stats Strip */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-10">
           <div className="p-4 rounded-2xl bg-white/80 dark:bg-dark-card/60 border border-slate-200/90 dark:border-white/10 backdrop-blur-sm shadow-sm">
             <div className="font-mono text-2xl sm:text-3xl font-black text-orange-500">
-              4+
+              Full-Stack
             </div>
             <div className="text-xs font-bold text-slate-800 dark:text-slate-200 mt-1">
-              Bidang Rekayasa
+              Web & Mobile
             </div>
             <div className="text-[11px] text-slate-500 dark:text-slate-400 font-mono mt-0.5">
-              Network, Web, UI/UX, HW
+              Laravel, React, Flutter
             </div>
           </div>
 
           <div className="p-4 rounded-2xl bg-white/80 dark:bg-dark-card/60 border border-slate-200/90 dark:border-white/10 backdrop-blur-sm shadow-sm">
             <div className="font-mono text-2xl sm:text-3xl font-black text-amber-500">
-              {techStack.length}+
+              Cisco & GNS3
             </div>
             <div className="text-xs font-bold text-slate-800 dark:text-slate-200 mt-1">
-              Tools & Teknologi
+              Network Engineering
             </div>
             <div className="text-[11px] text-slate-500 dark:text-slate-400 font-mono mt-0.5">
-              Standar Industri Aktif
+              OSPF, VLAN, MikroTik QoS
             </div>
           </div>
 
           <div className="p-4 rounded-2xl bg-white/80 dark:bg-dark-card/60 border border-slate-200/90 dark:border-white/10 backdrop-blur-sm shadow-sm">
             <div className="font-mono text-2xl sm:text-3xl font-black text-emerald-500">
-              100%
+              SQL & Cloud
             </div>
             <div className="text-xs font-bold text-slate-800 dark:text-slate-200 mt-1">
-              Hands-On Projects
+              Database Architecture
             </div>
             <div className="text-[11px] text-slate-500 dark:text-slate-400 font-mono mt-0.5">
-              Implementasi Riil Teruji
+              MySQL, Postgres, Supabase
             </div>
           </div>
 
           <div className="p-4 rounded-2xl bg-white/80 dark:bg-dark-card/60 border border-slate-200/90 dark:border-white/10 backdrop-blur-sm shadow-sm">
             <div className="font-mono text-2xl sm:text-3xl font-black text-rose-500">
-              BNSP
+              Java & C++
             </div>
             <div className="text-xs font-bold text-slate-800 dark:text-slate-200 mt-1">
-              Tersertifikasi Resmi
+              Core Fundamentals
             </div>
             <div className="text-[11px] text-slate-500 dark:text-slate-400 font-mono mt-0.5">
-              Interconnection & Cloud
+              OOP & Algoritma Sistem
             </div>
           </div>
         </div>
 
-        {/* Clean, Elegant Category Filter Tabs */}
+        {/* Clean, Non-Distracting Category Filter Tabs */}
         <div className="flex flex-wrap items-center gap-2 mb-8 pb-3 border-b border-slate-200/90 dark:border-white/10">
-          {filterCategories.map((cat) => {
-            const isActive = activeCategory === cat.id;
+          {filterTabs.map((tab) => {
+            const isActive = activeTab === tab.id;
             return (
               <button
-                key={cat.id}
-                onClick={() => setActiveCategory(cat.id as any)}
-                className={`px-3.5 py-2 rounded-xl text-xs font-mono font-bold transition-all relative flex items-center gap-2 ${
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as any)}
+                className={`px-4 py-2 rounded-xl text-xs font-mono font-bold transition-all relative flex items-center gap-2 ${
                   isActive
                     ? "text-white shadow-md shadow-orange-500/20"
                     : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white bg-white/70 dark:bg-dark-card/60 border border-slate-200/80 dark:border-white/5"
@@ -368,12 +320,12 @@ export const QuickHighlights: React.FC = () => {
               >
                 {isActive && (
                   <motion.div
-                    layoutId="activeArsenalTab"
+                    layoutId="activeArsenalTabGroup"
                     className="absolute inset-0 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-600 rounded-xl -z-10"
                     transition={{ type: "spring", stiffness: 350, damping: 30 }}
                   />
                 )}
-                <span>{cat.label}</span>
+                <span>{tab.label}</span>
                 <span
                   className={`text-[10px] px-1.5 py-0.2 rounded-md ${
                     isActive
@@ -381,101 +333,121 @@ export const QuickHighlights: React.FC = () => {
                       : "bg-slate-200/70 dark:bg-white/10 text-slate-500 dark:text-slate-400"
                   }`}
                 >
-                  {cat.count}
+                  {tab.count}
                 </span>
               </button>
             );
           })}
         </div>
 
-        {/* Clean, Modern Bento Grid: High Readability & No Distraction */}
+        {/* Consolidated Power-Stack Bento Grid */}
         <motion.div
           layout
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
         >
           <AnimatePresence>
-            {displayedItems.map((tech) => (
+            {displayedItems.map((item) => (
               <motion.div
                 layout
-                key={tech.id}
+                key={item.id}
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.25 }}
-                className="group relative p-5 sm:p-6 rounded-2xl bg-white dark:bg-dark-card/75 border border-slate-200/90 dark:border-white/10 hover:border-orange-500/40 hover:shadow-xl hover:shadow-orange-500/5 transition-all duration-300 flex flex-col justify-between"
+                className="group relative p-6 rounded-2xl bg-white dark:bg-dark-card/80 border border-slate-200/90 dark:border-white/10 hover:border-orange-500/40 hover:shadow-xl hover:shadow-orange-500/5 transition-all duration-300 flex flex-col justify-between"
               >
                 <div>
-                  {/* Card Header: Official Icon & Category Badge */}
+                  {/* Card Header: Main Ecosystem Logo + Secondary Badges */}
                   <div className="flex items-center justify-between gap-3 mb-4">
-                    <div className="w-11 h-11 rounded-xl bg-slate-100 dark:bg-dark-surface/90 border border-slate-200/80 dark:border-white/10 flex items-center justify-center p-2 group-hover:border-orange-500/40 transition-colors shrink-0">
-                      {tech.logoUrl ? (
-                        <img
-                          src={tech.logoUrl}
-                          alt={`${tech.name} logo`}
-                          className="w-full h-full object-contain filter group-hover:scale-110 transition-transform duration-300"
-                          loading="lazy"
-                          onError={(e) => {
-                            // Gracefully fallback to SVG icon if image fails
-                            e.currentTarget.style.display = "none";
-                          }}
-                        />
-                      ) : (
-                        tech.fallbackIcon
+                    <div className="flex items-center gap-2">
+                      {/* Main Logo Container */}
+                      <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-dark-surface/90 border border-slate-200/80 dark:border-white/10 flex items-center justify-center p-2 group-hover:border-orange-500/40 transition-colors shrink-0">
+                        {item.mainLogo ? (
+                          <img
+                            src={item.mainLogo}
+                            alt={`${item.name} logo`}
+                            className="w-full h-full object-contain filter group-hover:scale-110 transition-transform duration-300"
+                            loading="lazy"
+                            onError={(e) => {
+                              e.currentTarget.style.display = "none";
+                            }}
+                          />
+                        ) : (
+                          item.fallbackIcon
+                        )}
+                      </div>
+
+                      {/* Secondary Ecosystem Partner Badges */}
+                      {item.secondaryLogos && item.secondaryLogos.length > 0 && (
+                        <div className="flex items-center -space-x-1.5">
+                          {item.secondaryLogos.map((sLogo, idx) => (
+                            <div
+                              key={idx}
+                              className="w-7 h-7 rounded-lg bg-slate-100 dark:bg-dark-surface border border-slate-200 dark:border-white/10 p-1 flex items-center justify-center shrink-0 shadow-sm"
+                            >
+                              <img
+                                src={sLogo}
+                                alt="ecosystem tech"
+                                className="w-full h-full object-contain"
+                                loading="lazy"
+                                onError={(e) => {
+                                  e.currentTarget.style.display = "none";
+                                }}
+                              />
+                            </div>
+                          ))}
+                        </div>
                       )}
                     </div>
 
+                    {/* Domain & Proficiency Badge */}
                     <div className="flex items-center gap-1.5">
-                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-500 dark:text-slate-400">
-                        {tech.categoryName.split("&")[0].trim()}
-                      </span>
                       <span className="font-mono text-xs font-black text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded-md border border-orange-500/20">
-                        {tech.percentage}%
+                        {item.proficiency}%
                       </span>
                     </div>
                   </div>
 
-                  {/* Title & Technical Role */}
-                  <div className="mb-2.5">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white group-hover:text-orange-500 transition-colors flex items-center gap-1.5">
-                        <span>{tech.name}</span>
-                        {tech.externalDocUrl && (
-                          <a
-                            href={tech.externalDocUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-slate-400 hover:text-orange-500 transition-colors opacity-0 group-hover:opacity-100"
-                            title={`Dokumentasi resmi ${tech.name}`}
-                          >
-                            <ExternalLink className="w-3.5 h-3.5" />
-                          </a>
-                        )}
-                      </h3>
-                    </div>
+                  {/* Title & Domain Role */}
+                  <div className="mb-3">
+                    <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white group-hover:text-orange-500 transition-colors flex items-center gap-1.5">
+                      <span>{item.name}</span>
+                      {item.docUrl && (
+                        <a
+                          href={item.docUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-slate-400 hover:text-orange-500 transition-colors opacity-0 group-hover:opacity-100"
+                          title={`Kunjungi dokumentasi ${item.name}`}
+                        >
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </a>
+                      )}
+                    </h3>
                     <p className="font-mono text-xs text-orange-500 font-semibold mt-0.5">
-                      {tech.level}
+                      {item.level}
                     </p>
                   </div>
 
-                  {/* Concise, Clear Technical Summary */}
+                  {/* Clear, Professional Technical Summary */}
                   <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-sans mb-4">
-                    {tech.summary}
+                    {item.summary}
                   </p>
                 </div>
 
-                {/* Card Footer: Real-world Implementation & Tags */}
+                {/* Card Footer: Real-world Implementation & Tech Pills */}
                 <div className="pt-3.5 border-t border-slate-100 dark:border-white/5 space-y-3">
-                  {/* Verified Project Implementations */}
+                  {/* Verified Project Implementation */}
                   <div className="flex items-start gap-1.5 text-xs">
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 mt-0.5 shrink-0" />
                     <span className="text-[11px] font-mono text-slate-700 dark:text-slate-300">
-                      <strong className="text-slate-900 dark:text-white font-bold">Teruji di:</strong> {tech.useCase}
+                      <strong className="text-slate-900 dark:text-white font-bold">Teruji di:</strong> {item.useCase}
                     </span>
                   </div>
 
                   {/* Clean Technical Tag Badges */}
                   <div className="flex flex-wrap gap-1.5">
-                    {tech.tags.map((tag) => (
+                    {item.ecosystemTags.map((tag) => (
                       <span
                         key={tag}
                         className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-slate-100 dark:bg-dark-surface/80 text-slate-600 dark:text-slate-400 border border-slate-200/60 dark:border-white/5"
@@ -494,7 +466,7 @@ export const QuickHighlights: React.FC = () => {
         <div className="mt-12 text-center">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/70 dark:bg-dark-card/60 border border-slate-200/80 dark:border-white/10 text-xs font-mono text-slate-500 dark:text-slate-400 shadow-sm">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-            <span>Seluruh keahlian di atas didukung oleh dokumentasi proyek nyata & sertifikasi terverifikasi.</span>
+            <span>Seluruh stack teknologi didukung oleh repositori kode, simulasi aktif, dan sertifikasi BNSP resmi.</span>
           </div>
         </div>
 
