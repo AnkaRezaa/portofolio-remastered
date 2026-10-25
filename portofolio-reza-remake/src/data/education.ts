@@ -31,7 +31,7 @@ export const educationData: EducationItem[] = [
     id: "edu-4",
     period: "2023 — 2025",
     institution: "Akademi Komunitas Negeri Putra Sang Fajar",
-    degree: "D2 Komputer dan Jaringan",
+    degree: "D2 Administrasi Server dan Jaringan Komputer ",
     description:
       "Pengembangan keahlian profesional terapan dalam manajemen jaringan komputer, administrasi server Linux/Windows, routing MikroTik, serta implementasi proyek IT di lapangan.",
     badge: "Lulus",
