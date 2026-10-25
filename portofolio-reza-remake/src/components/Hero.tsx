@@ -204,36 +204,89 @@ export const Hero: React.FC<HeroProps> = ({ onOpenResume }) => {
 
           </div>
 
-          {/* Right Column: Clean Minimalist Portrait */}
-          <div className="lg:col-span-5 flex justify-center items-center relative">
-            <div className="relative w-72 h-80 sm:w-80 sm:h-96 md:w-96 md:h-[28rem]">
+          {/* Right Column: Epic Character with Cybernetic Arcane Portal Animation */}
+          <div className="lg:col-span-5 flex justify-center items-center relative select-none">
+            <div className="relative flex items-center justify-center w-full max-w-[340px] sm:max-w-[440px] lg:max-w-[500px] min-h-[440px] sm:min-h-[520px] lg:min-h-[580px]">
               
-              {/* Back Glow Blur matching image2.jpg golden orange */}
-              <div className="absolute inset-4 rounded-3xl bg-gradient-to-tr from-amber-500 via-orange-500 to-rose-600 opacity-20 dark:opacity-30 blur-2xl transform rotate-3" />
+              {/* 1. Deep Atmospheric Ambient Nebular Glow */}
+              <div className="absolute w-72 h-72 sm:w-96 sm:h-96 lg:w-[420px] lg:h-[420px] rounded-full bg-gradient-to-tr from-cyan-500/25 via-orange-500/30 to-rose-500/20 blur-3xl animate-pulse-portal pointer-events-none -z-10" />
 
-              {/* Clean Portrait Card */}
+              {/* 2. Outer Rotating Cybernetic Ring with Cardinal Markers */}
+              <div className="absolute w-[300px] h-[300px] sm:w-[400px] sm:h-[400px] lg:w-[460px] lg:h-[460px] rounded-full border border-dashed border-orange-500/35 dark:border-cyan-400/30 animate-spin-portal pointer-events-none -z-10 flex items-center justify-center">
+                {/* 4 Cardinal Energy Nodes */}
+                <span className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-orange-500 shadow-md shadow-orange-500/80" />
+                <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-cyan-400 shadow-md shadow-cyan-400/80" />
+                <span className="absolute -left-1.5 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-amber-400 shadow-md shadow-amber-400/80" />
+                <span className="absolute -right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-rose-500 shadow-md shadow-rose-500/80" />
+              </div>
+
+              {/* 3. Middle Counter-Rotating Tech Ring with Degree Markings */}
+              <div className="absolute w-[240px] h-[240px] sm:w-[320px] sm:h-[320px] lg:w-[380px] lg:h-[380px] rounded-full border border-cyan-400/30 dark:border-orange-500/25 animate-spin-portal-reverse pointer-events-none -z-10 flex items-center justify-center">
+                <span className="absolute top-2 right-4 font-mono text-[9px] text-cyan-400/70 tracking-widest font-bold">
+                  // SYS.01
+                </span>
+                <span className="absolute bottom-2 left-4 font-mono text-[9px] text-orange-400/70 tracking-widest font-bold">
+                  // ENG.02
+                </span>
+              </div>
+
+              {/* 4. Inner Radiant Core Ring */}
+              <div className="absolute w-[180px] h-[180px] sm:w-[240px] sm:h-[240px] lg:w-[280px] lg:h-[280px] rounded-full border border-white/20 dark:border-white/10 bg-gradient-to-b from-orange-500/10 via-transparent to-cyan-500/10 backdrop-blur-[2px] pointer-events-none -z-10" />
+
+              {/* 5. Holographic Pedestal Disc Glow under Character */}
+              <div className="absolute bottom-0 w-64 sm:w-80 h-14 rounded-[100%] bg-gradient-to-r from-orange-500/40 via-cyan-400/50 to-blue-600/40 blur-xl pointer-events-none transform -rotate-1 -z-10" />
+
+              {/* 6. Floating Cybernetic Telemetry Badges */}
               <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6 }}
-                className="relative w-full h-full rounded-3xl overflow-hidden border border-slate-200 dark:border-white/10 shadow-2xl glass-card group"
+                animate={{ y: [-6, 6, -6] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute top-4 -left-2 sm:-left-6 px-3 py-1.5 rounded-xl bg-white/85 dark:bg-slate-900/85 backdrop-blur-md border border-slate-200/90 dark:border-white/10 shadow-xl flex items-center gap-2 font-mono text-[11px] z-20"
+              >
+                <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+                <span className="text-slate-800 dark:text-slate-200 font-bold">
+                  D4 TI POLINEMA
+                </span>
+              </motion.div>
+
+              <motion.div
+                animate={{ y: [6, -6, 6] }}
+                transition={{ duration: 4.8, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute bottom-10 -right-2 sm:-right-6 px-3 py-1.5 rounded-xl bg-white/85 dark:bg-slate-900/85 backdrop-blur-md border border-slate-200/90 dark:border-white/10 shadow-xl flex items-center gap-2 font-mono text-[11px] z-20"
+              >
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                <span className="text-slate-800 dark:text-slate-200 font-bold">
+                  FULL-STACK & NETWORKS
+                </span>
+              </motion.div>
+
+              <motion.div
+                animate={{ y: [-4, 4, -4] }}
+                transition={{ duration: 5.2, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute -bottom-2 left-6 sm:left-4 px-2.5 py-1 rounded-lg bg-orange-500/10 dark:bg-orange-500/20 border border-orange-500/30 backdrop-blur-sm font-mono text-[10px] text-orange-600 dark:text-orange-400 font-semibold z-20"
+              >
+                ONLINE // MALANG, ID
+              </motion.div>
+
+              {/* 7. Character Persona: Smooth Floating Levitation with Drop Shadow */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{
+                  opacity: 1,
+                  scale: 1,
+                  y: [-8, 8, -8],
+                }}
+                transition={{
+                  opacity: { duration: 0.6 },
+                  scale: { duration: 0.6 },
+                  y: { duration: 5, repeat: Infinity, ease: "easeInOut" },
+                }}
+                className="relative z-10 flex items-end justify-center group cursor-pointer"
               >
                 <img
-                  src={profileData.avatar}
-                  alt={profileData.name}
-                  className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
+                  src="/assets/profile/download.png"
+                  alt="Muhammad Anka Reza - Persona"
+                  className="h-[360px] sm:h-[440px] md:h-[490px] lg:h-[540px] w-auto object-contain object-bottom drop-shadow-[0_20px_35px_rgba(0,0,0,0.5)] drop-shadow-[0_0_25px_rgba(249,115,22,0.25)] group-hover:drop-shadow-[0_0_40px_rgba(56,189,248,0.45)] group-hover:scale-[1.02] transition-all duration-500"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-dark-bg/90 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
-
-                {/* Minimalist Bottom Caption */}
-                <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between font-mono text-[10px] text-white/90">
-                  <span className="px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-md border border-white/10">
-                    D4 TI POLINEMA
-                  </span>
-                  <span className="px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-md border border-white/10">
-                    MALANG, ID
-                  </span>
-                </div>
               </motion.div>
 
             </div>
