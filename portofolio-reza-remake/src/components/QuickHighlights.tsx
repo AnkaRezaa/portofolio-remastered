@@ -20,7 +20,7 @@ export interface ConsolidatedArsenalItem {
   domainLabel: string;
   level: string;
   proficiency: number;
-  mainLogo: string;
+  mainLogo?: string;
   secondaryLogos?: string[];
   fallbackIcon: React.ReactNode;
   summary: string;
@@ -28,6 +28,45 @@ export interface ConsolidatedArsenalItem {
   ecosystemTags: string[];
   docUrl?: string;
 }
+
+const TechLogoBadge: React.FC<{
+  src?: string;
+  alt: string;
+  fallback: React.ReactNode;
+}> = ({ src, alt, fallback }) => {
+  const [hasError, setHasError] = useState(false);
+
+  if (!src || hasError) {
+    return <div className="flex items-center justify-center w-full h-full">{fallback}</div>;
+  }
+
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className="w-full h-full object-contain filter group-hover:scale-110 transition-transform duration-300"
+      loading="lazy"
+      onError={() => setHasError(true)}
+    />
+  );
+};
+
+const SecondaryLogoBadge: React.FC<{ src: string; alt: string }> = ({ src, alt }) => {
+  const [hasError, setHasError] = useState(false);
+  if (hasError) return null;
+
+  return (
+    <div className="w-7 h-7 rounded-lg bg-slate-100 dark:bg-dark-surface border border-slate-200 dark:border-white/10 p-1 flex items-center justify-center shrink-0 shadow-sm">
+      <img
+        src={src}
+        alt={alt}
+        className="w-full h-full object-contain"
+        loading="lazy"
+        onError={() => setHasError(true)}
+      />
+    </div>
+  );
+};
 
 export const QuickHighlights: React.FC = () => {
   const [activeTab, setActiveTab] = useState<
@@ -43,10 +82,10 @@ export const QuickHighlights: React.FC = () => {
       domainLabel: "Full-Stack Engineering",
       level: "MVC Architecture & RESTful APIs",
       proficiency: 93,
-      mainLogo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/laravel/laravel-original.svg",
+      mainLogo: "/assets/tech/laravel.svg",
       secondaryLogos: [
-        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg",
-        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg",
+        "/assets/tech/php.svg",
+        "/assets/tech/mysql.svg",
       ],
       fallbackIcon: <Server className="w-5 h-5 text-red-500" />,
       summary:
@@ -62,10 +101,10 @@ export const QuickHighlights: React.FC = () => {
       domainLabel: "Frontend Architecture",
       level: "Modern SPA & Component Systems",
       proficiency: 95,
-      mainLogo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg",
+      mainLogo: "/assets/tech/react.svg",
       secondaryLogos: [
-        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg",
-        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-original.svg",
+        "/assets/tech/typescript.svg",
+        "/assets/tech/tailwind.svg",
       ],
       fallbackIcon: <Code2 className="w-5 h-5 text-sky-400" />,
       summary:
@@ -81,9 +120,10 @@ export const QuickHighlights: React.FC = () => {
       domainLabel: "Database & Cloud BaaS",
       level: "Relational Schema & Cloud Sync",
       proficiency: 91,
-      mainLogo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg",
+      mainLogo: "/assets/tech/mysql.svg",
       secondaryLogos: [
-        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg",
+        "/assets/tech/supabase.svg",
+        "/assets/tech/postgresql.svg",
       ],
       fallbackIcon: <Database className="w-5 h-5 text-blue-500" />,
       summary:
@@ -101,9 +141,9 @@ export const QuickHighlights: React.FC = () => {
       domainLabel: "Cross-Platform Mobile",
       level: "Clean Architecture & State Management",
       proficiency: 90,
-      mainLogo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/flutter/flutter-original.svg",
+      mainLogo: "/assets/tech/flutter.svg",
       secondaryLogos: [
-        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/dart/dart-original.svg",
+        "/assets/tech/dart.svg",
       ],
       fallbackIcon: <Smartphone className="w-5 h-5 text-cyan-400" />,
       summary:
@@ -121,12 +161,15 @@ export const QuickHighlights: React.FC = () => {
       domainLabel: "Enterprise Network Simulation",
       level: "Topologi L2/L3 & Emulasi Real-Device",
       proficiency: 95,
-      mainLogo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cisco/cisco-original.svg",
+      mainLogo: "/assets/tech/cisco.svg",
+      secondaryLogos: [
+        "/assets/tech/gns3.svg",
+      ],
       fallbackIcon: <Network className="w-5 h-5 text-orange-500" />,
       summary:
         "Simulasi dan emulasi jaringan enterprise skala besar menggunakan Packet Tracer dan GNS3. Konfigurasi routing OSPF multi-area, inter-VLAN trunking, dan redundansi link.",
       useCase: "Desain Jaringan Multi-Gedung Kampus & Pengujian Protokol Enterprise",
-      ecosystemTags: ["GNS3", "Packet Tracer", "OSPF Multi-Area", "VLAN 802.1Q", "HSRP"],
+      ecosystemTags: ["Cisco IOS", "GNS3", "Packet Tracer", "OSPF Multi-Area", "VLAN 802.1Q"],
       docUrl: "https://www.gns3.com/",
     },
     {
@@ -136,7 +179,7 @@ export const QuickHighlights: React.FC = () => {
       domainLabel: "Network Infrastructure",
       level: "Bandwidth QoS, Hotspot & Firewall",
       proficiency: 93,
-      mainLogo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-original.svg",
+      mainLogo: "/assets/tech/mikrotik.svg",
       fallbackIcon: <Server className="w-5 h-5 text-amber-500" />,
       summary:
         "Pengaturan gateway internet, manajemen antrian bandwidth (Queue Simple/Tree), firewall filter & NAT, captive portal hotspot, serta failover dual-ISP.",
@@ -153,9 +196,9 @@ export const QuickHighlights: React.FC = () => {
       domainLabel: "Systems & OOP Fundamentals",
       level: "Object-Oriented & Algorithmic Problem Solving",
       proficiency: 89,
-      mainLogo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg",
+      mainLogo: "/assets/tech/java.svg",
       secondaryLogos: [
-        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg",
+        "/assets/tech/cpp.svg",
       ],
       fallbackIcon: <Binary className="w-5 h-5 text-orange-500" />,
       summary:
@@ -171,7 +214,7 @@ export const QuickHighlights: React.FC = () => {
       domainLabel: "Interface & Product Design",
       level: "Auto-Layout, Tokens & Prototyping",
       proficiency: 94,
-      mainLogo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg",
+      mainLogo: "/assets/tech/figma.svg",
       fallbackIcon: <Palette className="w-5 h-5 text-purple-400" />,
       summary:
         "Perancangan antarmuka digital dari wireframe ke high-fidelity mockup dengan Auto-Layout terstandar, token warna terstruktur, dan prototipe interaktif.",
@@ -186,8 +229,7 @@ export const QuickHighlights: React.FC = () => {
       domainLabel: "Hardware & Systems",
       level: "Workstation Rig & UEFI/BIOS",
       proficiency: 93,
-      mainLogo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-original.svg",
-      fallbackIcon: <Cpu className="w-5 h-5 text-amber-500" />,
+      fallbackIcon: <Cpu className="w-6 h-6 text-amber-500" />,
       summary:
         "Perakitan rig workstation berperforma tinggi, optimasi pendinginan & kabel, konfigurasi firmware UEFI/BIOS (XMP, Secure Boot), dan stress test diagnostik.",
       useCase: "Perakitan Rig Workstation Lab & Troubleshooting Perangkat Keras",
@@ -362,39 +404,22 @@ export const QuickHighlights: React.FC = () => {
                     <div className="flex items-center gap-2">
                       {/* Main Logo Container */}
                       <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-dark-surface/90 border border-slate-200/80 dark:border-white/10 flex items-center justify-center p-2 group-hover:border-orange-500/40 transition-colors shrink-0">
-                        {item.mainLogo ? (
-                          <img
-                            src={item.mainLogo}
-                            alt={`${item.name} logo`}
-                            className="w-full h-full object-contain filter group-hover:scale-110 transition-transform duration-300"
-                            loading="lazy"
-                            onError={(e) => {
-                              e.currentTarget.style.display = "none";
-                            }}
-                          />
-                        ) : (
-                          item.fallbackIcon
-                        )}
+                        <TechLogoBadge
+                          src={item.mainLogo}
+                          alt={`${item.name} logo`}
+                          fallback={item.fallbackIcon}
+                        />
                       </div>
 
                       {/* Secondary Ecosystem Partner Badges */}
                       {item.secondaryLogos && item.secondaryLogos.length > 0 && (
                         <div className="flex items-center -space-x-1.5">
                           {item.secondaryLogos.map((sLogo, idx) => (
-                            <div
+                            <SecondaryLogoBadge
                               key={idx}
-                              className="w-7 h-7 rounded-lg bg-slate-100 dark:bg-dark-surface border border-slate-200 dark:border-white/10 p-1 flex items-center justify-center shrink-0 shadow-sm"
-                            >
-                              <img
-                                src={sLogo}
-                                alt="ecosystem tech"
-                                className="w-full h-full object-contain"
-                                loading="lazy"
-                                onError={(e) => {
-                                  e.currentTarget.style.display = "none";
-                                }}
-                              />
-                            </div>
+                              src={sLogo}
+                              alt={`${item.name} ecosystem badge ${idx + 1}`}
+                            />
                           ))}
                         </div>
                       )}
