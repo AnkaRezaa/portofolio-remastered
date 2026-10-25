@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ProjectItem } from "../data/projects";
-import { CertificateItem } from "../data/certificates";
+import { CertificateItem, CertificateCategory } from "../data/certificates";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Lock,
@@ -85,7 +85,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     issueDate: "",
     credentialId: "",
     image: "",
-    category: "Network" as "Network" | "Cloud" | "UI/UX" | "DevOps" | "General",
+    category: "Professional" as CertificateCategory,
   });
 
   // Security Form State (Change Password)
@@ -967,14 +967,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     </label>
                     <select
                       value={certForm.category}
-                      onChange={(e) => setCertForm({ ...certForm, category: e.target.value as any })}
+                      onChange={(e) => setCertForm({ ...certForm, category: e.target.value as CertificateCategory })}
                       className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-white/10 text-white text-sm focus:outline-none focus:border-orange-500"
                     >
-                      <option value="Network">Network</option>
-                      <option value="Cloud">Cloud</option>
-                      <option value="UI/UX">UI/UX</option>
-                      <option value="DevOps">DevOps</option>
-                      <option value="General">General</option>
+                      <option value="Professional">Sertifikasi Profesional / Lisensi</option>
+                      <option value="Competition">Lomba & Hackathon</option>
+                      <option value="Training">Pelatihan & Workshop / Bootcamp</option>
+                      <option value="Course">Kursus & Spesialisasi Online</option>
+                      <option value="Network">Jaringan Komputer (Network)</option>
+                      <option value="Cloud">Cloud Infrastructure</option>
+                      <option value="UI/UX">UI/UX Design</option>
+                      <option value="DevOps">DevOps Engineering</option>
+                      <option value="General">Umum / Lainnya</option>
                     </select>
                   </div>
 
