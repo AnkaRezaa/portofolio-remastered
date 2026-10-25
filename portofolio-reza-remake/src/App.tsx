@@ -14,7 +14,19 @@ import { ResumeModal } from "./components/ResumeModal";
 import { TerminalStreamBg } from "./components/TerminalStreamBg";
 import { projectsData, ProjectItem } from "./data/projects";
 import { certificatesData, CertificateItem } from "./data/certificates";
-import { fetchProjects, fetchCertificates } from "./lib/supabase";
+import {
+  fetchProjects,
+  fetchCertificates,
+  getLocalProjects,
+  getLocalCertificates,
+  alignWithSavedOrderAndPins,
+  STORAGE_PROJECTS,
+  STORAGE_PINNED_PROJECTS,
+  STORAGE_PROJECT_ORDER,
+  STORAGE_CERTS,
+  STORAGE_PINNED_CERTS,
+  STORAGE_CERT_ORDER,
+} from "./lib/supabase";
 
 export function App() {
   const [isAdminOpen, setIsAdminOpen] = useState(() => {
@@ -56,7 +68,7 @@ export function App() {
     return () => window.removeEventListener("keydown", handleSecretShortcut);
   }, []);
 
-  // Fetch live projects and certificates from Supabase Cloud
+  // Fetch live projects and certificates from Supabase Cloud (never wipes local pins/order)
   useEffect(() => {
     let isMounted = true;
     fetchProjects().then((items) => {
@@ -74,59 +86,45 @@ export function App() {
     };
   }, []);
 
-  // Dynamic projects with localStorage persistence (Full CRUD: Create, Read, Update, Delete)
+  // Dynamic projects with localStorage & pin persistence (Full CRUD)
   const [projects, setProjects] = useState<ProjectItem[]>(() => {
-    const saved = localStorage.getItem("anka-portfolio-projects");
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        return projectsData;
-      }
-    }
-    const legacy = localStorage.getItem("custom-projects");
-    if (legacy) {
-      try {
-        return [...JSON.parse(legacy), ...projectsData];
-      } catch (e) {}
-    }
-    return projectsData;
+    return getLocalProjects();
   });
 
-  // Dynamic certificates with localStorage persistence (Full CRUD)
+  // Dynamic certificates with localStorage & pin persistence (Full CRUD)
   const [certificates, setCertificates] = useState<CertificateItem[]>(() => {
-    const saved = localStorage.getItem("anka-portfolio-certificates");
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        return certificatesData;
-      }
-    }
-    const legacy = localStorage.getItem("custom-certificates");
-    if (legacy) {
-      try {
-        return [...JSON.parse(legacy), ...certificatesData];
-      } catch (e) {}
-    }
-    return certificatesData;
+    return getLocalCertificates();
   });
 
   const handleSaveProjects = (updated: ProjectItem[]) => {
-    setProjects(updated);
-    localStorage.setItem("anka-portfolio-projects", JSON.stringify(updated));
+    const aligned = alignWithSavedOrderAndPins(
+      updated,
+      STORAGE_PINNED_PROJECTS,
+      STORAGE_PROJECT_ORDER,
+      STORAGE_PROJECTS
+    );
+    setProjects(aligned);
   };
 
   const handleSaveCertificates = (updated: CertificateItem[]) => {
-    setCertificates(updated);
-    localStorage.setItem("anka-portfolio-certificates", JSON.stringify(updated));
+    const aligned = alignWithSavedOrderAndPins(
+      updated,
+      STORAGE_PINNED_CERTS,
+      STORAGE_CERT_ORDER,
+      STORAGE_CERTS
+    );
+    setCertificates(aligned);
   };
 
   const handleResetDefault = () => {
     setProjects(projectsData);
     setCertificates(certificatesData);
-    localStorage.removeItem("anka-portfolio-projects");
-    localStorage.removeItem("anka-portfolio-certificates");
+    localStorage.removeItem(STORAGE_PROJECTS);
+    localStorage.removeItem(STORAGE_PINNED_PROJECTS);
+    localStorage.removeItem(STORAGE_PROJECT_ORDER);
+    localStorage.removeItem(STORAGE_CERTS);
+    localStorage.removeItem(STORAGE_PINNED_CERTS);
+    localStorage.removeItem(STORAGE_CERT_ORDER);
     localStorage.removeItem("custom-projects");
     localStorage.removeItem("custom-certificates");
   };

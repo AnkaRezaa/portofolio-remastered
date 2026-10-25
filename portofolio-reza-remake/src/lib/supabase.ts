@@ -18,6 +18,102 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
    PROJECTS (CRUD)
    ========================================================================== */
 
+// Storage keys for persistent pins & custom ordering
+export const STORAGE_PROJECTS = "anka-portfolio-projects";
+export const STORAGE_PINNED_PROJECTS = "anka-pinned-projects";
+export const STORAGE_PROJECT_ORDER = "anka-project-order";
+
+export const STORAGE_CERTS = "anka-portfolio-certificates";
+export const STORAGE_PINNED_CERTS = "anka-pinned-certificates";
+export const STORAGE_CERT_ORDER = "anka-certificate-order";
+
+/**
+ * Ensures items maintain pinned priority (pinned cards always on top)
+ * and preserve user-defined custom ordering across refreshes and cloud syncs.
+ */
+export function alignWithSavedOrderAndPins<T extends { id: string; pinned?: boolean }>(
+  items: T[],
+  pinnedStorageKey: string,
+  orderStorageKey: string,
+  localItemsStorageKey: string
+): T[] {
+  if (typeof window === "undefined") return items;
+
+  const pinnedSet = new Set<string>();
+  const orderList: string[] = [];
+
+  // 1. Read explicitly stored pinned IDs
+  try {
+    const savedPins = localStorage.getItem(pinnedStorageKey);
+    if (savedPins) {
+      const parsedPins: string[] = JSON.parse(savedPins);
+      parsedPins.forEach((id) => pinnedSet.add(id));
+    }
+  } catch (e) {}
+
+  // 2. Read explicitly stored ordering IDs
+  try {
+    const savedOrder = localStorage.getItem(orderStorageKey);
+    if (savedOrder) {
+      const parsedOrder: string[] = JSON.parse(savedOrder);
+      parsedOrder.forEach((id) => orderList.push(id));
+    }
+  } catch (e) {}
+
+  // 3. Fallback: inspect any pinned items already saved in local full list
+  try {
+    const savedLocal = localStorage.getItem(localItemsStorageKey);
+    if (savedLocal) {
+      const parsedLocal: T[] = JSON.parse(savedLocal);
+      parsedLocal.forEach((item) => {
+        if (item.pinned) pinnedSet.add(item.id);
+        if (!orderList.includes(item.id)) orderList.push(item.id);
+      });
+    }
+  } catch (e) {}
+
+  // 4. Also inspect current items passed in (e.g. from cloud or default data)
+  items.forEach((item) => {
+    if (item.pinned) pinnedSet.add(item.id);
+    if (!orderList.includes(item.id)) orderList.push(item.id);
+  });
+
+  // 5. Annotate every item with its correct pinned status
+  const itemsWithPinned = items.map((item) => {
+    const isPinned = pinnedSet.has(item.id) || Boolean(item.pinned);
+    return {
+      ...item,
+      pinned: isPinned,
+    };
+  });
+
+  // 6. Build index map for orderList
+  const orderMap = new Map<string, number>();
+  orderList.forEach((id, idx) => orderMap.set(id, idx));
+
+  // 7. Sort: Pinned items ALWAYS at the very top (index 0, 1, ...), preserving relative order
+  const sorted = [...itemsWithPinned].sort((a, b) => {
+    const aPinned = Boolean(a.pinned);
+    const bPinned = Boolean(b.pinned);
+    if (aPinned && !bPinned) return -1;
+    if (!aPinned && bPinned) return 1;
+
+    const aIdx = orderMap.has(a.id) ? orderMap.get(a.id)! : 9999;
+    const bIdx = orderMap.has(b.id) ? orderMap.get(b.id)! : 9999;
+    return aIdx - bIdx;
+  });
+
+  // 8. Re-persist the synchronized state so next refresh has immediate access
+  try {
+    const activePins = sorted.filter((s) => s.pinned).map((s) => s.id);
+    localStorage.setItem(pinnedStorageKey, JSON.stringify(activePins));
+    localStorage.setItem(orderStorageKey, JSON.stringify(sorted.map((s) => s.id)));
+    localStorage.setItem(localItemsStorageKey, JSON.stringify(sorted));
+  } catch (e) {}
+
+  return sorted;
+}
+
 interface DbProjectRow {
   id: string;
   title: string;
@@ -31,6 +127,7 @@ interface DbProjectRow {
 }
 
 function mapRowToProject(row: DbProjectRow): ProjectItem {
+  const isFeatured = Boolean(row.featured);
   return {
     id: row.id,
     title: row.title,
@@ -40,7 +137,8 @@ function mapRowToProject(row: DbProjectRow): ProjectItem {
     tags: Array.isArray(row.tags) ? row.tags : [],
     demoUrl: row.demo_url || undefined,
     githubUrl: row.github_url || undefined,
-    featured: Boolean(row.featured),
+    featured: isFeatured,
+    pinned: isFeatured, // In Supabase, the boolean 'featured' column mirrors pinned state
   };
 }
 
@@ -54,7 +152,7 @@ function mapProjectToRow(item: ProjectItem): DbProjectRow {
     tags: item.tags || [],
     demo_url: item.demoUrl || null,
     github_url: item.githubUrl || null,
-    featured: Boolean(item.featured),
+    featured: Boolean(item.pinned !== undefined ? item.pinned : item.featured),
   };
 }
 
@@ -80,8 +178,14 @@ export async function fetchProjects(): Promise<ProjectItem[]> {
     if (data && data.length > 0) {
       const mapped = data.map(mapRowToProject);
       const merged = mergeWithDefaults(mapped, projectsData);
-      localStorage.setItem("anka-portfolio-projects", JSON.stringify(merged));
-      return merged;
+      // Guarantee that remote fetch never overrides local pins and custom positions
+      const aligned = alignWithSavedOrderAndPins(
+        merged,
+        STORAGE_PINNED_PROJECTS,
+        STORAGE_PROJECT_ORDER,
+        STORAGE_PROJECTS
+      );
+      return aligned;
     }
 
     return getLocalProjects();
@@ -120,14 +224,20 @@ export async function deleteProject(id: string): Promise<boolean> {
   }
 }
 
-function getLocalProjects(): ProjectItem[] {
-  const saved = localStorage.getItem("anka-portfolio-projects");
+export function getLocalProjects(): ProjectItem[] {
+  let list = projectsData;
+  const saved = typeof window !== "undefined" ? localStorage.getItem(STORAGE_PROJECTS) : null;
   if (saved) {
     try {
-      return JSON.parse(saved);
+      list = JSON.parse(saved);
     } catch (e) {}
   }
-  return projectsData;
+  return alignWithSavedOrderAndPins(
+    list,
+    STORAGE_PINNED_PROJECTS,
+    STORAGE_PROJECT_ORDER,
+    STORAGE_PROJECTS
+  );
 }
 
 /* ==========================================================================
@@ -183,8 +293,14 @@ export async function fetchCertificates(): Promise<CertificateItem[]> {
     if (data && data.length > 0) {
       const mapped = data.map(mapRowToCert);
       const merged = mergeWithDefaults(mapped, certificatesData);
-      localStorage.setItem("anka-portfolio-certificates", JSON.stringify(merged));
-      return merged;
+      // Guarantee that remote fetch never overrides local pins and custom positions
+      const aligned = alignWithSavedOrderAndPins(
+        merged,
+        STORAGE_PINNED_CERTS,
+        STORAGE_CERT_ORDER,
+        STORAGE_CERTS
+      );
+      return aligned;
     }
 
     return getLocalCertificates();
@@ -223,14 +339,20 @@ export async function deleteCertificate(id: string): Promise<boolean> {
   }
 }
 
-function getLocalCertificates(): CertificateItem[] {
-  const saved = localStorage.getItem("anka-portfolio-certificates");
+export function getLocalCertificates(): CertificateItem[] {
+  let list = certificatesData;
+  const saved = typeof window !== "undefined" ? localStorage.getItem(STORAGE_CERTS) : null;
   if (saved) {
     try {
-      return JSON.parse(saved);
+      list = JSON.parse(saved);
     } catch (e) {}
   }
-  return certificatesData;
+  return alignWithSavedOrderAndPins(
+    list,
+    STORAGE_PINNED_CERTS,
+    STORAGE_CERT_ORDER,
+    STORAGE_CERTS
+  );
 }
 
 /* ==========================================================================
