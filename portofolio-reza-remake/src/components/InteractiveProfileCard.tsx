@@ -12,7 +12,7 @@ import {
   Layers,
 } from "lucide-react";
 
-type PhotoMode = "normal" | "blueprint" | "cyber";
+type PhotoMode = "normal" | "blueprint" | "hud";
 
 interface HotspotPin {
   id: string;
@@ -28,40 +28,40 @@ interface HotspotPin {
 
 const HOTSPOT_PINS: HotspotPin[] = [
   {
-    id: "pin-neural",
-    label: "01. ARCHITECTURE",
+    id: "pin-academic",
+    label: "01. AKADEMIK",
     code: "POLINEMA // D4-TI",
     top: "22%",
     left: "50%",
-    category: "Neural Core",
-    title: "System Architecture & Logic",
+    category: "Pendidikan & Studi",
+    title: "Mahasiswa D4 Teknologi Informasi",
     description:
-      "Lulusan D4 Teknik Informatika Polinema (IPK 3.84). Fondasi pemecahan masalah komputasi, algoritma terstruktur, dan arsitektur sistem modular.",
-    tags: ["Algorithms", "OOP", "Polinema", "IPK 3.84"],
+      "Sedang menempuh studi sarjana terapan (D4) di Politeknik Negeri Malang. Mempelajari fondasi komputasi, algoritma pemrograman, dan rekayasa perangkat lunak.",
+    tags: ["Polinema", "Mahasiswa Aktif", "D4 TI", "Algoritma"],
   },
   {
     id: "pin-stack",
     label: "02. FULL-STACK",
-    code: "ENGINE // MODERN-WEB",
+    code: "WEB & MOBILE",
     top: "52%",
     left: "44%",
-    category: "Full-Stack Core",
-    title: "Application Engineering",
+    category: "Pengembangan Aplikasi",
+    title: "Web & Mobile Development",
     description:
-      "Pengembangan aplikasi web & mobile modern yang responsif dengan arsitektur REST, performa tinggi, dan integrasi database relasional.",
+      "Membangun aplikasi web dan mobile fungsional menggunakan ekosistem Laravel, React, Tailwind CSS, Supabase, dan Flutter.",
     tags: ["React", "Laravel", "Tailwind", "Supabase", "Flutter"],
   },
   {
     id: "pin-infra",
-    label: "03. NETWORKING",
-    code: "INFRA // CISCO-MIKROTIK",
+    label: "03. JARINGAN",
+    code: "NETWORKING // LAB",
     top: "76%",
     left: "64%",
-    category: "Infrastructure",
-    title: "Enterprise Networking",
+    category: "Infrastruktur Jaringan",
+    title: "Jaringan Komputer & IT Support",
     description:
-      "Perancangan routing dinamis (OSPF), switching VLAN enterprise, manajemen bandwidth QoS MikroTik, dan simulasi topologi jaringan GNS3.",
-    tags: ["Cisco CCNA", "MikroTik", "GNS3", "OSPF", "Firewall"],
+      "Praktik konfigurasi MikroTik RouterOS, simulasi Cisco di GNS3/Packet Tracer, penataan jaringan lokal (LAN/VLAN), dan troubleshooting teknis.",
+    tags: ["MikroTik", "Cisco", "GNS3", "VLAN", "IT Support"],
   },
 ];
 
@@ -79,7 +79,7 @@ export const InteractiveProfileCard: React.FC = () => {
   const [isHovering, setIsHovering] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Audio synthesizer via Web Audio API (soft sci-fi clicks and beeps)
+  // Audio synthesizer via Web Audio API (soft tech clicks)
   const playSfx = (freq = 600, type: OscillatorType = "sine", duration = 0.08) => {
     if (!soundEnabled) return;
     try {
@@ -178,14 +178,14 @@ export const InteractiveProfileCard: React.FC = () => {
                 BLUEPRINT
               </button>
               <button
-                onClick={() => handleModeChange("cyber")}
+                onClick={() => handleModeChange("hud")}
                 className={`px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 ${
-                  photoMode === "cyber"
+                  photoMode === "hud"
                     ? "bg-gradient-to-r from-amber-500 to-rose-500 text-white font-bold shadow-sm"
                     : "text-slate-500 hover:text-slate-900 dark:hover:text-white"
                 }`}
               >
-                CYBER HUD
+                HUD TEKNIS
               </button>
             </div>
 
@@ -193,7 +193,7 @@ export const InteractiveProfileCard: React.FC = () => {
             <div className="flex items-center gap-1 bg-slate-100 dark:bg-dark-surface p-1 rounded-xl border border-slate-200 dark:border-white/5">
               <button
                 onClick={triggerScan}
-                title="Pindai Biometrik / Trigger Laser Scan"
+                title="Pindai / Animasi Scan"
                 className={`p-1.5 rounded-lg transition-colors text-slate-600 dark:text-slate-400 hover:text-orange-500 hover:bg-white dark:hover:bg-white/10 ${
                   isScanning ? "text-orange-500 bg-orange-500/10" : ""
                 }`}
@@ -205,7 +205,7 @@ export const InteractiveProfileCard: React.FC = () => {
                   setShowPins(!showPins);
                   playSfx(550, "sine", 0.05);
                 }}
-                title={showPins ? "Sembunyikan Titik Hotspot" : "Tampilkan Titik Hotspot"}
+                title={showPins ? "Sembunyikan Titik Interaktif" : "Tampilkan Titik Interaktif"}
                 className={`p-1.5 rounded-lg transition-colors hover:bg-white dark:hover:bg-white/10 ${
                   showPins
                     ? "text-orange-500 bg-orange-500/10 font-bold"
@@ -238,7 +238,7 @@ export const InteractiveProfileCard: React.FC = () => {
                   setIsFullscreen(true);
                   playSfx(750, "sine", 0.1);
                 }}
-                title="Perbesar Mode Dossier Teknis"
+                title="Lihat Foto Ukuran Penuh"
                 className="p-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-orange-500 hover:bg-white dark:hover:bg-white/10 transition-colors"
               >
                 <Maximize2 className="w-3.5 h-3.5" />
@@ -269,7 +269,7 @@ export const InteractiveProfileCard: React.FC = () => {
             className={`w-full h-full object-cover object-center transition-all duration-700 ${
               photoMode === "blueprint"
                 ? "filter grayscale contrast-150 invert-[0.15] sepia-[0.35] hue-rotate-[180deg] brightness-95"
-                : photoMode === "cyber"
+                : photoMode === "hud"
                 ? "filter contrast-125 saturate-150 brightness-90 hue-rotate-[15deg]"
                 : "filter contrast-105 brightness-100"
             }`}
@@ -295,10 +295,10 @@ export const InteractiveProfileCard: React.FC = () => {
               {/* Technical CAD Dimension Callouts */}
               <div className="absolute top-3 left-3 font-mono text-[9px] text-cyan-400 bg-cyan-950/80 px-2 py-0.5 rounded border border-cyan-500/30 flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" />
-                CAD-SPEC // SPECIMEN-01
+                SKEMA TEKNIS // D4-TI
               </div>
               <div className="absolute top-3 right-3 font-mono text-[9px] text-cyan-300 bg-cyan-950/80 px-2 py-0.5 rounded border border-cyan-500/30">
-                SCALE 1:1.2 // 1080×1350
+                POLINEMA // MALANG
               </div>
 
               {/* Blueprint Corner Brackets */}
@@ -309,8 +309,8 @@ export const InteractiveProfileCard: React.FC = () => {
             </div>
           )}
 
-          {/* CYBER HUD OVERLAY: Sci-Fi Telemetry & CRT Scanlines */}
-          {photoMode === "cyber" && (
+          {/* HUD OVERLAY: Modern Telemetry Grid */}
+          {photoMode === "hud" && (
             <div className="absolute inset-0 pointer-events-none">
               {/* Scanline pattern */}
               <div
@@ -321,20 +321,17 @@ export const InteractiveProfileCard: React.FC = () => {
                 }}
               />
 
-              {/* Warm Orange Hologram Tint */}
+              {/* Warm Amber Hologram Tint */}
               <div className="absolute inset-0 bg-gradient-to-t from-orange-950/50 via-transparent to-transparent opacity-80" />
 
-              {/* Cyber Reticles */}
+              {/* Status Pills */}
               <div className="absolute top-3 left-3 font-mono text-[9px] text-amber-400 bg-black/80 px-2 py-0.5 rounded border border-amber-500/30 flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-                HUD-SYS: ACTIVE
+                STATUS: AKTIF
               </div>
               <div className="absolute top-3 right-3 font-mono text-[9px] text-emerald-400 bg-black/80 px-2 py-0.5 rounded border border-emerald-500/30">
-                SIGNAL: 99.4%
+                OPEN TO WORK
               </div>
-
-              {/* Target Lock Corner Circles */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 border border-amber-500/20 rounded-full border-dashed animate-spin-slow pointer-events-none" />
             </div>
           )}
 
@@ -378,7 +375,7 @@ export const InteractiveProfileCard: React.FC = () => {
                   backgroundColor:
                     photoMode === "blueprint"
                       ? "#38bdf8"
-                      : photoMode === "cyber"
+                      : photoMode === "hud"
                       ? "#f59e0b"
                       : "#ffffff",
                 }}
@@ -390,7 +387,7 @@ export const InteractiveProfileCard: React.FC = () => {
                   backgroundColor:
                     photoMode === "blueprint"
                       ? "#38bdf8"
-                      : photoMode === "cyber"
+                      : photoMode === "hud"
                       ? "#f59e0b"
                       : "#ffffff",
                 }}
@@ -405,19 +402,19 @@ export const InteractiveProfileCard: React.FC = () => {
                   backgroundColor:
                     photoMode === "blueprint"
                       ? "rgba(8, 47, 73, 0.85)"
-                      : photoMode === "cyber"
+                      : photoMode === "hud"
                       ? "rgba(69, 26, 3, 0.85)"
                       : "rgba(15, 23, 42, 0.85)",
                   borderColor:
                     photoMode === "blueprint"
                       ? "rgba(56, 189, 248, 0.3)"
-                      : photoMode === "cyber"
+                      : photoMode === "hud"
                       ? "rgba(245, 158, 11, 0.3)"
                       : "rgba(255, 255, 255, 0.15)",
                   color:
                     photoMode === "blueprint"
                       ? "#7dd3fc"
-                      : photoMode === "cyber"
+                      : photoMode === "hud"
                       ? "#fde68a"
                       : "#ffffff",
                 }}
@@ -455,7 +452,7 @@ export const InteractiveProfileCard: React.FC = () => {
                       className={`absolute w-7 h-7 rounded-full animate-ping opacity-75 ${
                         photoMode === "blueprint"
                           ? "bg-cyan-400"
-                          : photoMode === "cyber"
+                          : photoMode === "hud"
                           ? "bg-amber-400"
                           : "bg-orange-500"
                       }`}
@@ -468,7 +465,7 @@ export const InteractiveProfileCard: React.FC = () => {
                       } ${
                         photoMode === "blueprint"
                           ? "bg-cyan-950 border-cyan-400 text-cyan-300"
-                          : photoMode === "cyber"
+                          : photoMode === "hud"
                           ? "bg-amber-950 border-amber-400 text-amber-300"
                           : "bg-slate-900 border-orange-500 text-orange-400"
                       }`}
@@ -477,7 +474,7 @@ export const InteractiveProfileCard: React.FC = () => {
                         className={`w-1.5 h-1.5 rounded-full ${
                           photoMode === "blueprint"
                             ? "bg-cyan-300"
-                            : photoMode === "cyber"
+                            : photoMode === "hud"
                             ? "bg-amber-300"
                             : "bg-orange-400"
                         }`}
@@ -530,7 +527,7 @@ export const InteractiveProfileCard: React.FC = () => {
           <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-dark-bg/95 via-dark-bg/60 to-transparent flex items-center justify-between font-mono text-[10px] text-white pointer-events-none z-10">
             <span className="px-2 py-0.5 rounded-lg bg-black/60 backdrop-blur-md border border-white/10 flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-              ONLINE // READY
+              ONLINE // MAHASISWA D4 TI
             </span>
             <span className="px-2 py-0.5 rounded-lg bg-black/60 backdrop-blur-md border border-white/10 text-slate-300">
               MALANG, ID
@@ -573,7 +570,7 @@ export const InteractiveProfileCard: React.FC = () => {
         </div>
       </div>
 
-      {/* Fullscreen Technical Dossier Modal */}
+      {/* Fullscreen Technical Preview Modal */}
       <AnimatePresence>
         {isFullscreen && (
           <div
@@ -591,7 +588,7 @@ export const InteractiveProfileCard: React.FC = () => {
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
                   <span className="font-mono text-xs font-bold text-white uppercase tracking-wider">
-                    TECHNICAL SPECIMEN DOSSIER // {profileData.name}
+                    PREVIEW FOTO // {profileData.name}
                   </span>
                 </div>
                 <button
@@ -609,7 +606,7 @@ export const InteractiveProfileCard: React.FC = () => {
                   className={`w-full h-full object-cover ${
                     photoMode === "blueprint"
                       ? "filter grayscale contrast-150 invert-[0.15] sepia-[0.35] hue-rotate-[180deg]"
-                      : photoMode === "cyber"
+                      : photoMode === "hud"
                       ? "filter contrast-125 saturate-150 brightness-90 hue-rotate-[15deg]"
                       : "filter contrast-105"
                   }`}
@@ -621,7 +618,7 @@ export const InteractiveProfileCard: React.FC = () => {
 
               <div className="mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-mono text-slate-300">
                 <div>
-                  <span className="text-orange-400 font-bold">STATUS:</span> Terverifikasi • D4 TI Polinema
+                  <span className="text-orange-400 font-bold">STATUS:</span> Mahasiswa Aktif D4 TI • Polinema
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-slate-500">MODE AKTIF:</span>
