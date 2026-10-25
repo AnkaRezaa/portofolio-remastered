@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { projectsData, ProjectItem } from "../data/projects";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Eye, ArrowUpRight, Terminal, ExternalLink, Globe } from "lucide-react";
+import { X, Eye, ArrowUpRight, Terminal, ExternalLink, Globe, Pin } from "lucide-react";
 
 interface ProjectsProps {
   items?: ProjectItem[];
@@ -18,10 +18,19 @@ export const Projects: React.FC<ProjectsProps> = ({ items = projectsData }) => {
     { id: "Network", label: "Jaringan Komputer" },
   ];
 
+  // Prioritize pinned items first, then maintain order
+  const sortedItems = [...items].sort((a, b) => {
+    const aPinned = Boolean(a.pinned);
+    const bPinned = Boolean(b.pinned);
+    if (aPinned && !bPinned) return -1;
+    if (!aPinned && bPinned) return 1;
+    return 0;
+  });
+
   const filteredProjects =
     activeCategory === "All"
-      ? items
-      : items.filter((item) => item.category === activeCategory);
+      ? sortedItems
+      : sortedItems.filter((item) => item.category === activeCategory);
 
   return (
     <section id="project" className="py-24 relative">
@@ -80,7 +89,11 @@ export const Projects: React.FC<ProjectsProps> = ({ items = projectsData }) => {
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.3 }}
                   key={project.id}
-                  className="glass-card rounded-3xl overflow-hidden border border-slate-200/80 dark:border-white/10 group flex flex-col justify-between hover:border-orange-500/40 hover:-translate-y-1.5 transition-all duration-300 shadow-sm"
+                  className={`glass-card rounded-3xl overflow-hidden border group flex flex-col justify-between hover:-translate-y-1.5 transition-all duration-300 shadow-sm ${
+                    project.pinned
+                      ? "border-orange-500/60 dark:border-orange-500/50 shadow-orange-500/10 shadow-lg ring-1 ring-orange-500/20"
+                      : "border-slate-200/80 dark:border-white/10 hover:border-orange-500/40"
+                  }`}
                 >
                   {/* Image Container with Aspect Ratio */}
                   <div className="relative aspect-video w-full overflow-hidden bg-slate-900 border-b border-slate-200 dark:border-white/5">
@@ -94,11 +107,19 @@ export const Projects: React.FC<ProjectsProps> = ({ items = projectsData }) => {
                     {/* Dark gradient vignette */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30" />
 
-                    {/* Top Index & Category */}
-                    <div className="absolute top-3 left-3 right-3 flex items-center justify-between font-mono text-[11px]">
-                      <span className="px-2.5 py-0.5 rounded-lg bg-black/60 text-white border border-white/10 backdrop-blur-md">
-                        #{numIndex}
-                      </span>
+                    {/* Top Index, Pinned Badge & Category */}
+                    <div className="absolute top-3 left-3 right-3 flex items-center justify-between font-mono text-[11px] z-10">
+                      <div className="flex items-center gap-1.5">
+                        <span className="px-2.5 py-0.5 rounded-lg bg-black/60 text-white border border-white/10 backdrop-blur-md">
+                          #{numIndex}
+                        </span>
+                        {project.pinned && (
+                          <span className="px-2.5 py-0.5 rounded-lg bg-gradient-to-r from-amber-500 via-orange-500 to-rose-600 text-white font-mono text-[10px] font-black tracking-wider shadow-md shadow-orange-500/30 flex items-center gap-1 border border-amber-300/40">
+                            <Pin className="w-2.5 h-2.5 fill-current" />
+                            <span>PINNED</span>
+                          </span>
+                        )}
+                      </div>
                       <span className="px-2.5 py-0.5 rounded-lg bg-orange-500/90 text-white font-bold backdrop-blur-md">
                         {project.category}
                       </span>

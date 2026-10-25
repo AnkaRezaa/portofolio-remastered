@@ -18,6 +18,8 @@ export interface CertificateItem {
   image: string;
   category: CertificateCategory;
   badgeLabel?: string;
+  pinned?: boolean;
+  orderIndex?: number;
 }
 
 export const certificatesData: CertificateItem[] = [

@@ -21,6 +21,9 @@ import {
   RotateCcw,
   Cloud,
   Loader2,
+  Pin,
+  ArrowUp,
+  ArrowDown,
 } from "lucide-react";
 import confetti from "canvas-confetti";
 import {
@@ -75,6 +78,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     image: "",
     tags: "",
     description: "",
+    pinned: false,
   });
 
   // Certificate Form State (Add / Edit)
@@ -86,6 +90,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     credentialId: "",
     image: "",
     category: "Professional" as CertificateCategory,
+    pinned: false,
   });
 
   // Security Form State (Change Password)
@@ -137,7 +142,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   };
 
   // ==========================================
-  // PROJECT CRUD OPERATIONS
+  // PROJECT CRUD & REORDER OPERATIONS
   // ==========================================
 
   // Populate form for editing
@@ -151,6 +156,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       image: item.image,
       tags: item.tags.join(", "),
       description: item.description,
+      pinned: Boolean(item.pinned),
     });
     // Smooth scroll to form
     const formEl = document.getElementById("projectFormSection");
@@ -167,6 +173,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       image: "",
       tags: "",
       description: "",
+      pinned: false,
     });
   };
 
@@ -195,11 +202,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           image: projectForm.image.trim() || "/assets/projects/Dashboard Desktop.png",
           tags: tagsArray.length > 0 ? tagsArray : ["Web"],
           description: projectForm.description.trim(),
+          pinned: projectForm.pinned,
         };
 
-        const updatedList = projects.map((p) =>
+        let updatedList = projects.map((p) =>
           p.id === editingProjectId ? updatedItem : p
         );
+
+        // Jika baru di-pin, bawa ke posisi paling atas
+        const wasPinned = projects.find((p) => p.id === editingProjectId)?.pinned;
+        if (projectForm.pinned && !wasPinned) {
+          updatedList = [updatedItem, ...updatedList.filter((p) => p.id !== editingProjectId)];
+        }
 
         onSaveProjects(updatedList);
         await saveProject(updatedItem);
@@ -216,9 +230,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           image: projectForm.image.trim() || "/assets/projects/Dashboard Desktop.png",
           tags: tagsArray.length > 0 ? tagsArray : ["Web"],
           description: projectForm.description.trim(),
+          pinned: projectForm.pinned,
         };
 
-        onSaveProjects([newProject, ...projects]);
+        const updatedList = projectForm.pinned
+          ? [newProject, ...projects]
+          : [...projects, newProject];
+
+        onSaveProjects(updatedList);
         await saveProject(newProject);
         showToast(`Proyek "${newProject.title}" berhasil disimpan ke Cloud Supabase!`);
         handleCancelEditProject();
@@ -241,8 +260,44 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     }
   };
 
+  // Toggle Pin Proyek (Pin to Top)
+  const handleTogglePinProject = async (id: string) => {
+    const target = projects.find((p) => p.id === id);
+    if (!target) return;
+    const newPinned = !target.pinned;
+    const updatedItem: ProjectItem = { ...target, pinned: newPinned };
+
+    let updatedList = projects.map((p) => (p.id === id ? updatedItem : p));
+    if (newPinned) {
+      // Pindahkan langsung ke index paling atas
+      updatedList = [updatedItem, ...updatedList.filter((p) => p.id !== id)];
+      showToast(`📌 Proyek "${target.title}" disematkan ke posisi teratas!`);
+    } else {
+      showToast(`Proyek "${target.title}" dilepas dari sematan.`);
+    }
+
+    onSaveProjects(updatedList);
+    await saveProject(updatedItem);
+  };
+
+  // Reorder Posisi Proyek (Naik/Turun)
+  const handleMoveProject = (id: string, direction: "up" | "down") => {
+    const index = projects.findIndex((p) => p.id === id);
+    if (index === -1) return;
+    const targetIndex = direction === "up" ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= projects.length) return;
+
+    const updated = [...projects];
+    const temp = updated[index];
+    updated[index] = updated[targetIndex];
+    updated[targetIndex] = temp;
+
+    onSaveProjects(updated);
+    showToast(`Posisi "${temp.title}" dipindahkan ke ${direction === "up" ? "atas" : "bawah"}!`);
+  };
+
   // ==========================================
-  // CERTIFICATE CRUD OPERATIONS
+  // CERTIFICATE CRUD & REORDER OPERATIONS
   // ==========================================
 
   const handleStartEditCert = (item: CertificateItem) => {
@@ -254,6 +309,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       credentialId: item.credentialId || "",
       image: item.image,
       category: item.category,
+      pinned: Boolean(item.pinned),
     });
     const formEl = document.getElementById("certFormSection");
     if (formEl) formEl.scrollIntoView({ behavior: "smooth" });
@@ -268,6 +324,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       credentialId: "",
       image: "",
       category: "Network",
+      pinned: false,
     });
   };
 
@@ -290,11 +347,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           credentialId: certForm.credentialId.trim() || undefined,
           image: certForm.image.trim() || "/assets/certificates/sertifikat_bnsp.jpeg",
           category: certForm.category,
+          pinned: certForm.pinned,
         };
 
-        const updatedList = certificates.map((c) =>
+        let updatedList = certificates.map((c) =>
           c.id === editingCertId ? updatedItem : c
         );
+
+        // Jika baru di-pin, bawa ke posisi paling atas
+        const wasPinned = certificates.find((c) => c.id === editingCertId)?.pinned;
+        if (certForm.pinned && !wasPinned) {
+          updatedList = [updatedItem, ...updatedList.filter((c) => c.id !== editingCertId)];
+        }
 
         onSaveCertificates(updatedList);
         await saveCertificate(updatedItem);
@@ -310,9 +374,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           credentialId: certForm.credentialId.trim() || undefined,
           image: certForm.image.trim() || "/assets/certificates/sertifikat_bnsp.jpeg",
           category: certForm.category,
+          pinned: certForm.pinned,
         };
 
-        onSaveCertificates([newCert, ...certificates]);
+        const updatedList = certForm.pinned
+          ? [newCert, ...certificates]
+          : [...certificates, newCert];
+
+        onSaveCertificates(updatedList);
         await saveCertificate(newCert);
         showToast(`Sertifikat "${newCert.title}" berhasil disimpan ke Cloud Supabase!`);
         handleCancelEditCert();
@@ -333,6 +402,41 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       showToast(`Sertifikat "${title}" telah dihapus.`);
       if (editingCertId === id) handleCancelEditCert();
     }
+  };
+
+  // Toggle Pin Sertifikat (Pin to Top)
+  const handleTogglePinCert = async (id: string) => {
+    const target = certificates.find((c) => c.id === id);
+    if (!target) return;
+    const newPinned = !target.pinned;
+    const updatedItem: CertificateItem = { ...target, pinned: newPinned };
+
+    let updatedList = certificates.map((c) => (c.id === id ? updatedItem : c));
+    if (newPinned) {
+      updatedList = [updatedItem, ...updatedList.filter((c) => c.id !== id)];
+      showToast(`📌 Sertifikat "${target.title}" disematkan ke posisi teratas!`);
+    } else {
+      showToast(`Sertifikat "${target.title}" dilepas dari sematan.`);
+    }
+
+    onSaveCertificates(updatedList);
+    await saveCertificate(updatedItem);
+  };
+
+  // Reorder Posisi Sertifikat (Naik/Turun)
+  const handleMoveCert = (id: string, direction: "up" | "down") => {
+    const index = certificates.findIndex((c) => c.id === id);
+    if (index === -1) return;
+    const targetIndex = direction === "up" ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= certificates.length) return;
+
+    const updated = [...certificates];
+    const temp = updated[index];
+    updated[index] = updated[targetIndex];
+    updated[targetIndex] = temp;
+
+    onSaveCertificates(updated);
+    showToast(`Posisi "${temp.title}" dipindahkan ke ${direction === "up" ? "atas" : "bawah"}!`);
   };
 
   // ==========================================
@@ -750,6 +854,24 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   />
                 </div>
 
+                {/* Pin to Top Checkbox Toggle */}
+                <div className="p-3 sm:p-4 rounded-xl bg-slate-950/60 border border-white/10 hover:border-orange-500/40 transition-all">
+                  <label className="flex items-center gap-3 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={projectForm.pinned}
+                      onChange={(e) => setProjectForm({ ...projectForm, pinned: e.target.checked })}
+                      className="w-4 h-4 rounded text-orange-500 bg-slate-900 border-white/20 focus:ring-orange-500 focus:ring-offset-slate-950 cursor-pointer"
+                    />
+                    <div className="flex items-center gap-2">
+                      <Pin className={`w-4 h-4 ${projectForm.pinned ? "text-orange-400 fill-current" : "text-slate-400"}`} />
+                      <span className="text-xs font-mono font-bold text-white">
+                        Pin ke Posisi Teratas (Tampilkan paling depan di portofolio)
+                      </span>
+                    </div>
+                  </label>
+                </div>
+
                 {/* Actions */}
                 <div className="flex items-center gap-3 pt-2">
                   <button
@@ -783,12 +905,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               </form>
             </div>
 
-            {/* Project List Section (Read / Update / Delete) */}
+            {/* Project List Section (Read / Update / Delete / Reorder) */}
             <div className="space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                   <h3 className="text-lg font-bold text-white">Daftar Semua Proyek ({filteredProjects.length})</h3>
-                  <p className="text-xs text-slate-400">Kelola, edit, atau hapus proyek yang tampil di website utama.</p>
+                  <p className="text-xs text-slate-400">Kelola urutan posisi kartu, sematkan (pin) ke atas, atau hapus proyek.</p>
                 </div>
 
                 {/* Search Bar & Category Filters */}
@@ -824,69 +946,125 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
               {/* Projects Grid Table */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {filteredProjects.map((proj) => (
-                  <div
-                    key={proj.id}
-                    className="bg-slate-900/60 border border-white/10 rounded-2xl p-4 flex flex-col justify-between hover:border-orange-500/30 transition-all space-y-3"
-                  >
-                    <div>
-                      {/* Image Thumbnail */}
-                      <div className="relative aspect-video w-full rounded-xl overflow-hidden bg-slate-950 mb-3 border border-white/5">
-                        <img
-                          src={proj.image}
-                          alt={proj.title}
-                          className="w-full h-full object-cover object-top"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src = "/assets/projects/Dashboard Desktop.png";
-                          }}
-                        />
-                        <span className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-black/70 backdrop-blur-md text-white font-mono text-[10px] font-bold">
-                          {proj.category}
-                        </span>
-                      </div>
+                {filteredProjects.map((proj) => {
+                  const masterIndex = projects.findIndex((p) => p.id === proj.id);
+                  const isFirst = masterIndex === 0;
+                  const isLast = masterIndex === projects.length - 1;
 
-                      <h4 className="font-bold text-white text-sm line-clamp-1">{proj.title}</h4>
-                      <p className="text-xs text-slate-400 mt-1 line-clamp-2 leading-relaxed">{proj.description}</p>
-
-                      {/* Live Link Indicator */}
-                      {proj.demoUrl && (
-                        <div className="mt-2.5 flex items-center gap-1.5">
-                          <a
-                            href={proj.demoUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono text-[11px] font-bold hover:bg-emerald-500/20 transition-colors"
-                          >
-                            <Globe className="w-3 h-3" />
-                            <span className="line-clamp-1">Website Live ↗</span>
-                          </a>
+                  return (
+                    <div
+                      key={proj.id}
+                      className={`bg-slate-900/60 border rounded-2xl p-4 flex flex-col justify-between transition-all space-y-3 ${
+                        proj.pinned
+                          ? "border-orange-500/50 shadow-lg shadow-orange-500/5 ring-1 ring-orange-500/20"
+                          : "border-white/10 hover:border-orange-500/30"
+                      }`}
+                    >
+                      <div>
+                        {/* Image Thumbnail */}
+                        <div className="relative aspect-video w-full rounded-xl overflow-hidden bg-slate-950 mb-3 border border-white/5">
+                          <img
+                            src={proj.image}
+                            alt={proj.title}
+                            className="w-full h-full object-cover object-top"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = "/assets/projects/Dashboard Desktop.png";
+                            }}
+                          />
+                          <div className="absolute top-2 left-2 flex items-center gap-1.5">
+                            <span className="px-2 py-0.5 rounded-md bg-black/70 backdrop-blur-md text-white font-mono text-[10px] font-bold">
+                              {proj.category}
+                            </span>
+                            {proj.pinned && (
+                              <span className="px-2 py-0.5 rounded-md bg-gradient-to-r from-amber-500 to-orange-500 text-white font-mono text-[10px] font-bold flex items-center gap-1 shadow-md">
+                                <Pin className="w-2.5 h-2.5 fill-current" />
+                                <span>PINNED</span>
+                              </span>
+                            )}
+                          </div>
                         </div>
-                      )}
-                    </div>
 
-                    {/* Actions: Edit & Delete */}
-                    <div className="pt-3 border-t border-white/5 flex items-center justify-between font-mono text-xs">
-                      <span className="text-[10px] text-slate-500">ID: {proj.id}</span>
-                      <div className="flex items-center gap-1.5">
-                        <button
-                          onClick={() => handleStartEditProject(proj)}
-                          className="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-slate-300 hover:text-orange-400 hover:border-orange-500/30 transition-all flex items-center gap-1 text-[11px]"
-                          title="Edit Proyek"
-                        >
-                          <Edit3 className="w-3 h-3" />
-                          <span>Edit</span>
-                        </button>
-                        <button
-                          onClick={() => handleDeleteProject(proj.id, proj.title)}
-                          className="p-1.5 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-500 hover:text-white transition-all text-[11px]"
-                          title="Hapus Proyek"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
+                        <h4 className="font-bold text-white text-sm line-clamp-1">{proj.title}</h4>
+                        <p className="text-xs text-slate-400 mt-1 line-clamp-2 leading-relaxed">{proj.description}</p>
+
+                        {/* Live Link Indicator */}
+                        {proj.demoUrl && (
+                          <div className="mt-2.5 flex items-center gap-1.5">
+                            <a
+                              href={proj.demoUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono text-[11px] font-bold hover:bg-emerald-500/20 transition-colors"
+                            >
+                              <Globe className="w-3 h-3" />
+                              <span className="line-clamp-1">Website Live ↗</span>
+                            </a>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Actions: Reorder Position, Pin, Edit & Delete */}
+                      <div className="pt-3 border-t border-white/5 flex flex-wrap items-center justify-between gap-2 font-mono text-xs">
+                        {/* Position badge & Up/Down Arrows */}
+                        <div className="flex items-center gap-1">
+                          <span className="text-[10px] text-slate-400 bg-black/50 px-2 py-0.5 rounded border border-white/10 font-mono">
+                            #{masterIndex + 1}
+                          </span>
+                          <button
+                            type="button"
+                            disabled={isFirst}
+                            onClick={() => handleMoveProject(proj.id, "up")}
+                            className="p-1 rounded-md bg-white/5 border border-white/10 text-slate-300 hover:text-white hover:bg-white/10 disabled:opacity-20 disabled:cursor-not-allowed transition-all"
+                            title="Geser posisi ke atas (lebih awal)"
+                          >
+                            <ArrowUp className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            disabled={isLast}
+                            onClick={() => handleMoveProject(proj.id, "down")}
+                            className="p-1 rounded-md bg-white/5 border border-white/10 text-slate-300 hover:text-white hover:bg-white/10 disabled:opacity-20 disabled:cursor-not-allowed transition-all"
+                            title="Geser posisi ke bawah (berikutnya)"
+                          >
+                            <ArrowDown className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+
+                        {/* Pin, Edit, Delete Actions */}
+                        <div className="flex items-center gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => handleTogglePinProject(proj.id)}
+                            className={`px-2 py-1 rounded-lg border transition-all flex items-center gap-1 text-[11px] ${
+                              proj.pinned
+                                ? "bg-orange-500/20 text-orange-400 border-orange-500/40 hover:bg-orange-500/30 font-bold shadow-sm"
+                                : "bg-white/5 text-slate-400 border-white/10 hover:text-white"
+                            }`}
+                            title={proj.pinned ? "Lepas sematan pin" : "Sematkan (Pin) ke posisi teratas"}
+                          >
+                            <Pin className={`w-3 h-3 ${proj.pinned ? "fill-current" : ""}`} />
+                            <span>{proj.pinned ? "Pinned" : "Pin"}</span>
+                          </button>
+                          <button
+                            onClick={() => handleStartEditProject(proj)}
+                            className="px-2 py-1 rounded-lg bg-white/5 border border-white/10 text-slate-300 hover:text-orange-400 hover:border-orange-500/30 transition-all flex items-center gap-1 text-[11px]"
+                            title="Edit Proyek"
+                          >
+                            <Edit3 className="w-3 h-3" />
+                            <span>Edit</span>
+                          </button>
+                          <button
+                            onClick={() => handleDeleteProject(proj.id, proj.title)}
+                            className="p-1.5 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-500 hover:text-white transition-all text-[11px]"
+                            title="Hapus Proyek"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               {filteredProjects.length === 0 && (
@@ -1023,6 +1201,24 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   />
                 </div>
 
+                {/* Pin to Top Checkbox Toggle */}
+                <div className="p-3 sm:p-4 rounded-xl bg-slate-950/60 border border-white/10 hover:border-amber-500/40 transition-all">
+                  <label className="flex items-center gap-3 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={certForm.pinned}
+                      onChange={(e) => setCertForm({ ...certForm, pinned: e.target.checked })}
+                      className="w-4 h-4 rounded text-amber-500 bg-slate-900 border-white/20 focus:ring-amber-500 focus:ring-offset-slate-950 cursor-pointer"
+                    />
+                    <div className="flex items-center gap-2">
+                      <Pin className={`w-4 h-4 ${certForm.pinned ? "text-amber-400 fill-current" : "text-slate-400"}`} />
+                      <span className="text-xs font-mono font-bold text-white">
+                        Pin ke Posisi Teratas (Tampilkan paling depan di Credential Vault)
+                      </span>
+                    </div>
+                  </label>
+                </div>
+
                 <div className="flex items-center gap-3 pt-2">
                   <button
                     type="submit"
@@ -1060,7 +1256,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                   <h3 className="text-lg font-bold text-white">Daftar Sertifikasi ({filteredCertificates.length})</h3>
-                  <p className="text-xs text-slate-400">Daftar kredensial dan lisensi yang tampil di bagian Vault.</p>
+                  <p className="text-xs text-slate-400">Kelola urutan posisi kartu, sematkan (pin) ke atas, atau hapus kredensial.</p>
                 </div>
 
                 <div className="relative">
@@ -1076,48 +1272,105 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {filteredCertificates.map((cert) => (
-                  <div
-                    key={cert.id}
-                    className="bg-slate-900/60 border border-white/10 rounded-2xl p-4 flex flex-col justify-between hover:border-amber-500/30 transition-all space-y-3"
-                  >
-                    <div>
-                      <div className="flex items-center justify-between font-mono text-[11px] mb-2">
-                        <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 font-bold">
-                          {cert.category}
-                        </span>
-                        <span className="text-slate-400">{cert.issueDate}</span>
+                {filteredCertificates.map((cert) => {
+                  const masterIndex = certificates.findIndex((c) => c.id === cert.id);
+                  const isFirst = masterIndex === 0;
+                  const isLast = masterIndex === certificates.length - 1;
+
+                  return (
+                    <div
+                      key={cert.id}
+                      className={`bg-slate-900/60 border rounded-2xl p-4 flex flex-col justify-between transition-all space-y-3 ${
+                        cert.pinned
+                          ? "border-amber-500/50 shadow-lg shadow-amber-500/5 ring-1 ring-amber-500/20"
+                          : "border-white/10 hover:border-amber-500/30"
+                      }`}
+                    >
+                      <div>
+                        <div className="flex items-center justify-between font-mono text-[11px] mb-2">
+                          <div className="flex items-center gap-1.5">
+                            <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 font-bold">
+                              {cert.category}
+                            </span>
+                            {cert.pinned && (
+                              <span className="px-2 py-0.5 rounded-md bg-gradient-to-r from-amber-500 to-orange-500 text-white font-mono text-[10px] font-bold flex items-center gap-1 shadow-md">
+                                <Pin className="w-2.5 h-2.5 fill-current" />
+                                <span>PINNED</span>
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-slate-400">{cert.issueDate}</span>
+                        </div>
+
+                        <h4 className="font-bold text-white text-sm line-clamp-1">{cert.title}</h4>
+                        <p className="text-xs text-slate-400 mt-0.5 font-mono">Penerbit: {cert.issuer}</p>
+                        {cert.credentialId && (
+                          <p className="text-[10px] text-slate-500 font-mono mt-1">ID: {cert.credentialId}</p>
+                        )}
                       </div>
 
-                      <h4 className="font-bold text-white text-sm line-clamp-1">{cert.title}</h4>
-                      <p className="text-xs text-slate-400 mt-0.5 font-mono">Penerbit: {cert.issuer}</p>
-                      {cert.credentialId && (
-                        <p className="text-[10px] text-slate-500 font-mono mt-1">ID: {cert.credentialId}</p>
-                      )}
-                    </div>
+                      {/* Actions: Reorder Position, Pin, Edit & Delete */}
+                      <div className="pt-3 border-t border-white/5 flex flex-wrap items-center justify-between gap-2 font-mono text-xs">
+                        {/* Position badge & Up/Down Arrows */}
+                        <div className="flex items-center gap-1">
+                          <span className="text-[10px] text-slate-400 bg-black/50 px-2 py-0.5 rounded border border-white/10 font-mono">
+                            #{masterIndex + 1}
+                          </span>
+                          <button
+                            type="button"
+                            disabled={isFirst}
+                            onClick={() => handleMoveCert(cert.id, "up")}
+                            className="p-1 rounded-md bg-white/5 border border-white/10 text-slate-300 hover:text-white hover:bg-white/10 disabled:opacity-20 disabled:cursor-not-allowed transition-all"
+                            title="Geser posisi ke atas (lebih awal)"
+                          >
+                            <ArrowUp className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            disabled={isLast}
+                            onClick={() => handleMoveCert(cert.id, "down")}
+                            className="p-1 rounded-md bg-white/5 border border-white/10 text-slate-300 hover:text-white hover:bg-white/10 disabled:opacity-20 disabled:cursor-not-allowed transition-all"
+                            title="Geser posisi ke bawah (berikutnya)"
+                          >
+                            <ArrowDown className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
 
-                    <div className="pt-3 border-t border-white/5 flex items-center justify-between font-mono text-xs">
-                      <span className="text-[10px] text-slate-500">ID: {cert.id}</span>
-                      <div className="flex items-center gap-1.5">
-                        <button
-                          onClick={() => handleStartEditCert(cert)}
-                          className="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-slate-300 hover:text-amber-400 hover:border-amber-500/30 transition-all flex items-center gap-1 text-[11px]"
-                          title="Edit Sertifikat"
-                        >
-                          <Edit3 className="w-3 h-3" />
-                          <span>Edit</span>
-                        </button>
-                        <button
-                          onClick={() => handleDeleteCertificate(cert.id, cert.title)}
-                          className="p-1.5 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-500 hover:text-white transition-all text-[11px]"
-                          title="Hapus Sertifikat"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
+                        {/* Pin, Edit, Delete Actions */}
+                        <div className="flex items-center gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => handleTogglePinCert(cert.id)}
+                            className={`px-2 py-1 rounded-lg border transition-all flex items-center gap-1 text-[11px] ${
+                              cert.pinned
+                                ? "bg-amber-500/20 text-amber-400 border-amber-500/40 hover:bg-amber-500/30 font-bold shadow-sm"
+                                : "bg-white/5 text-slate-400 border-white/10 hover:text-white"
+                            }`}
+                            title={cert.pinned ? "Lepas sematan pin" : "Sematkan (Pin) ke posisi teratas"}
+                          >
+                            <Pin className={`w-3 h-3 ${cert.pinned ? "fill-current" : ""}`} />
+                            <span>{cert.pinned ? "Pinned" : "Pin"}</span>
+                          </button>
+                          <button
+                            onClick={() => handleStartEditCert(cert)}
+                            className="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-slate-300 hover:text-amber-400 hover:border-amber-500/30 transition-all flex items-center gap-1 text-[11px]"
+                            title="Edit Sertifikat"
+                          >
+                            <Edit3 className="w-3 h-3" />
+                            <span>Edit</span>
+                          </button>
+                          <button
+                            onClick={() => handleDeleteCertificate(cert.id, cert.title)}
+                            className="p-1.5 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-500 hover:text-white transition-all text-[11px]"
+                            title="Hapus Sertifikat"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>

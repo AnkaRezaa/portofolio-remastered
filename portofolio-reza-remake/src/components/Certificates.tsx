@@ -11,6 +11,7 @@ import {
   Trophy,
   GraduationCap,
   BookOpen,
+  Pin,
 } from "lucide-react";
 
 interface CertificatesProps {
@@ -109,7 +110,16 @@ export const Certificates: React.FC<CertificatesProps> = ({ items = certificates
     },
   ];
 
-  const filteredCertificates = items.filter((cert) =>
+  // Prioritize pinned certificates first, then maintain order
+  const sortedItems = [...items].sort((a, b) => {
+    const aPinned = Boolean(a.pinned);
+    const bPinned = Boolean(b.pinned);
+    if (aPinned && !bPinned) return -1;
+    if (!aPinned && bPinned) return 1;
+    return 0;
+  });
+
+  const filteredCertificates = sortedItems.filter((cert) =>
     isCategoryMatch(cert.category, activeCategory)
   );
 
@@ -194,7 +204,11 @@ export const Certificates: React.FC<CertificatesProps> = ({ items = certificates
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.3 }}
                   key={cert.id}
-                  className="glass-card rounded-3xl overflow-hidden border border-slate-200/80 dark:border-white/10 flex flex-col justify-between hover:border-orange-500/40 hover:-translate-y-1.5 transition-all duration-300 shadow-sm group"
+                  className={`glass-card rounded-3xl overflow-hidden border flex flex-col justify-between hover:-translate-y-1.5 transition-all duration-300 shadow-sm group ${
+                    cert.pinned
+                      ? "border-amber-500/60 dark:border-amber-500/50 shadow-amber-500/10 shadow-lg ring-1 ring-amber-500/20"
+                      : "border-slate-200/80 dark:border-white/10 hover:border-orange-500/40"
+                  }`}
                 >
                   {/* Thumbnail Container */}
                   <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-950 border-b border-slate-200 dark:border-white/5">
@@ -214,9 +228,17 @@ export const Certificates: React.FC<CertificatesProps> = ({ items = certificates
 
                     {/* Top tags */}
                     <div className="absolute top-3 left-3 right-3 flex items-center justify-between font-mono text-[11px] z-10">
-                      <span className="px-2 py-0.5 rounded-lg bg-black/60 text-white border border-white/10 backdrop-blur-md">
-                        #{certIndex}
-                      </span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="px-2 py-0.5 rounded-lg bg-black/60 text-white border border-white/10 backdrop-blur-md">
+                          #{certIndex}
+                        </span>
+                        {cert.pinned && (
+                          <span className="px-2.5 py-0.5 rounded-lg bg-gradient-to-r from-amber-500 via-orange-500 to-rose-600 text-white font-mono text-[10px] font-black tracking-wider shadow-md shadow-orange-500/30 flex items-center gap-1 border border-amber-300/40">
+                            <Pin className="w-2.5 h-2.5 fill-current" />
+                            <span>PINNED</span>
+                          </span>
+                        )}
+                      </div>
                       <span
                         className={`px-2.5 py-0.5 rounded-lg border backdrop-blur-md font-bold flex items-center gap-1.5 ${meta.pillClass}`}
                       >

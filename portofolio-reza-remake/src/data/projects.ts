@@ -8,6 +8,8 @@ export interface ProjectItem {
   demoUrl?: string;
   githubUrl?: string;
   featured?: boolean;
+  pinned?: boolean;
+  orderIndex?: number;
 }
 
 export const projectsData: ProjectItem[] = [
