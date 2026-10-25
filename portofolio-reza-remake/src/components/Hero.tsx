@@ -71,13 +71,13 @@ export const Hero: React.FC<HeroProps> = ({ onOpenResume }) => {
               transition={{ duration: 0.4 }}
               className="flex items-center gap-2 mb-6"
             >
-              <div className="inline-flex items-center gap-2 font-mono text-xs text-slate-600 dark:text-slate-400">
+              {/* <div className="inline-flex items-center gap-2 font-mono text-xs text-slate-600 dark:text-slate-400">
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                 </span>
                 <span>Terbuka untuk Peluang Kerja & Kolaborasi</span>
-              </div>
+              </div> */}
             </motion.div>
 
             {/* High-Impact Typographic Headline */}
