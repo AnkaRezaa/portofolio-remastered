@@ -175,5 +175,40 @@
   .animate-pulse-portal {
     animation: pulse-portal 5s ease-in-out infinite;
   }
+
+  /* True Planetary Orbit & Counter-Rotation Animations */
+  @keyframes orbit-revolve {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes orbit-counter-revolve {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(-360deg);
+    }
+  }
+
+  .animate-orbit-revolve {
+    animation: orbit-revolve 28s linear infinite;
+  }
+
+  .animate-orbit-counter-revolve {
+    animation: orbit-counter-revolve 28s linear infinite;
+  }
+
+  .orbit-track:hover,
+  .orbit-track:hover .animate-orbit-revolve,
+  .orbit-track:hover .animate-orbit-counter-revolve,
+  .group\/orbit:hover .animate-orbit-revolve,
+  .group\/orbit:hover .animate-orbit-counter-revolve {
+    animation-play-state: paused !important;
+  }
 }
 

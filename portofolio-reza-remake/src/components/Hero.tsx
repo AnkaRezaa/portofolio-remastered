@@ -247,123 +247,107 @@ export const Hero: React.FC<HeroProps> = ({ onOpenResume }) => {
               {/* 5. Holographic Pedestal Disc Glow under Character */}
               <div className="absolute bottom-0 w-64 sm:w-80 h-14 rounded-[100%] bg-gradient-to-r from-orange-500/40 via-cyan-400/50 to-blue-600/40 blur-xl pointer-events-none transform -rotate-1 -z-10" />
 
-              {/* 6. Orbiting Micro Tech Icons Surrounding the Character */}
-              {[
-                {
-                  id: "tech-network",
-                  name: "Cisco & MikroTik",
-                  role: "Routing & VLAN",
-                  icon: <Network className="w-4 h-4 text-cyan-400" />,
-                  borderHover: "hover:border-cyan-400/80 hover:shadow-cyan-400/30",
-                  posClass: "top-14 -left-2 sm:-left-6",
-                  floatY: [-7, 7, -7],
-                  floatX: [-2, 2, -2],
-                  duration: 4.2,
-                  tooltipAlign: "left",
-                },
-                {
-                  id: "tech-code",
-                  name: "Full-Stack Dev",
-                  role: "Laravel, React, Next.js",
-                  icon: <Code2 className="w-4 h-4 text-orange-400" />,
-                  borderHover: "hover:border-orange-400/80 hover:shadow-orange-400/30",
-                  posClass: "top-8 -right-2 sm:-right-5",
-                  floatY: [6, -6, 6],
-                  floatX: [3, -3, 3],
-                  duration: 3.8,
-                  tooltipAlign: "right",
-                },
-                {
-                  id: "tech-terminal",
-                  name: "Linux & Server",
-                  role: "System Administration",
-                  icon: <Terminal className="w-4 h-4 text-emerald-400" />,
-                  borderHover: "hover:border-emerald-400/80 hover:shadow-emerald-400/30",
-                  posClass: "top-1/2 -left-3 sm:-left-8 -translate-y-12",
-                  floatY: [-6, 6, -6],
-                  floatX: [3, -3, 3],
-                  duration: 5.1,
-                  tooltipAlign: "left",
-                },
-                {
-                  id: "tech-cpu",
-                  name: "Hardware & IoT",
-                  role: "Core Architecture",
-                  icon: <Cpu className="w-4 h-4 text-amber-400" />,
-                  borderHover: "hover:border-amber-400/80 hover:shadow-amber-400/30",
-                  posClass: "top-1/2 -right-3 sm:-right-8 -translate-y-8",
-                  floatY: [7, -7, 7],
-                  floatX: [-3, 3, -3],
-                  duration: 4.6,
-                  tooltipAlign: "right",
-                },
-                {
-                  id: "tech-database",
-                  name: "Database Systems",
-                  role: "PostgreSQL & Supabase",
-                  icon: <Database className="w-4 h-4 text-sky-400" />,
-                  borderHover: "hover:border-sky-400/80 hover:shadow-sky-400/30",
-                  posClass: "bottom-24 -left-2 sm:-left-5",
-                  floatY: [-5, 5, -5],
-                  floatX: [-2, 2, -2],
-                  duration: 4.9,
-                  tooltipAlign: "left",
-                },
-                {
-                  id: "tech-security",
-                  name: "Network Security",
-                  role: "Firewall & QoS Bandwidth",
-                  icon: <ShieldCheck className="w-4 h-4 text-rose-400" />,
-                  borderHover: "hover:border-rose-400/80 hover:shadow-rose-400/30",
-                  posClass: "bottom-28 -right-2 sm:-right-5",
-                  floatY: [5, -5, 5],
-                  floatX: [2, -2, 2],
-                  duration: 4.4,
-                  tooltipAlign: "right",
-                },
-              ].map((tech) => (
-                <motion.div
-                  key={tech.id}
-                  animate={{
-                    y: tech.floatY,
-                    x: tech.floatX,
-                  }}
-                  transition={{
-                    duration: tech.duration,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                  className={`absolute ${tech.posClass} z-20 group/node cursor-pointer`}
-                >
-                  {/* Glassmorphic Orbital Micro Sphere */}
-                  <div
-                    className={`relative w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-slate-900/80 dark:bg-black/75 backdrop-blur-md border border-white/15 ${tech.borderHover} shadow-lg shadow-black/40 flex items-center justify-center transition-all duration-300 group-hover/node:scale-125`}
-                  >
-                    {tech.icon}
-                    
-                    {/* Micro Pulse Halo behind Icon */}
-                    <span className="absolute inset-0 rounded-full bg-white/5 group-hover/node:bg-white/10 animate-pulse pointer-events-none" />
-                  </div>
+              {/* 6. True Planetary Orbiting Micro Tech Icons Surrounding the Character */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20 group/orbit">
+                {/* Visual Orbit Track Ring */}
+                <div className="absolute w-[310px] h-[310px] sm:w-[410px] sm:h-[410px] lg:w-[470px] lg:h-[470px] rounded-full border border-dashed border-cyan-400/25 dark:border-cyan-400/30 pointer-events-none" />
 
-                  {/* Micro Tooltip that appears elegantly on hover without cluttering */}
-                  <div
-                    className={`absolute ${
-                      tech.tooltipAlign === "left"
-                        ? "left-full ml-2.5"
-                        : "right-full mr-2.5"
-                    } top-1/2 -translate-y-1/2 opacity-0 pointer-events-none group-hover/node:opacity-100 transition-opacity duration-200 z-30 whitespace-nowrap`}
-                  >
-                    <div className="px-2.5 py-1 rounded-lg bg-slate-900/90 dark:bg-black/90 backdrop-blur-md border border-white/15 shadow-xl text-left font-mono">
-                      <p className="text-[11px] font-bold text-white leading-tight">
-                        {tech.name}
-                      </p>
-                      <p className="text-[9px] text-slate-400">
-                        {tech.role}
-                      </p>
+                {/* 360-Degree Continuous Rotating Orbit Track */}
+                <div className="relative w-[310px] h-[310px] sm:w-[410px] sm:h-[410px] lg:w-[470px] lg:h-[470px] rounded-full animate-orbit-revolve pointer-events-auto">
+                  {[
+                    {
+                      id: "tech-network",
+                      name: "Cisco & MikroTik",
+                      role: "Routing & VLAN",
+                      icon: <Network className="w-4 h-4 text-cyan-400" />,
+                      borderHover: "hover:border-cyan-400 hover:shadow-cyan-400/40",
+                      left: "50%",
+                      top: "0%",
+                    },
+                    {
+                      id: "tech-code",
+                      name: "Full-Stack Dev",
+                      role: "Laravel, React, Next.js",
+                      icon: <Code2 className="w-4 h-4 text-orange-400" />,
+                      borderHover: "hover:border-orange-400 hover:shadow-orange-400/40",
+                      left: "93.3%",
+                      top: "25%",
+                    },
+                    {
+                      id: "tech-cpu",
+                      name: "Hardware & IoT",
+                      role: "Core Architecture",
+                      icon: <Cpu className="w-4 h-4 text-amber-400" />,
+                      borderHover: "hover:border-amber-400 hover:shadow-amber-400/40",
+                      left: "93.3%",
+                      top: "75%",
+                    },
+                    {
+                      id: "tech-database",
+                      name: "Database Systems",
+                      role: "PostgreSQL & Supabase",
+                      icon: <Database className="w-4 h-4 text-sky-400" />,
+                      borderHover: "hover:border-sky-400 hover:shadow-sky-400/40",
+                      left: "50%",
+                      top: "100%",
+                    },
+                    {
+                      id: "tech-security",
+                      name: "Network Security",
+                      role: "Firewall & QoS Bandwidth",
+                      icon: <ShieldCheck className="w-4 h-4 text-rose-400" />,
+                      borderHover: "hover:border-rose-400 hover:shadow-rose-400/40",
+                      left: "6.7%",
+                      top: "75%",
+                    },
+                    {
+                      id: "tech-terminal",
+                      name: "Linux & Server",
+                      role: "System Administration",
+                      icon: <Terminal className="w-4 h-4 text-emerald-400" />,
+                      borderHover: "hover:border-emerald-400 hover:shadow-emerald-400/40",
+                      left: "6.7%",
+                      top: "25%",
+                    },
+                  ].map((tech) => (
+                    <div
+                      key={tech.id}
+                      style={{
+                        position: "absolute",
+                        left: tech.left,
+                        top: tech.top,
+                        transform: "translate(-50%, -50%)",
+                      }}
+                      className="group/node cursor-pointer pointer-events-auto"
+                    >
+                      {/* Counter-rotation to keep each icon upright while revolving */}
+                      <div className="animate-orbit-counter-revolve">
+                        {/* Micro Glassmorphic Sphere */}
+                        <div
+                          className={`relative w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-slate-900/90 dark:bg-black/85 backdrop-blur-md border border-white/20 ${tech.borderHover} shadow-xl shadow-black/50 flex items-center justify-center transition-all duration-300 group-hover/node:scale-130`}
+                        >
+                          {tech.icon}
+                          
+                          {/* Micro Pulse Halo behind Icon */}
+                          <span className="absolute inset-0 rounded-full bg-white/5 group-hover/node:bg-white/15 animate-pulse pointer-events-none" />
+                        </div>
+
+                        {/* Floating Tooltip positioned neatly above each icon */}
+                        <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 opacity-0 pointer-events-none group-hover/node:opacity-100 transition-opacity duration-200 z-50 whitespace-nowrap">
+                          <div className="px-2.5 py-1 rounded-lg bg-slate-900/95 dark:bg-black/95 backdrop-blur-md border border-white/20 shadow-2xl text-center font-mono">
+                            <p className="text-[11px] font-bold text-white leading-tight">
+                              {tech.name}
+                            </p>
+                            <p className="text-[9px] text-slate-400">
+                              {tech.role}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </motion.div>
-              ))}
+                  ))}
+                </div>
+              </div>
 
 
 
