@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import {
-  Code2,
-  Smartphone,
-  Network,
-  Server,
-  Palette,
-  Database,
-  Cpu,
+  Boxes,
+  Layers3,
+  Waypoints,
+  SlidersHorizontal,
+  Shapes,
+  TableProperties,
+  CircuitBoard,
   CheckCircle2,
   Terminal,
   Activity,
@@ -43,7 +43,7 @@ export const Services: React.FC = () => {
       title: "Full-Stack Web Engineering",
       category: "Web & Software",
       tagline: "Arsitektur Modern SPA, Robust REST APIs & Relational Database",
-      icon: <Code2 className="w-5 h-5 text-orange-500" />,
+      icon: <Boxes className="w-5 h-5 text-orange-500" strokeWidth={1.75} />,
       accentGradient: "from-orange-500/20 via-amber-500/10 to-transparent",
       accentBorder: "border-orange-500/40",
       scope: "End-to-End Web App Delivery",
@@ -88,7 +88,7 @@ export const Services: React.FC = () => {
       title: "Mobile App Development",
       category: "Mobile Engineering",
       tagline: "Cross-Platform Native Android & iOS dengan Clean Architecture",
-      icon: <Smartphone className="w-5 h-5 text-cyan-400" />,
+      icon: <Layers3 className="w-5 h-5 text-cyan-400" strokeWidth={1.75} />,
       accentGradient: "from-cyan-500/20 via-blue-500/10 to-transparent",
       accentBorder: "border-cyan-500/40",
       scope: "Production-Ready Mobile App",
@@ -129,7 +129,7 @@ export const Services: React.FC = () => {
       title: "Enterprise Network & GNS3",
       category: "Network Infrastructure",
       tagline: "Simulasi Topologi L2/L3, OSPF Routing & Emulasi Real-Device",
-      icon: <Network className="w-5 h-5 text-orange-500" />,
+      icon: <Waypoints className="w-5 h-5 text-orange-500" strokeWidth={1.75} />,
       accentGradient: "from-orange-500/20 via-rose-500/10 to-transparent",
       accentBorder: "border-orange-500/40",
       scope: "Campus & Enterprise Network Design",
@@ -170,7 +170,7 @@ export const Services: React.FC = () => {
       title: "MikroTik Gateway & Bandwidth QoS",
       category: "Network Infrastructure",
       tagline: "Manajemen Bandwidth Adil, Captive Portal Hotspot & Dual-ISP Failover",
-      icon: <Server className="w-5 h-5 text-amber-500" />,
+      icon: <SlidersHorizontal className="w-5 h-5 text-amber-500" strokeWidth={1.75} />,
       accentGradient: "from-amber-500/20 via-orange-500/10 to-transparent",
       accentBorder: "border-amber-500/40",
       scope: "Gateway, Hotspot & Traffic Shaping",
@@ -208,7 +208,7 @@ export const Services: React.FC = () => {
       title: "UI/UX & Digital Product Design",
       category: "Interface & Product Design",
       tagline: "Desain Sistem Terstandar, Wireframing Intuitif & Interaktif Prototyping",
-      icon: <Palette className="w-5 h-5 text-purple-400" />,
+      icon: <Shapes className="w-5 h-5 text-purple-400" strokeWidth={1.75} />,
       accentGradient: "from-purple-500/20 via-rose-500/10 to-transparent",
       accentBorder: "border-purple-500/40",
       scope: "Design System & Figma Architecture",
@@ -246,7 +246,7 @@ export const Services: React.FC = () => {
       title: "Database Architecture & Cloud BaaS",
       category: "Database & Cloud",
       tagline: "Skema Normalisasi Relasional, Optimasi Query SQL & Supabase Cloud",
-      icon: <Database className="w-5 h-5 text-blue-500" />,
+      icon: <TableProperties className="w-5 h-5 text-blue-500" strokeWidth={1.75} />,
       accentGradient: "from-blue-500/20 via-emerald-500/10 to-transparent",
       accentBorder: "border-blue-500/40",
       scope: "Database Design & Cloud Sync",
@@ -288,7 +288,7 @@ export const Services: React.FC = () => {
       title: "IT Support, Hardware & Rig Assembly",
       category: "Hardware & Systems",
       tagline: "Perakitan Workstation, Optimasi Firmware UEFI/BIOS & Troubleshooting",
-      icon: <Cpu className="w-5 h-5 text-amber-500" />,
+      icon: <CircuitBoard className="w-5 h-5 text-amber-500" strokeWidth={1.75} />,
       accentGradient: "from-amber-500/20 via-rose-500/10 to-transparent",
       accentBorder: "border-amber-500/40",
       scope: "Workstation Build & System Diagnostics",
@@ -426,7 +426,7 @@ export const Services: React.FC = () => {
                 </div>
 
                 {/* Service Icon & Title */}
-                <div className="w-9 h-9 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center mb-3 group-hover/card:scale-105 group-hover/card:border-orange-500/40 transition-all">
+                <div className="w-10 h-10 rounded-xl bg-slate-100/80 dark:bg-white/[0.04] border border-slate-200/80 dark:border-white/10 flex items-center justify-center mb-3.5 group-hover/card:scale-105 group-hover/card:border-orange-500/40 group-hover/card:bg-orange-500/5 transition-all shadow-sm">
                   {item.icon}
                 </div>
 
@@ -547,7 +547,7 @@ export const Services: React.FC = () => {
                   </div>
 
                   <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-orange-500/10 border border-orange-500/30 flex items-center justify-center shrink-0 mt-1">
+                    <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-white/[0.05] border border-slate-200 dark:border-white/10 flex items-center justify-center shrink-0 mt-1 shadow-sm">
                       {activeModal.icon}
                     </div>
                     <div>
