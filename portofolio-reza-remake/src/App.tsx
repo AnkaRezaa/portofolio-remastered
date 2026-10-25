@@ -19,7 +19,7 @@ import {
   fetchCertificates,
   getLocalProjects,
   getLocalCertificates,
-  alignWithSavedOrderAndPins,
+  saveItemsWithOrderAndPins,
   STORAGE_PROJECTS,
   STORAGE_PINNED_PROJECTS,
   STORAGE_PROJECT_ORDER,
@@ -97,23 +97,23 @@ export function App() {
   });
 
   const handleSaveProjects = (updated: ProjectItem[]) => {
-    const aligned = alignWithSavedOrderAndPins(
+    const saved = saveItemsWithOrderAndPins(
       updated,
       STORAGE_PINNED_PROJECTS,
       STORAGE_PROJECT_ORDER,
       STORAGE_PROJECTS
     );
-    setProjects(aligned);
+    setProjects(saved);
   };
 
   const handleSaveCertificates = (updated: CertificateItem[]) => {
-    const aligned = alignWithSavedOrderAndPins(
+    const saved = saveItemsWithOrderAndPins(
       updated,
       STORAGE_PINNED_CERTS,
       STORAGE_CERT_ORDER,
       STORAGE_CERTS
     );
-    setCertificates(aligned);
+    setCertificates(saved);
   };
 
   const handleResetDefault = () => {

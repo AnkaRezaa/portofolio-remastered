@@ -28,6 +28,51 @@ export const STORAGE_PINNED_CERTS = "anka-pinned-certificates";
 export const STORAGE_CERT_ORDER = "anka-certificate-order";
 
 /**
+ * Persists user's explicit reordering and pin / unpin actions.
+ * If user unpins a card, it is immediately removed from pinned storage
+ * so it will NEVER be forced back to pinned state.
+ */
+export function saveItemsWithOrderAndPins<T extends { id: string; pinned?: boolean }>(
+  updatedItems: T[],
+  pinnedStorageKey: string,
+  orderStorageKey: string,
+  localItemsStorageKey: string
+): T[] {
+  if (typeof window === "undefined") return updatedItems;
+
+  // 1. Explicitly extract ONLY the items that are currently pinned
+  const activePins = updatedItems
+    .filter((item) => Boolean(item.pinned))
+    .map((item) => item.id);
+
+  const pinnedSet = new Set(activePins);
+
+  // 2. Ensure each item's boolean accurately reflects pinnedSet
+  const itemsWithPinned = updatedItems.map((item) => ({
+    ...item,
+    pinned: pinnedSet.has(item.id),
+  }));
+
+  // 3. Pinned items always float to the top; unpinned maintain their relative position
+  const sorted = [...itemsWithPinned].sort((a, b) => {
+    const aPinned = Boolean(a.pinned);
+    const bPinned = Boolean(b.pinned);
+    if (aPinned && !bPinned) return -1;
+    if (!aPinned && bPinned) return 1;
+    return 0;
+  });
+
+  // 4. Immediately write to localStorage so unpin is instantly persisted
+  try {
+    localStorage.setItem(pinnedStorageKey, JSON.stringify(activePins));
+    localStorage.setItem(orderStorageKey, JSON.stringify(sorted.map((s) => s.id)));
+    localStorage.setItem(localItemsStorageKey, JSON.stringify(sorted));
+  } catch (e) {}
+
+  return sorted;
+}
+
+/**
  * Ensures items maintain pinned priority (pinned cards always on top)
  * and preserve user-defined custom ordering across refreshes and cloud syncs.
  */
@@ -41,11 +86,13 @@ export function alignWithSavedOrderAndPins<T extends { id: string; pinned?: bool
 
   const pinnedSet = new Set<string>();
   const orderList: string[] = [];
+  let userPinsConfigured = false;
 
   // 1. Read explicitly stored pinned IDs
   try {
     const savedPins = localStorage.getItem(pinnedStorageKey);
-    if (savedPins) {
+    if (savedPins !== null) {
+      userPinsConfigured = true;
       const parsedPins: string[] = JSON.parse(savedPins);
       parsedPins.forEach((id) => pinnedSet.add(id));
     }
@@ -54,44 +101,42 @@ export function alignWithSavedOrderAndPins<T extends { id: string; pinned?: bool
   // 2. Read explicitly stored ordering IDs
   try {
     const savedOrder = localStorage.getItem(orderStorageKey);
-    if (savedOrder) {
+    if (savedOrder !== null) {
       const parsedOrder: string[] = JSON.parse(savedOrder);
       parsedOrder.forEach((id) => orderList.push(id));
     }
   } catch (e) {}
 
-  // 3. Fallback: inspect any pinned items already saved in local full list
-  try {
-    const savedLocal = localStorage.getItem(localItemsStorageKey);
-    if (savedLocal) {
-      const parsedLocal: T[] = JSON.parse(savedLocal);
-      parsedLocal.forEach((item) => {
-        if (item.pinned) pinnedSet.add(item.id);
-        if (!orderList.includes(item.id)) orderList.push(item.id);
-      });
-    }
-  } catch (e) {}
+  // 3. Fallback: only if user has NEVER interacted with pins (no storage key set yet)
+  if (!userPinsConfigured) {
+    try {
+      const savedLocal = localStorage.getItem(localItemsStorageKey);
+      if (savedLocal) {
+        const parsedLocal: T[] = JSON.parse(savedLocal);
+        parsedLocal.forEach((item) => {
+          if (item.pinned) pinnedSet.add(item.id);
+        });
+      }
+    } catch (e) {}
+  }
 
-  // 4. Also inspect current items passed in (e.g. from cloud or default data)
-  items.forEach((item) => {
-    if (item.pinned) pinnedSet.add(item.id);
-    if (!orderList.includes(item.id)) orderList.push(item.id);
-  });
-
-  // 5. Annotate every item with its correct pinned status
+  // 4. Annotate every item with its correct pinned status:
+  // If user has saved pins (even empty []), ONLY items present in pinnedSet are pinned!
   const itemsWithPinned = items.map((item) => {
-    const isPinned = pinnedSet.has(item.id) || Boolean(item.pinned);
+    const isPinned = userPinsConfigured
+      ? pinnedSet.has(item.id)
+      : pinnedSet.has(item.id) || Boolean(item.pinned);
     return {
       ...item,
       pinned: isPinned,
     };
   });
 
-  // 6. Build index map for orderList
+  // 5. Build index map for orderList
   const orderMap = new Map<string, number>();
   orderList.forEach((id, idx) => orderMap.set(id, idx));
 
-  // 7. Sort: Pinned items ALWAYS at the very top (index 0, 1, ...), preserving relative order
+  // 6. Sort: Pinned items ALWAYS at the very top (index 0, 1, ...), preserving relative order
   const sorted = [...itemsWithPinned].sort((a, b) => {
     const aPinned = Boolean(a.pinned);
     const bPinned = Boolean(b.pinned);
@@ -103,7 +148,7 @@ export function alignWithSavedOrderAndPins<T extends { id: string; pinned?: bool
     return aIdx - bIdx;
   });
 
-  // 8. Re-persist the synchronized state so next refresh has immediate access
+  // 7. Re-persist the synchronized state
   try {
     const activePins = sorted.filter((s) => s.pinned).map((s) => s.id);
     localStorage.setItem(pinnedStorageKey, JSON.stringify(activePins));
@@ -127,7 +172,6 @@ interface DbProjectRow {
 }
 
 function mapRowToProject(row: DbProjectRow): ProjectItem {
-  const isFeatured = Boolean(row.featured);
   return {
     id: row.id,
     title: row.title,
@@ -137,8 +181,8 @@ function mapRowToProject(row: DbProjectRow): ProjectItem {
     tags: Array.isArray(row.tags) ? row.tags : [],
     demoUrl: row.demo_url || undefined,
     githubUrl: row.github_url || undefined,
-    featured: isFeatured,
-    pinned: isFeatured, // In Supabase, the boolean 'featured' column mirrors pinned state
+    featured: Boolean(row.featured),
+    pinned: false, // Pinning is managed by user state in pinnedStorageKey
   };
 }
 
