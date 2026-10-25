@@ -58,6 +58,13 @@ function mapProjectToRow(item: ProjectItem): DbProjectRow {
   };
 }
 
+function mergeWithDefaults<T extends { id: string }>(remoteItems: T[], defaultItems: T[]): T[] {
+  const map = new Map<string, T>();
+  defaultItems.forEach((item) => map.set(item.id, item));
+  remoteItems.forEach((item) => map.set(item.id, item));
+  return Array.from(map.values());
+}
+
 export async function fetchProjects(): Promise<ProjectItem[]> {
   try {
     const { data, error } = await supabase
@@ -72,8 +79,9 @@ export async function fetchProjects(): Promise<ProjectItem[]> {
 
     if (data && data.length > 0) {
       const mapped = data.map(mapRowToProject);
-      localStorage.setItem("anka-portfolio-projects", JSON.stringify(mapped));
-      return mapped;
+      const merged = mergeWithDefaults(mapped, projectsData);
+      localStorage.setItem("anka-portfolio-projects", JSON.stringify(merged));
+      return merged;
     }
 
     return getLocalProjects();
@@ -174,8 +182,9 @@ export async function fetchCertificates(): Promise<CertificateItem[]> {
 
     if (data && data.length > 0) {
       const mapped = data.map(mapRowToCert);
-      localStorage.setItem("anka-portfolio-certificates", JSON.stringify(mapped));
-      return mapped;
+      const merged = mergeWithDefaults(mapped, certificatesData);
+      localStorage.setItem("anka-portfolio-certificates", JSON.stringify(merged));
+      return merged;
     }
 
     return getLocalCertificates();
