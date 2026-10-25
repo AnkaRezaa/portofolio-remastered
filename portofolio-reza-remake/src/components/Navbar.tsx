@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useTheme } from "../context/ThemeContext";
 import { Sun, Moon, Menu, X, ArrowUpRight, Terminal, FileText } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -23,23 +23,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenResume }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
-  const logoClicksRef = useRef(0);
-  const clickTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const handleLogoClick = () => {
-    logoClicksRef.current += 1;
-    if (clickTimerRef.current) clearTimeout(clickTimerRef.current);
-
-    if (logoClicksRef.current >= 3) {
-      window.open("?admin=true#admin", "_blank");
-      logoClicksRef.current = 0;
-      return;
-    }
-
-    clickTimerRef.current = setTimeout(() => {
-      logoClicksRef.current = 0;
-    }, 1000);
-  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -88,10 +71,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenResume }) => {
               : "bg-transparent border border-transparent"
           }`}
         >
-          {/* CLI Terminal Brand Identifier (Triple click opens Admin Console) */}
+          {/* CLI Terminal Brand Identifier */}
           <a
             href="#home"
-            onClick={handleLogoClick}
             className="group flex items-center gap-2 font-mono text-xs sm:text-sm font-bold text-slate-900 dark:text-white"
           >
             <span className="text-orange-500 font-extrabold">&gt;_</span>

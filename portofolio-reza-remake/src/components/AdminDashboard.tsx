@@ -49,10 +49,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   onResetDefault,
   onBackToSite,
 }) => {
-  // Authentication State
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    return sessionStorage.getItem("reza_admin_auth") === "true";
-  });
+  // Authentication State: Always require master password on every visit
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [passwordInput, setPasswordInput] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [authError, setAuthError] = useState("");
@@ -118,7 +116,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       const storedPwd = await getAdminPassword();
       if (passwordInput === storedPwd) {
         setIsAuthenticated(true);
-        sessionStorage.setItem("reza_admin_auth", "true");
         setPasswordInput("");
         confetti({ particleCount: 50, spread: 60 });
       } else {
@@ -133,7 +130,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
   // Logout handler
   const handleLogout = () => {
-    sessionStorage.removeItem("reza_admin_auth");
     setIsAuthenticated(false);
     setPasswordInput("");
     showToast("Anda telah keluar dari sesi admin.");
