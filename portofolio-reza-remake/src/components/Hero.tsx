@@ -1,7 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { profileData } from "../data/profile";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Send, Layers, FileText } from "lucide-react";
+import {
+  ArrowRight,
+  Send,
+  Layers,
+  FileText,
+  Network,
+  Code2,
+  Cpu,
+  Database,
+  Terminal,
+  ShieldCheck,
+} from "lucide-react";
 import {
   GithubIcon,
   LinkedinIcon,
@@ -236,36 +247,125 @@ export const Hero: React.FC<HeroProps> = ({ onOpenResume }) => {
               {/* 5. Holographic Pedestal Disc Glow under Character */}
               <div className="absolute bottom-0 w-64 sm:w-80 h-14 rounded-[100%] bg-gradient-to-r from-orange-500/40 via-cyan-400/50 to-blue-600/40 blur-xl pointer-events-none transform -rotate-1 -z-10" />
 
-              {/* 6. Floating Cybernetic Telemetry Badges */}
-              <motion.div
-                animate={{ y: [-6, 6, -6] }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute top-4 -left-2 sm:-left-6 px-3 py-1.5 rounded-xl bg-white/85 dark:bg-slate-900/85 backdrop-blur-md border border-slate-200/90 dark:border-white/10 shadow-xl flex items-center gap-2 font-mono text-[11px] z-20"
-              >
-                <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-                <span className="text-slate-800 dark:text-slate-200 font-bold">
-                  D4 TI POLINEMA
-                </span>
-              </motion.div>
+              {/* 6. Orbiting Micro Tech Icons Surrounding the Character */}
+              {[
+                {
+                  id: "tech-network",
+                  name: "Cisco & MikroTik",
+                  role: "Routing & VLAN",
+                  icon: <Network className="w-4 h-4 text-cyan-400" />,
+                  borderHover: "hover:border-cyan-400/80 hover:shadow-cyan-400/30",
+                  posClass: "top-14 -left-2 sm:-left-6",
+                  floatY: [-7, 7, -7],
+                  floatX: [-2, 2, -2],
+                  duration: 4.2,
+                  tooltipAlign: "left",
+                },
+                {
+                  id: "tech-code",
+                  name: "Full-Stack Dev",
+                  role: "Laravel, React, Next.js",
+                  icon: <Code2 className="w-4 h-4 text-orange-400" />,
+                  borderHover: "hover:border-orange-400/80 hover:shadow-orange-400/30",
+                  posClass: "top-8 -right-2 sm:-right-5",
+                  floatY: [6, -6, 6],
+                  floatX: [3, -3, 3],
+                  duration: 3.8,
+                  tooltipAlign: "right",
+                },
+                {
+                  id: "tech-terminal",
+                  name: "Linux & Server",
+                  role: "System Administration",
+                  icon: <Terminal className="w-4 h-4 text-emerald-400" />,
+                  borderHover: "hover:border-emerald-400/80 hover:shadow-emerald-400/30",
+                  posClass: "top-1/2 -left-3 sm:-left-8 -translate-y-12",
+                  floatY: [-6, 6, -6],
+                  floatX: [3, -3, 3],
+                  duration: 5.1,
+                  tooltipAlign: "left",
+                },
+                {
+                  id: "tech-cpu",
+                  name: "Hardware & IoT",
+                  role: "Core Architecture",
+                  icon: <Cpu className="w-4 h-4 text-amber-400" />,
+                  borderHover: "hover:border-amber-400/80 hover:shadow-amber-400/30",
+                  posClass: "top-1/2 -right-3 sm:-right-8 -translate-y-8",
+                  floatY: [7, -7, 7],
+                  floatX: [-3, 3, -3],
+                  duration: 4.6,
+                  tooltipAlign: "right",
+                },
+                {
+                  id: "tech-database",
+                  name: "Database Systems",
+                  role: "PostgreSQL & Supabase",
+                  icon: <Database className="w-4 h-4 text-sky-400" />,
+                  borderHover: "hover:border-sky-400/80 hover:shadow-sky-400/30",
+                  posClass: "bottom-24 -left-2 sm:-left-5",
+                  floatY: [-5, 5, -5],
+                  floatX: [-2, 2, -2],
+                  duration: 4.9,
+                  tooltipAlign: "left",
+                },
+                {
+                  id: "tech-security",
+                  name: "Network Security",
+                  role: "Firewall & QoS Bandwidth",
+                  icon: <ShieldCheck className="w-4 h-4 text-rose-400" />,
+                  borderHover: "hover:border-rose-400/80 hover:shadow-rose-400/30",
+                  posClass: "bottom-28 -right-2 sm:-right-5",
+                  floatY: [5, -5, 5],
+                  floatX: [2, -2, 2],
+                  duration: 4.4,
+                  tooltipAlign: "right",
+                },
+              ].map((tech) => (
+                <motion.div
+                  key={tech.id}
+                  animate={{
+                    y: tech.floatY,
+                    x: tech.floatX,
+                  }}
+                  transition={{
+                    duration: tech.duration,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                  className={`absolute ${tech.posClass} z-20 group/node cursor-pointer`}
+                >
+                  {/* Glassmorphic Orbital Micro Sphere */}
+                  <div
+                    className={`relative w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-slate-900/80 dark:bg-black/75 backdrop-blur-md border border-white/15 ${tech.borderHover} shadow-lg shadow-black/40 flex items-center justify-center transition-all duration-300 group-hover/node:scale-125`}
+                  >
+                    {tech.icon}
+                    
+                    {/* Micro Pulse Halo behind Icon */}
+                    <span className="absolute inset-0 rounded-full bg-white/5 group-hover/node:bg-white/10 animate-pulse pointer-events-none" />
+                  </div>
 
-              <motion.div
-                animate={{ y: [6, -6, 6] }}
-                transition={{ duration: 4.8, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute bottom-10 -right-2 sm:-right-6 px-3 py-1.5 rounded-xl bg-white/85 dark:bg-slate-900/85 backdrop-blur-md border border-slate-200/90 dark:border-white/10 shadow-xl flex items-center gap-2 font-mono text-[11px] z-20"
-              >
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                <span className="text-slate-800 dark:text-slate-200 font-bold">
-                  FULL-STACK & NETWORKS
-                </span>
-              </motion.div>
+                  {/* Micro Tooltip that appears elegantly on hover without cluttering */}
+                  <div
+                    className={`absolute ${
+                      tech.tooltipAlign === "left"
+                        ? "left-full ml-2.5"
+                        : "right-full mr-2.5"
+                    } top-1/2 -translate-y-1/2 opacity-0 pointer-events-none group-hover/node:opacity-100 transition-opacity duration-200 z-30 whitespace-nowrap`}
+                  >
+                    <div className="px-2.5 py-1 rounded-lg bg-slate-900/90 dark:bg-black/90 backdrop-blur-md border border-white/15 shadow-xl text-left font-mono">
+                      <p className="text-[11px] font-bold text-white leading-tight">
+                        {tech.name}
+                      </p>
+                      <p className="text-[9px] text-slate-400">
+                        {tech.role}
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
 
-              <motion.div
-                animate={{ y: [-4, 4, -4] }}
-                transition={{ duration: 5.2, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -bottom-2 left-6 sm:left-4 px-2.5 py-1 rounded-lg bg-orange-500/10 dark:bg-orange-500/20 border border-orange-500/30 backdrop-blur-sm font-mono text-[10px] text-orange-600 dark:text-orange-400 font-semibold z-20"
-              >
-                ONLINE // MALANG, ID
-              </motion.div>
+
 
               {/* 7. Character Persona: Smooth Floating Levitation with Drop Shadow */}
               <motion.div
