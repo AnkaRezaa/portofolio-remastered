@@ -1,13 +1,11 @@
 import React, { useState } from "react";
-import { profileData } from "../data/profile";
 import { motion, AnimatePresence } from "framer-motion";
+import { InteractiveProfileCard } from "./InteractiveProfileCard";
 import {
   Sparkles,
   Terminal,
   Shield,
   Eye,
-  Check,
-  Copy,
   Laptop,
   Compass,
   ArrowRight,
@@ -16,15 +14,7 @@ import {
 
 export const About: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"philosophy" | "story" | "workspace">("philosophy");
-  const [photoMode, setPhotoMode] = useState<"normal" | "blueprint">("normal");
-  const [copiedEmail, setCopiedEmail] = useState(false);
   const [activeChapter, setActiveChapter] = useState(0);
-
-  const handleCopyEmail = () => {
-    navigator.clipboard.writeText(profileData.contact.email);
-    setCopiedEmail(true);
-    setTimeout(() => setCopiedEmail(false), 2000);
-  };
 
   const philosophies = [
     {
@@ -156,101 +146,7 @@ export const About: React.FC = () => {
           
           {/* Left: Interactive Profile & Quick Actions */}
           <div className="lg:col-span-5 space-y-6">
-            <div className="glass-card p-6 rounded-3xl border border-slate-200/80 dark:border-white/10 shadow-lg relative overflow-hidden group">
-              
-              {/* Photo View Mode Toggles */}
-              <div className="flex items-center justify-between mb-4">
-                <span className="font-mono text-xs font-bold text-slate-700 dark:text-slate-300">
-                  Foto Profil
-                </span>
-                <div className="flex items-center gap-1 bg-slate-100 dark:bg-dark-surface p-1 rounded-lg border border-slate-200 dark:border-white/5 font-mono text-[10px]">
-                  <button
-                    onClick={() => setPhotoMode("normal")}
-                    className={`px-2.5 py-1 rounded transition-colors ${
-                      photoMode === "normal"
-                        ? "bg-orange-500 text-white font-bold"
-                        : "text-slate-500 hover:text-slate-900 dark:hover:text-white"
-                    }`}
-                  >
-                    NORMAL
-                  </button>
-                  <button
-                    onClick={() => setPhotoMode("blueprint")}
-                    className={`px-2.5 py-1 rounded transition-colors ${
-                      photoMode === "blueprint"
-                        ? "bg-orange-500 text-white font-bold"
-                        : "text-slate-500 hover:text-slate-900 dark:hover:text-white"
-                    }`}
-                  >
-                    BLUEPRINT
-                  </button>
-                </div>
-              </div>
-
-              {/* Portrait Container */}
-              <div className="relative aspect-[4/5] w-full rounded-2xl overflow-hidden bg-slate-950 border border-slate-200 dark:border-white/10">
-                <img
-                  src={profileData.avatar}
-                  alt={profileData.name}
-                  className={`w-full h-full object-cover object-center transition-all duration-500 ${
-                    photoMode === "blueprint"
-                      ? "filter grayscale contrast-125 invert-[0.1] sepia-[0.3] hue-rotate-[180deg]"
-                      : "filter contrast-105"
-                  }`}
-                />
-
-                {photoMode === "blueprint" && (
-                  <div className="absolute inset-0 bg-grid-pattern opacity-40 pointer-events-none" />
-                )}
-
-                <div className="absolute inset-0 bg-gradient-to-t from-dark-bg/80 via-transparent to-transparent opacity-60" />
-
-                <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between font-mono text-[10px] text-white">
-                  <span className="px-2 py-0.5 rounded bg-black/60 backdrop-blur-md border border-white/10 flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-                    ONLINE
-                  </span>
-                  <span className="px-2 py-0.5 rounded bg-black/60 backdrop-blur-md border border-white/10">
-                    MALANG, INDONESIA
-                  </span>
-                </div>
-              </div>
-
-              {/* Bio & One-Click Copy Actions */}
-              <div className="mt-5 space-y-3">
-                <div>
-                  <h4 className="font-bold text-slate-900 dark:text-white text-base">
-                    {profileData.name}
-                  </h4>
-                  <p className="font-mono text-xs text-orange-500 font-semibold">
-                    {profileData.headline}
-                  </p>
-                </div>
-
-                <div className="pt-3 border-t border-slate-200 dark:border-white/5 flex items-center justify-between">
-                  <span className="font-mono text-xs text-slate-500 truncate max-w-[200px]">
-                    {profileData.contact.email}
-                  </span>
-                  <button
-                    onClick={handleCopyEmail}
-                    className="inline-flex items-center gap-1 font-mono text-xs font-bold text-orange-600 dark:text-orange-400 hover:underline"
-                  >
-                    {copiedEmail ? (
-                      <>
-                        <Check className="w-3.5 h-3.5 text-emerald-500" />
-                        <span className="text-emerald-500">COPIED</span>
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="w-3.5 h-3.5" />
-                        <span>COPY EMAIL</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-              </div>
-
-            </div>
+            <InteractiveProfileCard />
           </div>
 
           {/* Right: Dynamic Interactive Lens Content */}
