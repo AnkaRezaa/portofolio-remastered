@@ -4,6 +4,7 @@ export interface ProjectItem {
   category: "Web" | "UI/UX" | "Network" | "All";
   description: string;
   image: string;
+  images?: string[];
   tags: string[];
   demoUrl?: string;
   githubUrl?: string;

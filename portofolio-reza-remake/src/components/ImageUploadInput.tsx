@@ -26,7 +26,7 @@ interface ImageUploadInputProps {
 /**
  * Optimizes and converts image file to compressed Base64 Data URL
  */
-const compressImageFile = (
+export const compressImageFile = (
   file: File,
   maxWidth: number = 1200,
   maxHeight: number = 800,

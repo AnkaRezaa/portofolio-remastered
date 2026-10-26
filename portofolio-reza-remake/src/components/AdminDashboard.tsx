@@ -38,6 +38,8 @@ import {
   STORAGE_DELETED_CERTS,
 } from "../lib/supabase";
 import { ImageUploadInput } from "./ImageUploadInput";
+import { MultiImageUploadInput } from "./MultiImageUploadInput";
+import { GithubIcon } from "./ui/BrandIcons";
 
 interface AdminDashboardProps {
   projects: ProjectItem[];
@@ -79,6 +81,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     demoUrl: "",
     githubUrl: "",
     image: "",
+    images: [] as string[],
     tags: "",
     description: "",
     pinned: false,
@@ -151,12 +154,17 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   // Populate form for editing
   const handleStartEditProject = (item: ProjectItem) => {
     setEditingProjectId(item.id);
+    const initialImages = item.images && item.images.length > 0
+      ? item.images
+      : (item.image ? [item.image] : []);
+
     setProjectForm({
       title: item.title,
       category: item.category === "All" ? "Web" : item.category,
       demoUrl: item.demoUrl || "",
       githubUrl: item.githubUrl || "",
       image: item.image,
+      images: initialImages,
       tags: item.tags.join(", "),
       description: item.description,
       pinned: Boolean(item.pinned),
@@ -174,6 +182,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       demoUrl: "",
       githubUrl: "",
       image: "",
+      images: [],
       tags: "",
       description: "",
       pinned: false,
@@ -192,6 +201,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       .map((t) => t.trim())
       .filter(Boolean);
 
+    const projectImages = projectForm.images.length > 0
+      ? projectForm.images
+      : (projectForm.image.trim() ? [projectForm.image.trim()] : ["/assets/projects/Dashboard Desktop.png"]);
+    const primaryImg = projectImages[0] || "/assets/projects/Dashboard Desktop.png";
+
     setIsSavingProject(true);
     try {
       if (editingProjectId) {
@@ -202,7 +216,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           category: projectForm.category,
           demoUrl: projectForm.demoUrl.trim() || undefined,
           githubUrl: projectForm.githubUrl.trim() || undefined,
-          image: projectForm.image.trim() || "/assets/projects/Dashboard Desktop.png",
+          image: primaryImg,
+          images: projectImages,
           tags: tagsArray.length > 0 ? tagsArray : ["Web"],
           description: projectForm.description.trim(),
           pinned: projectForm.pinned,
@@ -230,7 +245,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           category: projectForm.category,
           demoUrl: projectForm.demoUrl.trim() || undefined,
           githubUrl: projectForm.githubUrl.trim() || undefined,
-          image: projectForm.image.trim() || "/assets/projects/Dashboard Desktop.png",
+          image: primaryImg,
+          images: projectImages,
           tags: tagsArray.length > 0 ? tagsArray : ["Web"],
           description: projectForm.description.trim(),
           pinned: projectForm.pinned,
@@ -831,16 +847,23 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   />
                 </div>
 
-                {/* Project Image: Drag & Drop File Upload & URL with Live Preview */}
+                {/* Project Images: Multi-Image Upload & URL with Live Preview & Cover Selector */}
                 <div className="p-4 sm:p-5 rounded-2xl bg-slate-950/40 border border-white/10">
-                  <ImageUploadInput
-                    label="Gambar / Thumbnail Dokumen Proyek (JPG, PNG, PDF)"
-                    value={projectForm.image}
-                    onChange={(newImg) => setProjectForm({ ...projectForm, image: newImg })}
-                    placeholder="/assets/projects/hotelier.png atau https://..."
-                    previewAspect="video"
-                    helpText="Pilih foto/screenshot atau file PDF dokumen proyek. Halaman 1 PDF otomatis dirender menjadi gambar thumbnail!"
-                    docTitle={projectForm.title || "Dokumen Proyek"}
+                  <MultiImageUploadInput
+                    label="Galeri Gambar / Tangkapan Layar Proyek (Bisa Tambah Banyak Foto)"
+                    images={
+                      projectForm.images && projectForm.images.length > 0
+                        ? projectForm.images
+                        : (projectForm.image ? [projectForm.image] : [])
+                    }
+                    onChange={(newImgs) =>
+                      setProjectForm({
+                        ...projectForm,
+                        images: newImgs,
+                        image: newImgs[0] || "",
+                      })
+                    }
+                    helpText="Pilih beberapa tangkapan layar atau file PDF sekaligus. Gambar pertama dengan badge [COVER] akan menjadi sampul utama di grid portofolio."
                   />
                 </div>
 
@@ -986,24 +1009,42 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                                 <span>PINNED</span>
                               </span>
                             )}
+                            {proj.images && proj.images.length > 1 && (
+                              <span className="px-1.5 py-0.5 rounded-md bg-black/70 backdrop-blur-md text-amber-400 font-mono text-[10px] font-bold border border-amber-400/20">
+                                {proj.images.length} Foto
+                              </span>
+                            )}
                           </div>
                         </div>
 
                         <h4 className="font-bold text-white text-sm line-clamp-1">{proj.title}</h4>
                         <p className="text-xs text-slate-400 mt-1 line-clamp-2 leading-relaxed">{proj.description}</p>
 
-                        {/* Live Link Indicator */}
-                        {proj.demoUrl && (
-                          <div className="mt-2.5 flex items-center gap-1.5">
-                            <a
-                              href={proj.demoUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono text-[11px] font-bold hover:bg-emerald-500/20 transition-colors"
-                            >
-                              <Globe className="w-3 h-3" />
-                              <span className="line-clamp-1">Website Live ↗</span>
-                            </a>
+                        {/* Live Link & GitHub Link Indicators */}
+                        {(proj.demoUrl || proj.githubUrl) && (
+                          <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
+                            {proj.demoUrl && (
+                              <a
+                                href={proj.demoUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono text-[11px] font-bold hover:bg-emerald-500/20 transition-colors"
+                              >
+                                <Globe className="w-3 h-3" />
+                                <span className="line-clamp-1">Website Live ↗</span>
+                              </a>
+                            )}
+                            {proj.githubUrl && (
+                              <a
+                                href={proj.githubUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-slate-300 font-mono text-[11px] font-bold hover:text-white hover:bg-white/10 transition-colors"
+                              >
+                                <GithubIcon className="w-3 h-3" />
+                                <span className="line-clamp-1">GitHub Repo ↗</span>
+                              </a>
+                            )}
                           </div>
                         )}
                       </div>

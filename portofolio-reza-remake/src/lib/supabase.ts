@@ -216,12 +216,28 @@ interface DbProjectRow {
 }
 
 function mapRowToProject(row: DbProjectRow): ProjectItem {
+  let images: string[] = [];
+  let primaryImage = row.image || "";
+
+  if (row.image && row.image.trim().startsWith("[") && row.image.trim().endsWith("]")) {
+    try {
+      const parsed = JSON.parse(row.image);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        images = parsed;
+        primaryImage = images[0] || "";
+      }
+    } catch (e) {}
+  } else if (row.image) {
+    images = [row.image];
+  }
+
   return {
     id: row.id,
     title: row.title,
     category: row.category as ProjectItem["category"],
     description: row.description || "",
-    image: row.image || "",
+    image: primaryImage,
+    images: images.length > 0 ? images : (primaryImage ? [primaryImage] : []),
     tags: Array.isArray(row.tags) ? row.tags : [],
     demoUrl: row.demo_url || undefined,
     githubUrl: row.github_url || undefined,
@@ -231,12 +247,20 @@ function mapRowToProject(row: DbProjectRow): ProjectItem {
 }
 
 function mapProjectToRow(item: ProjectItem): DbProjectRow {
+  const allImages = item.images && item.images.length > 0
+    ? item.images
+    : (item.image ? [item.image] : []);
+
+  const imageValue = allImages.length > 1
+    ? JSON.stringify(allImages)
+    : (allImages[0] || item.image || "");
+
   return {
     id: item.id,
     title: item.title,
     category: item.category,
     description: item.description,
-    image: item.image,
+    image: imageValue,
     tags: item.tags || [],
     demo_url: item.demoUrl || null,
     github_url: item.githubUrl || null,
