@@ -23,9 +23,11 @@ import {
   STORAGE_PROJECTS,
   STORAGE_PINNED_PROJECTS,
   STORAGE_PROJECT_ORDER,
+  STORAGE_DELETED_PROJECTS,
   STORAGE_CERTS,
   STORAGE_PINNED_CERTS,
   STORAGE_CERT_ORDER,
+  STORAGE_DELETED_CERTS,
 } from "./lib/supabase";
 
 export function App() {
@@ -122,9 +124,11 @@ export function App() {
     localStorage.removeItem(STORAGE_PROJECTS);
     localStorage.removeItem(STORAGE_PINNED_PROJECTS);
     localStorage.removeItem(STORAGE_PROJECT_ORDER);
+    localStorage.removeItem(STORAGE_DELETED_PROJECTS);
     localStorage.removeItem(STORAGE_CERTS);
     localStorage.removeItem(STORAGE_PINNED_CERTS);
     localStorage.removeItem(STORAGE_CERT_ORDER);
+    localStorage.removeItem(STORAGE_DELETED_CERTS);
     localStorage.removeItem("custom-projects");
     localStorage.removeItem("custom-certificates");
   };

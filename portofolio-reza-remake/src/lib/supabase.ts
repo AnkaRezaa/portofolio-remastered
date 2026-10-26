@@ -18,14 +18,58 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
    PROJECTS (CRUD)
    ========================================================================== */
 
-// Storage keys for persistent pins & custom ordering
 export const STORAGE_PROJECTS = "anka-portfolio-projects";
 export const STORAGE_PINNED_PROJECTS = "anka-pinned-projects";
 export const STORAGE_PROJECT_ORDER = "anka-project-order";
+export const STORAGE_DELETED_PROJECTS = "anka-deleted-projects";
 
 export const STORAGE_CERTS = "anka-portfolio-certificates";
 export const STORAGE_PINNED_CERTS = "anka-pinned-certificates";
 export const STORAGE_CERT_ORDER = "anka-certificate-order";
+export const STORAGE_DELETED_CERTS = "anka-deleted-certificates";
+
+export function getDeletedIds(storageKey: string): Set<string> {
+  if (typeof window === "undefined") return new Set<string>();
+  try {
+    const saved = localStorage.getItem(storageKey);
+    if (saved) return new Set(JSON.parse(saved));
+  } catch (e) {}
+  return new Set<string>();
+}
+
+export function markItemAsDeleted(id: string, storageKey: string) {
+  if (typeof window === "undefined") return;
+  try {
+    const set = getDeletedIds(storageKey);
+    set.add(id);
+    localStorage.setItem(storageKey, JSON.stringify(Array.from(set)));
+  } catch (e) {}
+}
+
+// Auto-sanitize known deleted items so legacy client localStorages are immediately cleaned
+if (typeof window !== "undefined") {
+  try {
+    markItemAsDeleted("cert-hackathon-polinema", STORAGE_DELETED_CERTS);
+    markItemAsDeleted("cert-lks-network", STORAGE_DELETED_CERTS);
+
+    const cleanStorageList = (key: string, removeIds: string[]) => {
+      const raw = localStorage.getItem(key);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          const filtered = parsed.filter((item: any) => {
+            const id = typeof item === "string" ? item : item?.id;
+            return !removeIds.includes(id);
+          });
+          localStorage.setItem(key, JSON.stringify(filtered));
+        }
+      }
+    };
+    cleanStorageList(STORAGE_CERTS, ["cert-hackathon-polinema", "cert-lks-network"]);
+    cleanStorageList(STORAGE_PINNED_CERTS, ["cert-hackathon-polinema", "cert-lks-network"]);
+    cleanStorageList(STORAGE_CERT_ORDER, ["cert-hackathon-polinema", "cert-lks-network"]);
+  } catch (e) {}
+}
 
 /**
  * Persists user's explicit reordering and pin / unpin actions.
@@ -200,12 +244,6 @@ function mapProjectToRow(item: ProjectItem): DbProjectRow {
   };
 }
 
-function mergeWithDefaults<T extends { id: string }>(remoteItems: T[], defaultItems: T[]): T[] {
-  const map = new Map<string, T>();
-  defaultItems.forEach((item) => map.set(item.id, item));
-  remoteItems.forEach((item) => map.set(item.id, item));
-  return Array.from(map.values());
-}
 
 export async function fetchProjects(): Promise<ProjectItem[]> {
   try {
@@ -221,10 +259,11 @@ export async function fetchProjects(): Promise<ProjectItem[]> {
 
     if (data && data.length > 0) {
       const mapped = data.map(mapRowToProject);
-      const merged = mergeWithDefaults(mapped, projectsData);
+      const deletedSet = getDeletedIds(STORAGE_DELETED_PROJECTS);
+      const activeProjects = mapped.filter((p) => !deletedSet.has(p.id));
       // Guarantee that remote fetch never overrides local pins and custom positions
       const aligned = alignWithSavedOrderAndPins(
-        merged,
+        activeProjects,
         STORAGE_PINNED_PROJECTS,
         STORAGE_PROJECT_ORDER,
         STORAGE_PROJECTS
@@ -255,6 +294,18 @@ export async function saveProject(project: ProjectItem): Promise<boolean> {
 }
 
 export async function deleteProject(id: string): Promise<boolean> {
+  markItemAsDeleted(id, STORAGE_DELETED_PROJECTS);
+
+  // Clean from localStorage immediately
+  try {
+    const pins = JSON.parse(localStorage.getItem(STORAGE_PINNED_PROJECTS) || "[]").filter((pid: string) => pid !== id);
+    localStorage.setItem(STORAGE_PINNED_PROJECTS, JSON.stringify(pins));
+    const order = JSON.parse(localStorage.getItem(STORAGE_PROJECT_ORDER) || "[]").filter((oid: string) => oid !== id);
+    localStorage.setItem(STORAGE_PROJECT_ORDER, JSON.stringify(order));
+    const list = JSON.parse(localStorage.getItem(STORAGE_PROJECTS) || "[]").filter((item: any) => item.id !== id);
+    localStorage.setItem(STORAGE_PROJECTS, JSON.stringify(list));
+  } catch (e) {}
+
   try {
     const { error } = await supabase.from("projects").delete().eq("id", id);
     if (error) {
@@ -269,11 +320,13 @@ export async function deleteProject(id: string): Promise<boolean> {
 }
 
 export function getLocalProjects(): ProjectItem[] {
-  let list = projectsData;
+  const deletedSet = getDeletedIds(STORAGE_DELETED_PROJECTS);
+  let list = projectsData.filter((p) => !deletedSet.has(p.id));
   const saved = typeof window !== "undefined" ? localStorage.getItem(STORAGE_PROJECTS) : null;
   if (saved) {
     try {
-      list = JSON.parse(saved);
+      const parsed: ProjectItem[] = JSON.parse(saved);
+      list = parsed.filter((p) => !deletedSet.has(p.id));
     } catch (e) {}
   }
   return alignWithSavedOrderAndPins(
@@ -336,10 +389,11 @@ export async function fetchCertificates(): Promise<CertificateItem[]> {
 
     if (data && data.length > 0) {
       const mapped = data.map(mapRowToCert);
-      const merged = mergeWithDefaults(mapped, certificatesData);
+      const deletedSet = getDeletedIds(STORAGE_DELETED_CERTS);
+      const activeCerts = mapped.filter((c) => !deletedSet.has(c.id));
       // Guarantee that remote fetch never overrides local pins and custom positions
       const aligned = alignWithSavedOrderAndPins(
-        merged,
+        activeCerts,
         STORAGE_PINNED_CERTS,
         STORAGE_CERT_ORDER,
         STORAGE_CERTS
@@ -370,6 +424,18 @@ export async function saveCertificate(cert: CertificateItem): Promise<boolean> {
 }
 
 export async function deleteCertificate(id: string): Promise<boolean> {
+  markItemAsDeleted(id, STORAGE_DELETED_CERTS);
+
+  // Clean from localStorage immediately
+  try {
+    const pins = JSON.parse(localStorage.getItem(STORAGE_PINNED_CERTS) || "[]").filter((cid: string) => cid !== id);
+    localStorage.setItem(STORAGE_PINNED_CERTS, JSON.stringify(pins));
+    const order = JSON.parse(localStorage.getItem(STORAGE_CERT_ORDER) || "[]").filter((oid: string) => oid !== id);
+    localStorage.setItem(STORAGE_CERT_ORDER, JSON.stringify(order));
+    const list = JSON.parse(localStorage.getItem(STORAGE_CERTS) || "[]").filter((item: any) => item.id !== id);
+    localStorage.setItem(STORAGE_CERTS, JSON.stringify(list));
+  } catch (e) {}
+
   try {
     const { error } = await supabase.from("certificates").delete().eq("id", id);
     if (error) {
@@ -384,11 +450,13 @@ export async function deleteCertificate(id: string): Promise<boolean> {
 }
 
 export function getLocalCertificates(): CertificateItem[] {
-  let list = certificatesData;
+  const deletedSet = getDeletedIds(STORAGE_DELETED_CERTS);
+  let list = certificatesData.filter((c) => !deletedSet.has(c.id));
   const saved = typeof window !== "undefined" ? localStorage.getItem(STORAGE_CERTS) : null;
   if (saved) {
     try {
-      list = JSON.parse(saved);
+      const parsed: CertificateItem[] = JSON.parse(saved);
+      list = parsed.filter((c) => !deletedSet.has(c.id));
     } catch (e) {}
   }
   return alignWithSavedOrderAndPins(

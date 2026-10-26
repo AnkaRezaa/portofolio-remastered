@@ -87,29 +87,6 @@ export const certificatesData: CertificateItem[] = [
     badgeLabel: "AI & ML Certified",
   },
 
-  // ==========================================
-  // 2. LOMBA & HACKATHON
-  // ==========================================
-  {
-    id: "cert-hackathon-polinema",
-    title: "Hackathon & IT Software Innovation",
-    issuer: "Politeknik Negeri Malang & Tech Community",
-    issueDate: "Desember 2023",
-    credentialId: "POLINEMA-HACK-2023",
-    image: "/assets/certificates/Muhammad Anka Reza le wagon - 2024-09-29.pdf",
-    category: "Competition",
-    badgeLabel: "Lomba & Hackathon",
-  },
-  {
-    id: "cert-lks-network",
-    title: "IT Network Systems Competition",
-    issuer: "Lomba Keterampilan Siswa (LKS) IT Network",
-    issueDate: "Februari 2023",
-    credentialId: "LKS-NET-2023-VERIFIED",
-    image: "/assets/certificates/img_dcdb0abdd06cfc2afd2be7bb8efefd2f.jpg",
-    category: "Competition",
-    badgeLabel: "Kompetisi IT",
-  },
 
   // ==========================================
   // 3. PELATIHAN & WORKSHOP BOOTCAMP

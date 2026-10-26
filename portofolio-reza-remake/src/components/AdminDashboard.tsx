@@ -33,6 +33,9 @@ import {
   deleteCertificate,
   getAdminPassword,
   updateAdminPassword,
+  markItemAsDeleted,
+  STORAGE_DELETED_PROJECTS,
+  STORAGE_DELETED_CERTS,
 } from "../lib/supabase";
 import { ImageUploadInput } from "./ImageUploadInput";
 
@@ -252,6 +255,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
   const handleDeleteProject = async (id: string, title: string) => {
     if (window.confirm(`Yakin ingin menghapus proyek "${title}" dari database cloud?`)) {
+      markItemAsDeleted(id, STORAGE_DELETED_PROJECTS);
       const updatedList = projects.filter((p) => p.id !== id);
       onSaveProjects(updatedList);
       await deleteProject(id);
@@ -396,6 +400,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
   const handleDeleteCertificate = async (id: string, title: string) => {
     if (window.confirm(`Yakin ingin menghapus sertifikat "${title}" dari database cloud?`)) {
+      markItemAsDeleted(id, STORAGE_DELETED_CERTS);
       const updatedList = certificates.filter((c) => c.id !== id);
       onSaveCertificates(updatedList);
       await deleteCertificate(id);
